@@ -593,6 +593,7 @@ function renderToday(){
   generateReading();
   renderIntentionBanner();
   renderTransitAlerts();
+  renderVedicPanel();
 }
 
 // ─── COMPARISON ───────────────────────────────────────────────────────────────
@@ -713,6 +714,176 @@ function switchView(name,btn){
   if(name==='patterns')renderPatterns();
   if(name==='sky')renderSky();
   closePlanetPopup();
+}
+
+
+
+// ─── VEDIC CALENDAR LAYER ────────────────────────────────────────────────────
+
+// TITHI — lunar day (1-30, 15 = full moon, 30/0 = new moon)
+function getTithi(date) {
+  const sunLon  = getSunLongitude(date);
+  const moonLon = getMoonLongitude(date);
+  let diff = ((moonLon - sunLon) % 360 + 360) % 360;
+  const tithiNum = Math.floor(diff / 12) + 1; // 1–30
+  const tithis = [
+    { n:1,  name:'Pratipada',  quality:'neutral',     desc:'New beginnings, initiations. Good for starting ventures.' },
+    { n:2,  name:'Dwitiya',    quality:'auspicious',  desc:'Favors travel, building, and creative work.' },
+    { n:3,  name:'Tritiya',    quality:'auspicious',  desc:'Excellent for beginning work, cutting hair, auspicious activities.' },
+    { n:4,  name:'Chaturthi',  quality:'mixed',       desc:'Ruled by Ganesh. Good for removing obstacles. Avoid new starts.' },
+    { n:5,  name:'Panchami',   quality:'auspicious',  desc:'Strong for medicine, learning, spiritual practice.' },
+    { n:6,  name:'Shashthi',   quality:'auspicious',  desc:'Good for valor, courage, and action.' },
+    { n:7,  name:'Saptami',    quality:'auspicious',  desc:'Favors vehicles, travel, and solar work.' },
+    { n:8,  name:'Ashtami',    quality:'intense',     desc:'Powerful Shakti day. Intense energy — good for deep practice, not new ventures.' },
+    { n:9,  name:'Navami',     quality:'mixed',       desc:'Good for aggressive or destructive work. Use force wisely.' },
+    { n:10, name:'Dashami',    quality:'auspicious',  desc:'Very auspicious. Favors all good works and dharmic action.' },
+    { n:11, name:'Ekadashi',   quality:'sacred',      desc:'Most spiritually potent day. Fasting, mantra, devotion. The 11th is revered across traditions.' },
+    { n:12, name:'Dwadashi',   quality:'auspicious',  desc:'Good for gifting, worship of Vishnu, and charitable acts.' },
+    { n:13, name:'Trayodashi', quality:'auspicious',  desc:'Favors music, art, and sensual/creative pursuits.' },
+    { n:14, name:'Chaturdashi',quality:'intense',     desc:'Shiva and Kali day. Deep tantric potency. Not for worldly beginnings.' },
+    { n:15, name:'Purnima',    quality:'sacred',      desc:'Full moon. Peak manifestation, gratitude, and offering. Highly auspicious.' },
+    { n:16, name:'Pratipada',  quality:'neutral',     desc:'Waning begins. Good for completing, releasing.' },
+    { n:17, name:'Dwitiya',    quality:'auspicious',  desc:'Good for work requiring endurance.' },
+    { n:18, name:'Tritiya',    quality:'auspicious',  desc:'Favors travel and action under waning light.' },
+    { n:19, name:'Chaturthi',  quality:'mixed',       desc:'Obstacle-clearing energy. Ganesh rules.' },
+    { n:20, name:'Panchami',   quality:'auspicious',  desc:'Healing and learning supported.' },
+    { n:21, name:'Shashthi',   quality:'auspicious',  desc:'Courage and protection.' },
+    { n:22, name:'Saptami',    quality:'auspicious',  desc:'Solar and travel energy.' },
+    { n:23, name:'Ashtami',    quality:'intense',     desc:'Kali energy strong. Deep practice, not new projects.' },
+    { n:24, name:'Navami',     quality:'mixed',       desc:'Completion energy. Finish what remains.' },
+    { n:25, name:'Dashami',    quality:'auspicious',  desc:'Auspicious for dharmic and devotional acts.' },
+    { n:26, name:'Ekadashi',   quality:'sacred',      desc:'Krishna Ekadashi — second most potent day of the cycle. Fast, mantra, devotion.' },
+    { n:27, name:'Dwadashi',   quality:'auspicious',  desc:'Good for acts of service and giving.' },
+    { n:28, name:'Trayodashi', quality:'auspicious',  desc:'Artistic and sensory pursuits.' },
+    { n:29, name:'Chaturdashi',quality:'intense',     desc:'Dark 14th — Shiva and shadow work. Powerful for depth practice.' },
+    { n:30, name:'Amavasya',   quality:'sacred',      desc:'New moon / dark moon. Deepest void. Ancestor offerings, seed intentions, silence.' },
+  ];
+  return { ...tithis[(tithiNum-1) % 30], num: tithiNum, fortnight: tithiNum <= 15 ? 'Shukla (waxing)' : 'Krishna (waning)' };
+}
+
+// Approximate sun longitude
+function getSunLongitude(date) {
+  const JD = julianDay(date);
+  const n = JD - 2451545.0;
+  const L = (280.460 + 0.9856474 * n) % 360;
+  const g = ((357.528 + 0.9856003 * n) % 360) * Math.PI / 180;
+  const lambda = L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2*g);
+  return ((lambda % 360) + 360) % 360;
+}
+
+// Approximate moon longitude
+function getMoonLongitude(date) {
+  const JD = julianDay(date);
+  const lon = ((JD - 2451545.0) * 13.176396 + 218.316) % 360;
+  return ((lon % 360) + 360) % 360;
+}
+
+// NAKSHATRA — lunar mansion (27 nakshatras, each 13°20')
+function getNakshatra(date) {
+  const moonLon = getMoonLongitude(date);
+  const idx = Math.floor(moonLon / (360/27));
+  const nakshatras = [
+    { name:'Ashwini',     ruling:'Ketu',    quality:'auspicious', keywords:'swift beginnings, healing, travel' },
+    { name:'Bharani',     ruling:'Venus',   quality:'intense',    keywords:'transformation, desire, creative force' },
+    { name:'Krittika',    ruling:'Sun',     quality:'mixed',      keywords:'sharp action, purification, cutting away' },
+    { name:'Rohini',      ruling:'Moon',    quality:'auspicious', keywords:'growth, beauty, abundance, creativity — most beloved of the moon' },
+    { name:'Mrigashira',  ruling:'Mars',    quality:'auspicious', keywords:'seeking, gentleness, curiosity, inspiration' },
+    { name:'Ardra',       ruling:'Rahu',    quality:'intense',    keywords:'storm energy, dissolution, raw power' },
+    { name:'Punarvasu',   ruling:'Jupiter', quality:'auspicious', keywords:'renewal, return, nourishment, restoration' },
+    { name:'Pushya',      ruling:'Saturn',  quality:'sacred',     keywords:'most auspicious nakshatra. nourishment, spiritual growth, dharma' },
+    { name:'Ashlesha',    ruling:'Mercury', quality:'intense',    keywords:'serpent wisdom, kundalini, mystical but volatile' },
+    { name:'Magha',       ruling:'Ketu',    quality:'auspicious', keywords:'ancestors, royalty, power, throne' },
+    { name:'Purva Phalguni', ruling:'Venus', quality:'auspicious',keywords:'pleasure, creativity, love, rest' },
+    { name:'Uttara Phalguni', ruling:'Sun', quality:'auspicious',keywords:'service, contracts, relationships, fruition' },
+    { name:'Hasta',       ruling:'Moon',    quality:'auspicious', keywords:'skillful hands, healing, craft, manifestation' },
+    { name:'Chitra',      ruling:'Mars',    quality:'auspicious', keywords:'beauty, art, architecture, brilliance' },
+    { name:'Swati',       ruling:'Rahu',    quality:'mixed',      keywords:'independence, flexibility, cutting free' },
+    { name:'Vishakha',    ruling:'Jupiter', quality:'auspicious', keywords:'purpose, determination, two-pathed, power' },
+    { name:'Anuradha',    ruling:'Saturn',  quality:'auspicious', keywords:'devotion, friendship, following the star' },
+    { name:'Jyeshtha',    ruling:'Mercury', quality:'intense',    keywords:'eldest, protection, but pride and conflict' },
+    { name:'Mula',        ruling:'Ketu',    quality:'intense',    keywords:'root destruction, going to the source — powerful but uprooting' },
+    { name:'Purva Ashadha', ruling:'Venus', quality:'auspicious',keywords:'invincible, purification, water energy' },
+    { name:'Uttara Ashadha', ruling:'Sun',  quality:'auspicious',keywords:'final victory, unwavering purpose' },
+    { name:'Shravana',    ruling:'Moon',    quality:'auspicious', keywords:'listening, learning, Vishnu's star — wisdom through receptivity' },
+    { name:'Dhanishtha',  ruling:'Mars',    quality:'auspicious', keywords:'wealth, music, abundance, symphony' },
+    { name:'Shatabhisha', ruling:'Rahu',    quality:'mixed',      keywords:'healing, mystery, hundred physicians' },
+    { name:'Purva Bhadrapada', ruling:'Jupiter', quality:'intense', keywords:'fire of transformation, two-faced, fierce' },
+    { name:'Uttara Bhadrapada', ruling:'Saturn', quality:'auspicious', keywords:'depth, wisdom, rain, serpent of depths' },
+    { name:'Revati',      ruling:'Mercury', quality:'auspicious', keywords:'completion, nourishment, final journey, gentle' },
+  ];
+  const pada = Math.floor((moonLon % (360/27)) / (360/27/4)) + 1;
+  return { ...nakshatras[idx % 27], pada, moonDegree: moonLon.toFixed(1) };
+}
+
+// VARA — weekday planetary ruler
+function getVara(date) {
+  const day = date.getDay(); // 0=Sun
+  const varas = [
+    { name:'Ravivara',   planet:'Sun',     symbol:'☉', quality:'auspicious', desc:'Solar energy — vitality, visibility, leadership, divine masculine.' },
+    { name:'Somavara',   planet:'Moon',    symbol:'☽', quality:'sacred',     desc:'Moon day — ideal for lunar practice, intuition, and devotional work.' },
+    { name:'Mangalavara',planet:'Mars',    symbol:'♂', quality:'intense',    desc:'Mars day — courage, action, fire practice. Avoid conflict without purpose.' },
+    { name:'Budhavara',  planet:'Mercury', symbol:'☿', quality:'auspicious', desc:'Mercury day — communication, learning, writing, commerce.' },
+    { name:'Guruvara',   planet:'Jupiter', symbol:'♃', quality:'sacred',     desc:'Jupiter day — most auspicious vara. Guru, teaching, expansion, dharma.' },
+    { name:'Shukravara', planet:'Venus',   symbol:'♀', quality:'auspicious', desc:'Venus/Shukra day — beauty, art, devotion, the feminine. Excellent for creative and devotional work.' },
+    { name:'Shanivara',  planet:'Saturn',  symbol:'♄', quality:'mixed',      desc:'Saturn day — discipline, karma, ancestors, limits. Good for serious and structural work.' },
+  ];
+  return varas[day];
+}
+
+// QUALITY COLOR MAPPING
+const VEDIC_QUALITY_COLORS = {
+  auspicious: { bg: 'rgba(60,120,60,.15)', border: 'rgba(100,180,100,.3)', text: '#8fcc8f' },
+  sacred:     { bg: 'rgba(201,168,76,.12)', border: 'rgba(201,168,76,.35)', text: '#e8d49a' },
+  intense:    { bg: 'rgba(139,58,42,.15)', border: 'rgba(200,100,70,.3)', text: '#d4856a' },
+  mixed:      { bg: 'rgba(100,100,140,.12)', border: 'rgba(140,140,200,.25)', text: 'rgba(200,200,245,.6)' },
+  neutral:    { bg: 'rgba(100,100,100,.08)', border: 'rgba(160,160,160,.15)', text: 'rgba(245,240,232,.4)' },
+};
+
+function renderVedicPanel() {
+  const now = new Date();
+  const tithi = getTithi(now);
+  const nakshatra = getNakshatra(now);
+  const vara = getVara(now);
+
+  const tq = VEDIC_QUALITY_COLORS[tithi.quality] || VEDIC_QUALITY_COLORS.neutral;
+  const nq = VEDIC_QUALITY_COLORS[nakshatra.quality] || VEDIC_QUALITY_COLORS.neutral;
+  const vq = VEDIC_QUALITY_COLORS[vara.quality] || VEDIC_QUALITY_COLORS.neutral;
+
+  const html = `<div class="astro-card" style="margin-bottom:20px;" id="vedicPanel">
+    <div class="card-label">Vedic Day</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px;">
+
+      <div style="background:${tq.bg};border:1px solid ${tq.border};border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:${tq.text};opacity:.7;margin-bottom:6px;text-transform:uppercase;">Tithi ${tithi.num} · ${tithi.fortnight}</div>
+        <div style="font-size:17px;color:rgba(245,240,232,.85);margin-bottom:4px;">${tithi.name}</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">${tithi.desc}</div>
+      </div>
+
+      <div style="background:${nq.bg};border:1px solid ${nq.border};border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:${nq.text};opacity:.7;margin-bottom:6px;text-transform:uppercase;">Nakshatra · Pada ${nakshatra.pada}</div>
+        <div style="font-size:17px;color:rgba(245,240,232,.85);margin-bottom:4px;">${nakshatra.name}</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">Ruled by ${nakshatra.ruling} · ${nakshatra.keywords}</div>
+      </div>
+
+      <div style="background:${vq.bg};border:1px solid ${vq.border};border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:${vq.text};opacity:.7;margin-bottom:6px;text-transform:uppercase;">Vara · Day of Week</div>
+        <div style="font-size:17px;color:rgba(245,240,232,.85);margin-bottom:4px;">${vara.symbol} ${vara.name}</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">${vara.desc}</div>
+      </div>
+
+    </div>
+    ${tithi.quality === 'sacred' || nakshatra.quality === 'sacred' ? `<div style="margin-top:14px;padding:10px 14px;background:rgba(201,168,76,.07);border-radius:4px;font-size:13px;color:rgba(232,212,154,.7);font-style:italic;">✦ Spiritually potent day — ${tithi.quality === 'sacred' ? tithi.name : nakshatra.name} carries heightened energy for practice and devotion.</div>` : ''}
+    ${tithi.quality === 'intense' || nakshatra.quality === 'intense' ? `<div style="margin-top:14px;padding:10px 14px;background:rgba(139,58,42,.08);border-radius:4px;font-size:13px;color:rgba(212,133,106,.6);font-style:italic;">⚡ Intense energy today — proceed with awareness. Powerful for depth practice; approach new ventures with caution.</div>` : ''}
+  </div>`;
+
+  let vedicWrap = document.getElementById('vedicPanelWrap');
+  if (!vedicWrap) {
+    vedicWrap = document.createElement('div');
+    vedicWrap.id = 'vedicPanelWrap';
+    const cycleTone = document.getElementById('cycleTone')?.closest('.astro-card');
+    if (cycleTone) cycleTone.after(vedicWrap);
+  }
+  vedicWrap.innerHTML = html;
 }
 
 

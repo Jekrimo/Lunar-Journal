@@ -3,5 +3,4 @@
 .env.production
 .vercel
 .DS_Store
-Thumbs.db
 node_modules/
