@@ -1,0 +1,1077 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: file:///C:/Users/jekri/Downloads/index_2.html
+Subject: Lunar Journal
+Date: Thu, 19 Mar 2026 14:07:16 -0600
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe----"
+
+
+------MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe----
+Content-Type: text/html
+Content-ID: <frame-893059ADB871D61345A5759A0E0819FF@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///C:/Users/jekri/Downloads/index_2.html
+
+<!DOCTYPE html><html lang=3D"en"><head><meta http-equiv=3D"Content-Type" co=
+ntent=3D"text/html; charset=3DUTF-8"><link rel=3D"stylesheet" type=3D"text/=
+css" href=3D"cid:css-5b529c2c-46db-40bb-a3d5-e19c13ec2f5c@mhtml.blink" />
+
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1.=
+0">
+<title>Lunar Journal</title>
+<meta name=3D"description" content=3D"Track your mood and energy across lun=
+ar cycles. Personalized daily readings, pattern tracking, and celestial dat=
+a.">
+<meta name=3D"theme-color" content=3D"#0f0c09">
+<link rel=3D"manifest" href=3D"file:///C:/manifest.json">
+<link href=3D"https://fonts.googleapis.com/css2?family=3DCinzel:wght@400;50=
+0;600&amp;family=3DEB+Garamond:ital,wght@0,400;0,500;1,400&amp;display=3Dsw=
+ap" rel=3D"stylesheet">
+
+</head>
+<body>
+<!-- LANDING SCREEN -->
+<div class=3D"landing" id=3D"landingScreen">
+  <div class=3D"landing-moon">=F0=9F=8C=99</div>
+  <h1 class=3D"landing-title">Lunar Journal</h1>
+  <p class=3D"landing-sub">Track your inner weather across 13 lunar cycles.=
+ Personalized readings, pattern insight, celestial data.</p>
+  <div class=3D"landing-features">
+    <span class=3D"landing-feature">=E2=9C=A6 Daily AI readings</span>
+    <span class=3D"landing-feature">=E2=9C=A6 Moon phase tracking</span>
+    <span class=3D"landing-feature">=E2=9C=A6 13-cycle calendar</span>
+    <span class=3D"landing-feature">=E2=9C=A6 Pattern charts</span>
+    <span class=3D"landing-feature">=E2=9C=A6 Last cycle mirror</span>
+  </div>
+  <button class=3D"landing-cta">Begin Your Record</button>
+</div>
+<div class=3D"starfield"></div>
+<div class=3D"app-shell">
+
+<header class=3D"site-header">
+  <span class=3D"moon-glyph" id=3D"headerMoon">=F0=9F=8C=99</span>
+  <h1 class=3D"site-title">Lunar Journal</h1>
+  <p class=3D"site-subtitle">13 cycles =C2=B7 daily devotion =C2=B7 pattern=
+ &amp; prophecy</p>
+  <div class=3D"header-rule"></div>
+</header>
+
+<nav class=3D"nav-tabs">
+  <button class=3D"nav-tab active">Today</button>
+  <button class=3D"nav-tab">Last Cycle</button>
+  <button class=3D"nav-tab">Calendar</button>
+  <button class=3D"nav-tab">Journal</button>
+  <button class=3D"nav-tab">Patterns</button>
+  <button class=3D"nav-tab">Full Sky</button>
+</nav>
+
+<!-- TODAY -->
+<div id=3D"view-today" class=3D"view active">
+  <div id=3D"natalBadgeWrap"></div>
+  <!-- CYCLE INTENTION BANNER -->
+  <div class=3D"intention-banner" id=3D"intentionBanner" style=3D"display:n=
+one;">
+    <span class=3D"intention-moon-icon">=F0=9F=8C=91</span>
+    <div class=3D"intention-content">
+      <div class=3D"intention-label">Cycle Intention</div>
+      <div class=3D"intention-text" id=3D"intentionBannerText">=E2=80=94</d=
+iv>
+      <button class=3D"intention-edit">Edit intention =E2=9C=8E</button>
+    </div>
+  </div>
+  <!-- TRANSIT ALERTS -->
+  <div id=3D"transitAlertsWrap"></div>
+  <div class=3D"reading-card">
+    <div class=3D"card-label">Today's Reading</div>
+    <div class=3D"reading-text" id=3D"readingText"><span class=3D"reading-l=
+oading">Consulting the sky=E2=80=A6</span></div>
+    <button class=3D"reading-refresh">=E2=86=BA Refresh reading</button>
+  </div>
+  <div class=3D"today-grid">
+    <div class=3D"astro-card">
+      <div class=3D"card-label">Moon Phase</div>
+      <div class=3D"moon-phase-display">
+        <div class=3D"moon-svg-wrap"><svg id=3D"moonSVG" width=3D"56" heigh=
+t=3D"56" viewBox=3D"0 0 56 56"></svg></div>
+        <div><div class=3D"card-value" id=3D"moonPhaseName">=E2=80=94</div>=
+<div class=3D"card-sub" id=3D"moonPhasePercent">=E2=80=94</div></div>
+      </div>
+    </div>
+    <div class=3D"astro-card"><div class=3D"card-label">Moon in</div><div c=
+lass=3D"card-value" id=3D"moonSign">=E2=80=94</div><div class=3D"card-sub" =
+id=3D"moonSignKeywords">=E2=80=94</div></div>
+    <div class=3D"astro-card"><div class=3D"card-label">Cycle Day</div><div=
+ class=3D"card-value" id=3D"cycleDayNum">=E2=80=94</div><div class=3D"card-=
+sub" id=3D"cycleContext">=E2=80=94</div></div>
+    <div class=3D"astro-card"><div class=3D"card-label">Sun in</div><div cl=
+ass=3D"card-value" id=3D"sunSign">=E2=80=94</div><div class=3D"card-sub" id=
+=3D"sunSignSub">=E2=80=94</div></div>
+  </div>
+  <div class=3D"astro-card" style=3D"margin-bottom:20px;">
+    <div class=3D"card-label">Planetary Influences =E2=80=94 tap any for in=
+terpretation</div>
+    <div class=3D"planet-grid" id=3D"planetGridToday" style=3D"margin-top:1=
+2px;"></div>
+  </div>
+  <div class=3D"astro-card" style=3D"margin-bottom:28px;">
+    <div class=3D"card-label">Cycle Tone</div>
+    <div id=3D"cycleTone" style=3D"font-size:17px;color:rgba(245,240,232,.7=
+5);line-height:1.7;margin-top:6px;font-style:italic;"></div>
+  </div>
+  <div class=3D"entry-form">
+    <div class=3D"form-title">Today's Entry</div>
+    <div class=3D"section-heading">Energy &amp; Mood</div>
+    <div class=3D"form-row" style=3D"margin-bottom:20px;">
+      <div class=3D"form-group"><label class=3D"form-label">Energy =E2=9A=
+=A1</label><div class=3D"slider-wrap"><input type=3D"range" min=3D"1" max=
+=3D"10" value=3D"5" id=3D"sliderEnergy"><span class=3D"slider-val" id=3D"va=
+lEnergy">5</span></div></div>
+      <div class=3D"form-group"><label class=3D"form-label">Mood =F0=9F=8C=
+=99</label><div class=3D"slider-wrap"><input type=3D"range" min=3D"1" max=
+=3D"10" value=3D"5" id=3D"sliderMood"><span class=3D"slider-val" id=3D"valM=
+ood">5</span></div></div>
+      <div class=3D"form-group"><label class=3D"form-label">Clarity =E2=9C=
+=A6</label><div class=3D"slider-wrap"><input type=3D"range" min=3D"1" max=
+=3D"10" value=3D"5" id=3D"sliderClarity"><span class=3D"slider-val" id=3D"v=
+alClarity">5</span></div></div>
+      <div class=3D"form-group"><label class=3D"form-label">Creativity =F0=
+=9F=94=A5</label><div class=3D"slider-wrap"><input type=3D"range" min=3D"1"=
+ max=3D"10" value=3D"5" id=3D"sliderCreativity"><span class=3D"slider-val" =
+id=3D"valCreativity">5</span></div></div>
+    </div>
+    <div class=3D"section-heading">Qualities Present</div>
+    <div class=3D"tag-row" id=3D"qualityTags"></div>
+    <div class=3D"section-heading">Dreams / Visions</div>
+    <textarea class=3D"journal-text" id=3D"dreamText" rows=3D"2" placeholde=
+r=3D"Any dreams, visions, or night messages to note=E2=80=A6" style=3D"marg=
+in-bottom:16px;min-height:72px;"></textarea>
+    <div class=3D"section-heading">Reflection</div>
+    <textarea class=3D"journal-text" id=3D"entryText" placeholder=3D"What a=
+re you feeling, sensing, knowing today?"></textarea>
+    <div class=3D"form-group" style=3D"margin-top:16px;">
+      <label class=3D"form-label">Intention / Devotion for Today</label>
+      <textarea class=3D"journal-text" id=3D"intentionText" rows=3D"2" plac=
+eholder=3D"I dedicate this day to=E2=80=A6" style=3D"min-height:60px;"></te=
+xtarea>
+    </div>
+    <div style=3D"display:flex;align-items:center;flex-wrap:wrap;">
+      <button class=3D"save-btn">Save Entry</button>
+      <span class=3D"save-confirm" id=3D"saveConfirm">=E2=9C=A6 Received in=
+to the record</span>
+    </div>
+  </div>
+</div>
+
+<!-- LAST CYCLE COMPARISON -->
+<div id=3D"view-compare" class=3D"view">
+  <div style=3D"margin-bottom:24px;">
+    <div class=3D"card-label" style=3D"font-size:12px;letter-spacing:.1em;m=
+argin-bottom:6px;">This Time Last Cycle</div>
+    <div style=3D"font-size:15px;color:rgba(245,240,232,.4);font-style:ital=
+ic;" id=3D"compareSubtitle">29-day mirror</div>
+  </div>
+  <div class=3D"comparison-grid" id=3D"comparisonGrid"></div>
+  <div class=3D"astro-card" style=3D"margin-bottom:20px;">
+    <div class=3D"card-label">Sky Then vs Now</div>
+    <div id=3D"compareSkyContent" style=3D"margin-top:10px;"></div>
+  </div>
+  <div class=3D"astro-card">
+    <div class=3D"card-label">Journal Excerpt =E2=80=94 Last Cycle</div>
+    <div id=3D"compareTextContent" style=3D"margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- CYCLE CALENDAR -->
+<div id=3D"view-cycle" class=3D"view">
+  <div class=3D"cycle-header">
+    <div class=3D"cycle-nav">
+      <button>=E2=80=B9</button>
+      <span class=3D"cycle-name" id=3D"cycleLabel">=E2=80=94</span>
+      <button>=E2=80=BA</button>
+    </div>
+    <div style=3D"font-family:'Cinzel',serif;font-size:11px;color:rgba(245,=
+240,232,.3);letter-spacing:.1em;">CYCLE <span id=3D"cycleNum">=E2=80=94</sp=
+an> OF 13</div>
+  </div>
+  <div style=3D"display:grid;grid-template-columns:repeat(7,1fr);gap:8px;ma=
+rgin-bottom:16px;">
+    <span style=3D"font-family:'Cinzel',serif;font-size:10px;color:rgba(245=
+,240,232,.3);text-align:center;">SUN</span>
+    <span style=3D"font-family:'Cinzel',serif;font-size:10px;color:rgba(245=
+,240,232,.3);text-align:center;">MON</span>
+    <span style=3D"font-family:'Cinzel',serif;font-size:10px;color:rgba(245=
+,240,232,.3);text-align:center;">TUE</span>
+    <span style=3D"font-family:'Cinzel',serif;font-size:10px;color:rgba(245=
+,240,232,.3);text-align:center;">WED</span>
+    <span style=3D"font-family:'Cinzel',serif;font-size:10px;color:rgba(245=
+,240,232,.3);text-align:center;">THU</span>
+    <span style=3D"font-family:'Cinzel',serif;font-size:10px;color:rgba(245=
+,240,232,.3);text-align:center;">FRI</span>
+    <span style=3D"font-family:'Cinzel',serif;font-size:10px;color:rgba(245=
+,240,232,.3);text-align:center;">SAT</span>
+  </div>
+  <div class=3D"cycle-grid" id=3D"cycleGrid"></div>
+  <div class=3D"section-rule" style=3D"margin-top:24px;"></div>
+  <div class=3D"section-heading">Phase Legend</div>
+  <div style=3D"font-size:13px;color:rgba(245,240,232,.4);line-height:2.2;"=
+>=F0=9F=8C=91 New =C2=B7 =F0=9F=8C=92 Wax. Crescent =C2=B7 =F0=9F=8C=93 Fir=
+st Quarter =C2=B7 =F0=9F=8C=94 Wax. Gibbous =C2=B7 =F0=9F=8C=95 Full =C2=B7=
+ =F0=9F=8C=96 Wan. Gibbous =C2=B7 =F0=9F=8C=97 Last Quarter =C2=B7 =F0=9F=
+=8C=98 Wan. Crescent</div>
+</div>
+
+<!-- JOURNAL ENTRIES -->
+<div id=3D"view-entries" class=3D"view">
+  <div style=3D"display:flex;align-items:center;justify-content:space-betwe=
+en;margin-bottom:0;">
+    <div class=3D"section-heading" style=3D"margin-bottom:0;">Past Entries<=
+/div>
+    <button class=3D"export-btn">=E2=86=93 Export JSON</button>
+  </div>
+  <div class=3D"section-rule"></div>
+  <div id=3D"entriesList"></div>
+</div>
+
+<!-- PATTERNS -->
+<div id=3D"view-patterns" class=3D"view">
+  <div class=3D"pattern-chart"><div class=3D"pattern-title">Energy &amp; Mo=
+od by Moon Phase</div><canvas class=3D"chart-canvas" id=3D"phaseEnergyChart=
+"></canvas></div>
+  <div class=3D"pattern-chart"><div class=3D"pattern-title">Mood Arc =E2=80=
+=94 Last 28 Days</div><canvas class=3D"chart-canvas" id=3D"moodArcChart"></=
+canvas></div>
+  <div class=3D"pattern-chart"><div class=3D"pattern-title">Energy Arc =E2=
+=80=94 Last 28 Days</div><canvas class=3D"chart-canvas" id=3D"energyArcChar=
+t"></canvas></div>
+  <div id=3D"patternInsights"></div>
+</div>
+
+<!-- FULL SKY -->
+<div id=3D"view-sky" class=3D"view">
+  <div class=3D"astro-card" style=3D"margin-bottom:20px;">
+    <div class=3D"card-label">Zodiac Positions</div>
+    <div style=3D"font-size:11px;color:rgba(245,240,232,.2);font-style:ital=
+ic;margin:4px 0 12px;">Positions are approximate / symbolic</div>
+    <div class=3D"sign-strip" id=3D"signStrip"></div>
+  </div>
+  <div class=3D"astro-card" style=3D"margin-bottom:20px;">
+    <div class=3D"card-label">All Planets =E2=80=94 tap for interpretation<=
+/div>
+    <div class=3D"planet-grid" id=3D"planetGridFull" style=3D"margin-top:12=
+px;"></div>
+  </div>
+  <div class=3D"astro-card" style=3D"margin-bottom:20px;">
+    <div class=3D"card-label">13-Cycle Year Overview</div>
+    <div id=3D"yearOverview" style=3D"margin-top:12px;"></div>
+  </div>
+  <div class=3D"astro-card">
+    <div class=3D"card-label" style=3D"margin-bottom:12px;">Your Natal Prof=
+ile</div>
+    <div id=3D"profileDisplay" style=3D"font-size:15px;color:rgba(245,240,2=
+32,.5);line-height:1.9;"></div>
+    <button class=3D"save-btn" style=3D"margin-top:16px;">Edit Birth Profil=
+e</button>
+  </div>
+</div>
+
+</div><!-- /app-shell -->
+
+<!-- PLANET POPUP -->
+<div class=3D"planet-popup" id=3D"planetPopup">
+  <button class=3D"planet-popup-close">=C3=97</button>
+  <div class=3D"planet-popup-title" id=3D"ppTitle"></div>
+  <div class=3D"planet-popup-body" id=3D"ppBody"></div>
+  <div class=3D"planet-popup-natal" id=3D"ppNatal"></div>
+</div>
+
+<!-- INTENTION MODAL -->
+<div class=3D"modal-overlay" id=3D"intentionModal">
+  <div class=3D"modal-box">
+    <button class=3D"modal-close">=C3=97</button>
+    <div class=3D"modal-title">Cycle Intention</div>
+    <p style=3D"font-size:15px;color:rgba(245,240,232,.45);font-style:itali=
+c;line-height:1.7;margin-bottom:20px;">Set an intention at the new moon. It=
+ will remain visible throughout this 29-day cycle as your thread of continu=
+ity.</p>
+    <textarea class=3D"journal-text" id=3D"intentionInput" style=3D"min-hei=
+ght:100px;" placeholder=3D"This cycle I intend to=E2=80=A6"></textarea>
+    <button class=3D"save-btn">Set Intention</button>
+  </div>
+</div>
+
+<!-- DAY MODAL -->
+<div class=3D"modal-overlay" id=3D"dayModal">
+  <div class=3D"modal-box">
+    <button class=3D"modal-close">=C3=97</button>
+    <div class=3D"modal-title" id=3D"modalTitle">=E2=80=94</div>
+    <div id=3D"modalContent"></div>
+  </div>
+</div>
+
+<!-- ONBOARDING / PROFILE -->
+<div class=3D"ob-overlay" id=3D"obOverlay">
+  <div class=3D"ob-box">
+    <div class=3D"ob-title">Birth Profile</div>
+    <p class=3D"ob-sub">Your natal placements personalize daily readings an=
+d planet influence notes. Stored only in your browser.</p>
+    <div class=3D"ob-field"><label class=3D"ob-label">Your Name</label><inp=
+ut class=3D"ob-input" type=3D"text" id=3D"obName" placeholder=3D"How shall =
+we address you?"></div>
+    <div class=3D"ob-field"><label class=3D"ob-label">Date of Birth</label>=
+<input class=3D"ob-input" type=3D"date" id=3D"obDOB"></div>
+    <div class=3D"ob-field"><label class=3D"ob-label">Birth Time (approxima=
+te is fine)</label><input class=3D"ob-input" type=3D"time" id=3D"obTime"></=
+div>
+    <div class=3D"ob-field">
+      <label class=3D"ob-label">Rising Sign (if known)</label>
+      <select class=3D"ob-input" id=3D"obRising">
+        <option value=3D"">Unknown / Skip</option>
+        <option>Aries</option><option>Taurus</option><option>Gemini</option=
+><option>Cancer</option>
+        <option>Leo</option><option>Virgo</option><option>Libra</option><op=
+tion>Scorpio</option>
+        <option>Sagittarius</option><option>Capricorn</option><option>Aquar=
+ius</option><option>Pisces</option>
+      </select>
+    </div>
+    <div class=3D"ob-field">
+      <label class=3D"ob-label">Chart Notes (optional =E2=80=94 anything yo=
+u want the journal to factor in)</label>
+      <textarea class=3D"ob-input" id=3D"obNotes" rows=3D"3" placeholder=3D=
+"e.g. Scorpio moon, Venus in Pisces, stellium in 12th house, Kundalini acti=
+ve=E2=80=A6" style=3D"resize:vertical;min-height:80px;"></textarea>
+    </div>
+    <button class=3D"save-btn" style=3D"width:100%;text-align:center;margin=
+-top:4px;">Save Profile</button>
+    <button class=3D"ob-skip">Skip for now</button>
+  </div>
+</div>
+
+
+
+
+</body></html>
+------MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap
+
+@charset "utf-8";
+
+@font-face { font-family: Cinzel; font-style: normal; font-weight: 400; fon=
+t-display: swap; src: url("https://fonts.gstatic.com/s/cinzel/v26/8vIJ7ww63=
+mVu7gt7-GT7LEc.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5=
+, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00=
+-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, =
+U+A720-A7FF; }
+
+@font-face { font-family: Cinzel; font-style: normal; font-weight: 400; fon=
+t-display: swap; src: url("https://fonts.gstatic.com/s/cinzel/v26/8vIJ7ww63=
+mVu7gt79mT7.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-15=
+3, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC=
+, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: Cinzel; font-style: normal; font-weight: 500; fon=
+t-display: swap; src: url("https://fonts.gstatic.com/s/cinzel/v26/8vIJ7ww63=
+mVu7gt7-GT7LEc.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5=
+, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00=
+-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, =
+U+A720-A7FF; }
+
+@font-face { font-family: Cinzel; font-style: normal; font-weight: 500; fon=
+t-display: swap; src: url("https://fonts.gstatic.com/s/cinzel/v26/8vIJ7ww63=
+mVu7gt79mT7.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-15=
+3, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC=
+, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: Cinzel; font-style: normal; font-weight: 600; fon=
+t-display: swap; src: url("https://fonts.gstatic.com/s/cinzel/v26/8vIJ7ww63=
+mVu7gt7-GT7LEc.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5=
+, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00=
+-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, =
+U+A720-A7FF; }
+
+@font-face { font-family: Cinzel; font-style: normal; font-weight: 600; fon=
+t-display: swap; src: url("https://fonts.gstatic.com/s/cinzel/v26/8vIJ7ww63=
+mVu7gt79mT7.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-15=
+3, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC=
+, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QL9wU6ingQ.woff2") format("woff2"=
+); unicode-range: U+460-52F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F,=
+ U+FE2E-FE2F; }
+
+@font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QL95U6ingQ.woff2") format("woff2"=
+); unicode-range: U+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QL9xU6ingQ.woff2") format("woff2"=
+); unicode-range: U+1F00-1FFF; }
+
+@font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QL9-U6ingQ.woff2") format("woff2"=
+); unicode-range: U+370-377, U+37A-37F, U+384-38A, U+38C, U+38E-3A1, U+3A3-=
+3FF; }
+
+@font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QL9yU6ingQ.woff2") format("woff2"=
+); unicode-range: U+102-103, U+110-111, U+128-129, U+168-169, U+1A0-1A1, U+=
+1AF-1B0, U+300-301, U+303-304, U+308-309, U+323, U+329, U+1EA0-1EF9, U+20AB=
+; }
+
+@font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QL9zU6ingQ.woff2") format("woff2"=
+); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+=
+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20=
+AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+@font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QL99U6g.woff2") format("woff2"); =
+unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+=
+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2=
+215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR4SDktYw.woff2") format("woff2"); unicode-range: U+=
+460-52F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GRxSDktYw.woff2") format("woff2"); unicode-range: U+=
+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR5SDktYw.woff2") format("woff2"); unicode-range: U+=
+1F00-1FFF; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR2SDktYw.woff2") format("woff2"); unicode-range: U+=
+370-377, U+37A-37F, U+384-38A, U+38C, U+38E-3A1, U+3A3-3FF; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR6SDktYw.woff2") format("woff2"); unicode-range: U+=
+102-103, U+110-111, U+128-129, U+168-169, U+1A0-1A1, U+1AF-1B0, U+300-301, =
+U+303-304, U+308-309, U+323, U+329, U+1EA0-1EF9, U+20AB; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR7SDktYw.woff2") format("woff2"); unicode-range: U+=
+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U=
++1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2=
+113, U+2C60-2C7F, U+A720-A7FF; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 4=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR1SDk.woff2") format("woff2"); unicode-range: U+0-F=
+F, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U=
++2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;=
+ }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 5=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR4SDktYw.woff2") format("woff2"); unicode-range: U+=
+460-52F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 5=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GRxSDktYw.woff2") format("woff2"); unicode-range: U+=
+301, U+400-45F, U+490-491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 5=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR5SDktYw.woff2") format("woff2"); unicode-range: U+=
+1F00-1FFF; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 5=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR2SDktYw.woff2") format("woff2"); unicode-range: U+=
+370-377, U+37A-37F, U+384-38A, U+38C, U+38E-3A1, U+3A3-3FF; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 5=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR6SDktYw.woff2") format("woff2"); unicode-range: U+=
+102-103, U+110-111, U+128-129, U+168-169, U+1A0-1A1, U+1AF-1B0, U+300-301, =
+U+303-304, U+308-309, U+323, U+329, U+1EA0-1EF9, U+20AB; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 5=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR7SDktYw.woff2") format("woff2"); unicode-range: U+=
+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U=
++1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2=
+113, U+2C60-2C7F, U+A720-A7FF; }
+
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 5=
+00; font-display: swap; src: url("https://fonts.gstatic.com/s/ebgaramond/v3=
+2/SlGUmQSNjdsmc35JDF1K5GR1SDk.woff2") format("woff2"); unicode-range: U+0-F=
+F, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U=
++2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;=
+ }
+------MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: cid:css-5b529c2c-46db-40bb-a3d5-e19c13ec2f5c@mhtml.blink
+
+@charset "utf-8";
+
+:root { --gold: #c9a84c; --gold-pale: #e8d49a; --gold-deep: #9b7a28; }
+
+* { box-sizing: border-box; margin: 0px; padding: 0px; }
+
+body { background: rgb(15, 12, 9); color: rgb(26, 20, 16); font-family: "EB=
+ Garamond", serif; min-height: 100vh; overflow-x: hidden; }
+
+.starfield { position: fixed; inset: 0px; background: radial-gradient(at 20=
+% 30%, rgb(26, 18, 48) 0%, rgb(10, 8, 6) 60%, rgb(5, 4, 3) 100%); z-index: =
+0; }
+
+.starfield::before { content: ""; position: absolute; inset: 0px; backgroun=
+d-image: radial-gradient(1px 1px at 15% 20%, rgba(255, 240, 200, 0.7) 0%, t=
+ransparent 100%), radial-gradient(1px 1px at 35% 45%, rgba(255, 240, 200, 0=
+.5) 0%, transparent 100%), radial-gradient(1.5px 1.5px at 55% 15%, rgba(255=
+, 240, 200, 0.8) 0%, transparent 100%), radial-gradient(1px 1px at 75% 60%,=
+ rgba(255, 240, 200, 0.4) 0%, transparent 100%), radial-gradient(1px 1px at=
+ 85% 30%, rgba(255, 240, 200, 0.6) 0%, transparent 100%), radial-gradient(1=
+px 1px at 10% 70%, rgba(255, 240, 200, 0.5) 0%, transparent 100%), radial-g=
+radient(1px 1px at 90% 80%, rgba(255, 240, 200, 0.3) 0%, transparent 100%),=
+ radial-gradient(1px 1px at 45% 85%, rgba(255, 240, 200, 0.6) 0%, transpare=
+nt 100%), radial-gradient(1px 1px at 25% 55%, rgba(255, 240, 200, 0.4) 0%, =
+transparent 100%), radial-gradient(1px 1px at 65% 40%, rgba(255, 240, 200, =
+0.5) 0%, transparent 100%), radial-gradient(1px 1px at 50% 70%, rgba(255, 2=
+40, 200, 0.3) 0%, transparent 100%), radial-gradient(1px 1px at 30% 10%, rg=
+ba(255, 240, 200, 0.6) 0%, transparent 100%), radial-gradient(1px 1px at 70=
+% 90%, rgba(255, 240, 200, 0.4) 0%, transparent 100%), radial-gradient(1px =
+1px at 5% 40%, rgba(255, 240, 200, 0.5) 0%, transparent 100%), radial-gradi=
+ent(1px 1px at 95% 55%, rgba(255, 240, 200, 0.4) 0%, transparent 100%); }
+
+.app-shell { position: relative; z-index: 1; max-width: 1100px; margin: 0px=
+ auto; padding: 0px 16px 80px; }
+
+.site-header { text-align: center; padding: 48px 0px 32px; }
+
+.moon-glyph { font-size: 48px; display: block; margin-bottom: 12px; filter:=
+ drop-shadow(rgba(201, 168, 76, 0.4) 0px 0px 20px); animation: 4s ease-in-o=
+ut 0s infinite normal none running moonPulse; }
+
+@keyframes moonPulse {=20
+  0%, 100% { filter: drop-shadow(rgba(201, 168, 76, 0.4) 0px 0px 20px); }
+  50% { filter: drop-shadow(rgba(201, 168, 76, 0.7) 0px 0px 35px); }
+}
+
+.site-title { font-family: Cinzel, serif; font-size: clamp(28px, 5vw, 48px)=
+; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; li=
+ne-height: 1; text-shadow: rgba(201, 168, 76, 0.3) 0px 0px 40px; }
+
+.site-subtitle { font-family: "EB Garamond", serif; font-style: italic; col=
+or: rgba(245, 240, 232, 0.5); font-size: 16px; margin-top: 8px; letter-spac=
+ing: 0.05em; }
+
+.header-rule { width: 200px; height: 1px; background: linear-gradient(90deg=
+,transparent,var(--gold),transparent); margin: 20px auto 0px; }
+
+.nav-tabs { display: flex; border-bottom: 1px solid rgba(201, 168, 76, 0.2)=
+; margin-bottom: 32px; overflow-x: auto; }
+
+.nav-tab { font-family: Cinzel, serif; font-size: 12px; letter-spacing: 0.1=
+em; color: rgba(245, 240, 232, 0.4); padding: 12px 20px; background: none; =
+border-top: none; border-right: none; border-left: none; border-image: init=
+ial; border-bottom: 2px solid transparent; cursor: pointer; transition: 0.2=
+s; white-space: nowrap; }
+
+.nav-tab:hover { color: rgba(245, 240, 232, 0.7); }
+
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.view { display: none; }
+
+.view.active { display: block; }
+
+.today-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; mar=
+gin-bottom: 28px; }
+
+@media (max-width: 600px) {
+  .today-grid, .form-row, .comparison-grid { grid-template-columns: 1fr !im=
+portant; }
+}
+
+.astro-card { background: rgba(245, 240, 232, 0.04); border: 1px solid rgba=
+(201, 168, 76, 0.15); border-radius: 8px; padding: 20px 22px; position: rel=
+ative; overflow: hidden; }
+
+.astro-card::before { content: ""; position: absolute; top: 0px; left: 0px;=
+ right: 0px; height: 2px; background: linear-gradient(90deg,transparent,var=
+(--gold),transparent); opacity: 0.4; }
+
+.card-label { font-family: Cinzel, serif; font-size: 10px; letter-spacing: =
+0.15em; color: var(--gold); opacity: 0.7; margin-bottom: 8px; text-transfor=
+m: uppercase; }
+
+.card-value { font-size: 22px; color: rgba(245, 240, 232, 0.9); line-height=
+: 1.2; }
+
+.card-sub { font-style: italic; font-size: 14px; color: rgba(245, 240, 232,=
+ 0.45); margin-top: 4px; }
+
+.moon-phase-display { display: flex; align-items: center; gap: 16px; }
+
+.moon-svg-wrap { flex-shrink: 0; }
+
+.planet-grid { display: grid; grid-template-columns: repeat(auto-fill, minm=
+ax(120px, 1fr)); gap: 10px; margin-bottom: 0px; }
+
+.planet-card { background: rgba(245, 240, 232, 0.024); border: 1px solid rg=
+ba(245, 240, 232, 0.07); border-radius: 6px; padding: 12px 14px; cursor: po=
+inter; transition: 0.15s; }
+
+.planet-card:hover { border-color: rgba(201, 168, 76, 0.35); background: rg=
+ba(201, 168, 76, 0.06); }
+
+.planet-name { font-family: Cinzel, serif; font-size: 10px; color: rgba(245=
+, 240, 232, 0.4); letter-spacing: 0.1em; margin-bottom: 4px; }
+
+.planet-sign { font-size: 15px; color: rgba(245, 240, 232, 0.75); }
+
+.planet-symbol { font-size: 18px; float: right; opacity: 0.5; }
+
+.planet-tap-hint { font-size: 10px; color: rgba(245, 240, 232, 0.2); margin=
+-top: 4px; font-style: italic; }
+
+.planet-popup { display: none; position: fixed; z-index: 200; background: r=
+gb(26, 22, 14); border: 1px solid rgba(201, 168, 76, 0.3); border-radius: 1=
+0px; padding: 20px; max-width: 340px; width: 90vw; box-shadow: rgba(0, 0, 0=
+, 0.6) 0px 8px 40px; }
+
+.planet-popup.open { display: block; }
+
+.planet-popup-title { font-family: Cinzel, serif; font-size: 14px; color: v=
+ar(--gold-pale); margin-bottom: 10px; letter-spacing: 0.06em; }
+
+.planet-popup-body { font-size: 15px; color: rgba(245, 240, 232, 0.7); line=
+-height: 1.75; }
+
+.planet-popup-close { position: absolute; top: 10px; right: 14px; backgroun=
+d: none; border: none; color: rgba(245, 240, 232, 0.3); font-size: 18px; cu=
+rsor: pointer; }
+
+.planet-popup-natal { margin-top: 12px; padding-top: 12px; border-top: 1px =
+solid rgba(245, 240, 232, 0.08); font-size: 13px; color: rgba(245, 240, 232=
+, 0.45); font-style: italic; line-height: 1.7; }
+
+.reading-card { background: rgba(245, 240, 232, 0.03); border: 1px solid rg=
+ba(201, 168, 76, 0.2); border-radius: 8px; padding: 24px; margin-bottom: 28=
+px; position: relative; overflow: hidden; }
+
+.reading-card::before { content: ""; position: absolute; top: 0px; left: 0p=
+x; right: 0px; height: 2px; background: linear-gradient(90deg,transparent,v=
+ar(--gold),transparent); opacity: 0.6; }
+
+.reading-text { font-size: 17px; color: rgba(245, 240, 232, 0.82); line-hei=
+ght: 1.9; }
+
+.reading-loading { font-style: italic; color: rgba(245, 240, 232, 0.3); fon=
+t-size: 15px; }
+
+.reading-refresh { font-family: Cinzel, serif; font-size: 10px; letter-spac=
+ing: 0.1em; color: rgba(201, 168, 76, 0.45); background: none; border: none=
+; cursor: pointer; margin-top: 14px; display: block; text-transform: upperc=
+ase; }
+
+.reading-refresh:hover { color: var(--gold); }
+
+.natal-badge { display: inline-flex; align-items: center; gap: 6px; backgro=
+und: rgba(201, 168, 76, 0.07); border: 1px solid rgba(201, 168, 76, 0.2); b=
+order-radius: 20px; padding: 5px 14px; font-size: 13px; color: rgba(245, 24=
+0, 232, 0.6); margin-bottom: 20px; cursor: pointer; }
+
+.natal-badge:hover { border-color: rgba(201, 168, 76, 0.4); }
+
+.comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px=
+; margin-bottom: 20px; }
+
+.comparison-col { background: rgba(245, 240, 232, 0.03); border: 1px solid =
+rgba(245, 240, 232, 0.07); border-radius: 8px; padding: 18px; }
+
+.comparison-col.now { border-color: rgba(201, 168, 76, 0.2); }
+
+.comparison-col-label { font-family: Cinzel, serif; font-size: 10px; letter=
+-spacing: 0.12em; color: rgba(245, 240, 232, 0.35); text-transform: upperca=
+se; margin-bottom: 14px; }
+
+.comparison-col.now .comparison-col-label { color: var(--gold); opacity: 0.=
+7; }
+
+.compare-metric { display: flex; justify-content: space-between; align-item=
+s: center; padding: 6px 0px; border-bottom: 1px solid rgba(245, 240, 232, 0=
+.05); }
+
+.compare-metric-name { font-size: 13px; color: rgba(245, 240, 232, 0.4); }
+
+.compare-metric-val { font-family: Cinzel, serif; font-size: 16px; color: r=
+gba(245, 240, 232, 0.8); }
+
+.compare-delta { font-size: 12px; padding: 2px 7px; border-radius: 20px; ma=
+rgin-left: 8px; }
+
+.compare-delta.up { background: rgba(60, 120, 60, 0.2); color: rgb(122, 204=
+, 122); }
+
+.compare-delta.down { background: rgba(120, 60, 60, 0.2); color: rgb(204, 1=
+22, 122); }
+
+.compare-delta.same { background: rgba(100, 100, 100, 0.15); color: rgba(24=
+5, 240, 232, 0.35); }
+
+.compare-bar { height: 3px; border-radius: 2px; background: rgba(245, 240, =
+232, 0.08); margin-top: 4px; }
+
+.compare-bar-fill { height: 100%; border-radius: 2px; background: var(--gol=
+d); }
+
+.entry-form { background: rgba(245, 240, 232, 0.03); border: 1px solid rgba=
+(201, 168, 76, 0.12); border-radius: 8px; padding: 24px; margin-bottom: 28p=
+x; }
+
+.form-title { font-family: Cinzel, serif; font-size: 13px; letter-spacing: =
+0.1em; color: var(--gold); opacity: 0.8; margin-bottom: 20px; text-transfor=
+m: uppercase; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margi=
+n-bottom: 16px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.form-label { font-family: Cinzel, serif; font-size: 10px; letter-spacing: =
+0.12em; color: rgba(245, 240, 232, 0.5); text-transform: uppercase; }
+
+.slider-wrap { display: flex; align-items: center; gap: 10px; }
+
+.slider-wrap input[type=3D"range"] { flex: 1 1 0%; appearance: none; height=
+: 2px; background: rgba(201, 168, 76, 0.2); border-radius: 2px; outline: no=
+ne; }
+
+.slider-wrap input[type=3D"range"]::-webkit-slider-thumb { appearance: none=
+; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); c=
+ursor: pointer; box-shadow: rgba(201, 168, 76, 0.5) 0px 0px 8px; }
+
+.slider-val { font-family: Cinzel, serif; font-size: 12px; color: var(--gol=
+d); min-width: 20px; text-align: right; }
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+
+.tag-btn { font-family: "EB Garamond", serif; font-size: 13px; padding: 4px=
+ 12px; background: transparent; border: 1px solid rgba(245, 240, 232, 0.15)=
+; border-radius: 20px; color: rgba(245, 240, 232, 0.45); cursor: pointer; t=
+ransition: 0.15s; }
+
+.tag-btn:hover, .tag-btn.selected { background: rgba(201, 168, 76, 0.1); bo=
+rder-color: rgba(201, 168, 76, 0.4); color: rgb(232, 212, 154); }
+
+textarea.journal-text { width: 100%; background: rgba(245, 240, 232, 0.03);=
+ border: 1px solid rgba(245, 240, 232, 0.1); border-radius: 4px; color: rgb=
+a(245, 240, 232, 0.8); font-family: "EB Garamond", serif; font-size: 16px; =
+line-height: 1.7; padding: 14px 16px; resize: vertical; min-height: 120px; =
+outline: none; transition: border-color 0.2s; }
+
+textarea.journal-text::placeholder { color: rgba(245, 240, 232, 0.2); font-=
+style: italic; }
+
+textarea.journal-text:focus { border-color: rgba(201, 168, 76, 0.3); }
+
+.save-btn { font-family: Cinzel, serif; font-size: 12px; letter-spacing: 0.=
+12em; text-transform: uppercase; padding: 11px 28px; background: transparen=
+t; border: 1px solid rgba(201, 168, 76, 0.4); border-radius: 4px; color: va=
+r(--gold); cursor: pointer; transition: 0.2s; margin-top: 16px; }
+
+.save-btn:hover { background: rgba(201, 168, 76, 0.1); border-color: var(--=
+gold); box-shadow: rgba(201, 168, 76, 0.15) 0px 0px 20px; }
+
+.save-confirm { display: inline-block; font-style: italic; color: rgba(245,=
+ 240, 232, 0.4); font-size: 14px; margin-left: 12px; opacity: 0; transition=
+: opacity 0.3s; }
+
+.cycle-header { display: flex; align-items: center; justify-content: space-=
+between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+
+.cycle-nav { display: flex; align-items: center; gap: 16px; }
+
+.cycle-nav button { background: none; border: 1px solid rgba(201, 168, 76, =
+0.2); color: var(--gold); font-size: 18px; width: 32px; height: 32px; borde=
+r-radius: 50%; cursor: pointer; transition: 0.15s; display: flex; align-ite=
+ms: center; justify-content: center; }
+
+.cycle-nav button:hover { background: rgba(201, 168, 76, 0.1); }
+
+.cycle-name { font-family: Cinzel, serif; font-size: 16px; color: rgb(232, =
+212, 154); letter-spacing: 0.05em; }
+
+.cycle-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6p=
+x; }
+
+.day-cell { aspect-ratio: 1 / 1; border-radius: 6px; background: rgba(245, =
+240, 232, 0.02); border: 1px solid rgba(245, 240, 232, 0.06); cursor: point=
+er; transition: 0.15s; display: flex; flex-direction: column; align-items: =
+center; justify-content: center; gap: 3px; position: relative; overflow: hi=
+dden; min-height: 52px; }
+
+.day-cell:hover { border-color: rgba(201, 168, 76, 0.3); background: rgba(2=
+01, 168, 76, 0.05); }
+
+.day-cell.today { border-color: rgba(201, 168, 76, 0.5); background: rgba(2=
+01, 168, 76, 0.06); }
+
+.day-cell.has-entry { background: rgba(201, 168, 76, 0.07); }
+
+.day-cell.has-entry::after { content: ""; position: absolute; bottom: 4px; =
+left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-rad=
+ius: 50%; background: var(--gold); opacity: 0.6; }
+
+.day-num { font-family: Cinzel, serif; font-size: 11px; color: rgba(245, 24=
+0, 232, 0.5); line-height: 1; }
+
+.day-moon { font-size: 14px; line-height: 1; }
+
+.day-energy-bar { position: absolute; bottom: 0px; left: 0px; right: 0px; h=
+eight: 2px; background: var(--gold); opacity: 0; }
+
+.day-cell.has-entry .day-energy-bar { opacity: 0.5; }
+
+.pattern-chart { background: rgba(245, 240, 232, 0.02); border: 1px solid r=
+gba(201, 168, 76, 0.1); border-radius: 8px; padding: 24px; margin-bottom: 2=
+4px; }
+
+.pattern-title { font-family: Cinzel, serif; font-size: 13px; letter-spacin=
+g: 0.1em; color: var(--gold); opacity: 0.7; text-transform: uppercase; marg=
+in-bottom: 20px; }
+
+canvas.chart-canvas { width: 100% !important; height: 200px !important; }
+
+.entry-item { border-bottom: 1px solid rgba(245, 240, 232, 0.07); padding: =
+20px 0px; display: grid; grid-template-columns: 80px 1fr; gap: 20px; align-=
+items: start; }
+
+.entry-date-col { text-align: center; }
+
+.entry-moon-icon { font-size: 28px; display: block; line-height: 1; }
+
+.entry-date-num { font-family: Cinzel, serif; font-size: 18px; color: rgba(=
+245, 240, 232, 0.7); display: block; }
+
+.entry-date-month { font-size: 12px; color: rgba(245, 240, 232, 0.35); font=
+-style: italic; display: block; }
+
+.entry-meta { display: flex; gap: 16px; margin-bottom: 8px; flex-wrap: wrap=
+; }
+
+.entry-badge { font-family: Cinzel, serif; font-size: 10px; letter-spacing:=
+ 0.08em; padding: 3px 10px; border-radius: 20px; border: 1px solid; text-tr=
+ansform: uppercase; }
+
+.badge-energy { border-color: rgba(201, 168, 76, 0.3); color: rgb(232, 212,=
+ 154); }
+
+.badge-mood { border-color: rgba(138, 58, 42, 0.4); color: rgb(212, 133, 10=
+6); }
+
+.entry-text-preview { font-size: 15px; color: rgba(245, 240, 232, 0.55); li=
+ne-height: 1.6; font-style: italic; }
+
+.entry-qualities { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6p=
+x; }
+
+.quality-pill { font-size: 12px; color: rgba(245, 240, 232, 0.4); backgroun=
+d: rgba(245, 240, 232, 0.05); border-radius: 20px; padding: 2px 10px; }
+
+.sign-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8p=
+x; margin-bottom: 20px; }
+
+.sign-chip { flex-shrink: 0; text-align: center; padding: 8px 12px; border-=
+radius: 6px; background: rgba(245, 240, 232, 0.03); border: 1px solid rgba(=
+245, 240, 232, 0.08); }
+
+.sign-chip.current { background: rgba(201, 168, 76, 0.08); border-color: rg=
+ba(201, 168, 76, 0.35); }
+
+.sign-symbol { font-size: 18px; display: block; }
+
+.sign-name { font-size: 10px; color: rgba(245, 240, 232, 0.4); display: blo=
+ck; font-family: Cinzel, serif; letter-spacing: 0.05em; margin-top: 2px; }
+
+.section-rule { width: 100%; height: 1px; background: linear-gradient(90deg=
+, transparent, rgba(201, 168, 76, 0.15), transparent); margin: 8px 0px 24px=
+; }
+
+.section-heading { font-family: Cinzel, serif; font-size: 11px; letter-spac=
+ing: 0.15em; color: rgba(201, 168, 76, 0.5); text-transform: uppercase; mar=
+gin-bottom: 14px; }
+
+.empty-state { text-align: center; padding: 48px 24px; color: rgba(245, 240=
+, 232, 0.25); font-style: italic; font-size: 16px; }
+
+.modal-overlay { display: none; position: fixed; inset: 0px; background: rg=
+ba(0, 0, 0, 0.7); z-index: 100; align-items: center; justify-content: cente=
+r; padding: 16px; }
+
+.modal-overlay.open { display: flex; }
+
+.modal-box { background: rgb(26, 22, 14); border: 1px solid rgba(201, 168, =
+76, 0.25); border-radius: 12px; padding: 28px; max-width: 520px; width: 100=
+%; max-height: 80vh; overflow-y: auto; position: relative; }
+
+.modal-box::before { content: ""; position: absolute; top: 0px; left: 0px; =
+right: 0px; height: 1px; background: linear-gradient(90deg,transparent,var(=
+--gold),transparent); opacity: 0.4; }
+
+.modal-title { font-family: Cinzel, serif; font-size: 16px; color: rgb(232,=
+ 212, 154); margin-bottom: 20px; letter-spacing: 0.08em; }
+
+.modal-close { position: absolute; top: 16px; right: 16px; background: none=
+; border: none; color: rgba(245, 240, 232, 0.3); font-size: 20px; cursor: p=
+ointer; line-height: 1; }
+
+.modal-close:hover { color: rgba(245, 240, 232, 0.7); }
+
+.ob-overlay { display: none; position: fixed; inset: 0px; background: rgba(=
+0, 0, 0, 0.88); z-index: 300; align-items: center; justify-content: center;=
+ padding: 16px; }
+
+.ob-overlay.open { display: flex; }
+
+.ob-box { background: rgb(26, 22, 14); border: 1px solid rgba(201, 168, 76,=
+ 0.3); border-radius: 14px; padding: 36px; max-width: 480px; width: 100%; p=
+osition: relative; max-height: 90vh; overflow-y: auto; }
+
+.ob-box::before { content: ""; position: absolute; top: 0px; left: 0px; rig=
+ht: 0px; height: 1px; background: linear-gradient(90deg,transparent,var(--g=
+old),transparent); opacity: 0.5; }
+
+.ob-title { font-family: Cinzel, serif; font-size: 20px; color: var(--gold)=
+; letter-spacing: 0.1em; margin-bottom: 8px; }
+
+.ob-sub { font-size: 15px; color: rgba(245, 240, 232, 0.45); font-style: it=
+alic; line-height: 1.6; margin-bottom: 28px; }
+
+.ob-field { margin-bottom: 18px; }
+
+.ob-label { font-family: Cinzel, serif; font-size: 10px; letter-spacing: 0.=
+12em; color: rgba(245, 240, 232, 0.4); text-transform: uppercase; margin-bo=
+ttom: 6px; display: block; }
+
+input.ob-input, select.ob-input, textarea.ob-input { width: 100%; backgroun=
+d: rgba(245, 240, 232, 0.04); border: 1px solid rgba(245, 240, 232, 0.12); =
+border-radius: 4px; color: rgba(245, 240, 232, 0.8); font-family: "EB Garam=
+ond", serif; font-size: 16px; padding: 10px 14px; outline: none; transition=
+: border-color 0.2s; }
+
+input.ob-input:focus, select.ob-input:focus, textarea.ob-input:focus { bord=
+er-color: rgba(201, 168, 76, 0.4); }
+
+select.ob-input option { background: rgb(26, 22, 14); }
+
+.ob-skip { font-size: 13px; color: rgba(245, 240, 232, 0.2); background: no=
+ne; border: none; cursor: pointer; display: block; margin-top: 14px; text-a=
+lign: center; font-style: italic; width: 100%; }
+
+.ob-skip:hover { color: rgba(245, 240, 232, 0.4); }
+
+@media (max-width: 480px) {
+  .cycle-grid { grid-template-columns: repeat(4, 1fr); }
+  .day-moon { font-size: 12px; }
+}
+
+.intention-banner { background: rgba(201, 168, 76, 0.06); border: 1px solid=
+ rgba(201, 168, 76, 0.2); border-radius: 8px; padding: 18px 22px; margin-bo=
+ttom: 28px; display: flex; align-items: flex-start; gap: 14px; position: re=
+lative; overflow: hidden; }
+
+.intention-banner::before { content: ""; position: absolute; top: 0px; left=
+: 0px; right: 0px; height: 1px; background: linear-gradient(90deg,transpare=
+nt,var(--gold),transparent); opacity: 0.5; }
+
+.intention-moon-icon { font-size: 28px; flex-shrink: 0; line-height: 1; mar=
+gin-top: 2px; }
+
+.intention-content { flex: 1 1 0%; }
+
+.intention-label { font-family: Cinzel, serif; font-size: 9px; letter-spaci=
+ng: 0.15em; color: var(--gold); opacity: 0.6; text-transform: uppercase; ma=
+rgin-bottom: 5px; }
+
+.intention-text { font-size: 16px; color: rgba(245, 240, 232, 0.75); line-h=
+eight: 1.7; font-style: italic; }
+
+.intention-edit { font-family: Cinzel, serif; font-size: 9px; letter-spacin=
+g: 0.1em; color: rgba(245, 240, 232, 0.25); background: none; border: none;=
+ cursor: pointer; text-transform: uppercase; display: block; margin-top: 8p=
+x; }
+
+.intention-edit:hover { color: rgba(201, 168, 76, 0.6); }
+
+.transit-alert { display: flex; align-items: flex-start; gap: 10px; padding=
+: 10px 0px; border-bottom: 1px solid rgba(245, 240, 232, 0.05); }
+
+.transit-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;=
+ margin-top: 5px; }
+
+.transit-dot.major { background: rgba(201, 168, 76, 0.8); box-shadow: rgba(=
+201, 168, 76, 0.4) 0px 0px 6px; }
+
+.transit-dot.minor { background: rgba(245, 240, 232, 0.2); }
+
+.transit-title { font-family: Cinzel, serif; font-size: 11px; color: rgba(2=
+45, 240, 232, 0.6); letter-spacing: 0.05em; margin-bottom: 3px; }
+
+.transit-desc { font-size: 13px; color: rgba(245, 240, 232, 0.4); line-heig=
+ht: 1.6; font-style: italic; }
+
+.export-btn { font-family: Cinzel, serif; font-size: 10px; letter-spacing: =
+0.1em; text-transform: uppercase; padding: 8px 18px; background: transparen=
+t; border: 1px solid rgba(245, 240, 232, 0.15); border-radius: 4px; color: =
+rgba(245, 240, 232, 0.4); cursor: pointer; transition: 0.2s; }
+
+.export-btn:hover { border-color: rgba(201, 168, 76, 0.3); color: var(--gol=
+d); }
+
+.landing { position: fixed; inset: 0px; background: rgb(10, 8, 6); z-index:=
+ 400; display: flex; flex-direction: column; align-items: center; justify-c=
+ontent: center; padding: 32px; text-align: center; }
+
+.landing.hidden { display: none; }
+
+.landing-moon { font-size: 72px; margin-bottom: 24px; animation: 3s ease-in=
+-out 0s infinite normal none running moonPulse; }
+
+.landing-title { font-family: Cinzel, serif; font-size: clamp(32px, 6vw, 56=
+px); color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase;=
+ margin-bottom: 12px; text-shadow: rgba(201, 168, 76, 0.3) 0px 0px 40px; }
+
+.landing-sub { font-size: 18px; color: rgba(245, 240, 232, 0.5); font-style=
+: italic; max-width: 400px; line-height: 1.7; margin-bottom: 40px; }
+
+.landing-features { display: flex; gap: 24px; flex-wrap: wrap; justify-cont=
+ent: center; margin-bottom: 40px; }
+
+.landing-feature { font-size: 13px; color: rgba(245, 240, 232, 0.35); displ=
+ay: flex; align-items: center; gap: 6px; }
+
+.landing-cta { font-family: Cinzel, serif; font-size: 13px; letter-spacing:=
+ 0.12em; text-transform: uppercase; padding: 14px 36px; background: rgba(20=
+1, 168, 76, 0.1); border: 1px solid rgba(201, 168, 76, 0.4); border-radius:=
+ 4px; color: var(--gold); cursor: pointer; transition: 0.2s; }
+
+.landing-cta:hover { background: rgba(201, 168, 76, 0.2); box-shadow: rgba(=
+201, 168, 76, 0.15) 0px 0px 30px; }
+------MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe------
