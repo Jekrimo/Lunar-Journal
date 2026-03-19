@@ -6,6 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   :root { --gold:#c9a84c; --gold-pale:#e8d49a; --gold-deep:#9b7a28; }
@@ -241,6 +242,7 @@
 
 <!-- TODAY -->
 <div id="view-today" class="view active">
+  <div id="authBadgeWrap"></div>
   <div id="natalBadgeWrap"></div>
   <!-- CYCLE INTENTION BANNER -->
   <div class="intention-banner" id="intentionBanner" style="display:none;">
@@ -461,6 +463,30 @@
 
 </div><!-- /app-shell -->
 
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box" style="max-width:400px;">
+    <button class="modal-close" onclick="closeAuthModal()">×</button>
+    <div class="modal-title">Sign in to Lunations</div>
+    <p style="font-size:15px;color:rgba(245,240,232,.45);font-style:italic;line-height:1.6;margin-bottom:24px;">Your entries sync across all your devices and are safely backed up in the cloud.</p>
+    <div class="ob-field">
+      <label class="ob-label">Email</label>
+      <input class="ob-input" type="email" id="authEmail" placeholder="your@email.com" autocomplete="email">
+    </div>
+    <div class="ob-field">
+      <label class="ob-label">Password</label>
+      <input class="ob-input" type="password" id="authPass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div id="authError" style="font-size:13px;color:#cc7a7a;min-height:20px;margin-bottom:8px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="save-btn" style="margin-top:0;flex:1;text-align:center;" onclick="signIn()">Sign In</button>
+      <button class="save-btn" style="margin-top:0;flex:1;text-align:center;" onclick="signUp()">Sign Up</button>
+    </div>
+    <p style="font-size:12px;color:rgba(245,240,232,.2);text-align:center;margin-top:16px;font-style:italic;">No account needed — the app works fully without signing in.</p>
+  </div>
+</div>
+
 <!-- PLANET POPUP -->
 <div class="planet-popup" id="planetPopup">
   <button class="planet-popup-close" onclick="closePlanetPopup()">×</button>
@@ -517,12 +543,104 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
+// Supabase config — set these as window vars from your deployment
+// In Vercel: add SUPABASE_URL and SUPABASE_ANON_KEY as env vars
+// The anon key is safe to expose client-side (RLS protects the data)
+window.SUPABASE_URL = typeof __SUPABASE_URL__ !== 'undefined' ? __SUPABASE_URL__ : '';
+window.SUPABASE_ANON_KEY = typeof __SUPABASE_ANON_KEY__ !== 'undefined' ? __SUPABASE_ANON_KEY__ : '';
+
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 const EK='lunations_v1', PK='lunations_profile_v1', RK='lunations_reading_v1';
+
+// ── Migrate old key names from before the Lunations rebrand ──────────────────
+(function migrateLegacyKeys(){
+  const migrations = [
+    ['lunar_journal_v1', EK],
+    ['lunar_profile_v1', PK],
+    ['lunar_intention_v1', 'lunations_intention_v1'],
+    ['lunar_settings_v1', 'lunations_settings_v1'],
+  ];
+  migrations.forEach(([oldKey, newKey]) => {
+    const old = localStorage.getItem(oldKey);
+    if(old && !localStorage.getItem(newKey)){
+      localStorage.setItem(newKey, old);
+      localStorage.removeItem(oldKey);
+      console.log('Migrated', oldKey, '→', newKey);
+    }
+  });
+  // Also migrate any individual backup entries
+  Object.keys(localStorage).forEach(k => {
+    if(k.startsWith('lunar_backup_')){
+      const newKey = k.replace('lunar_backup_', 'lunations_backup_');
+      if(!localStorage.getItem(newKey)){
+        localStorage.setItem(newKey, localStorage.getItem(k));
+        localStorage.removeItem(k);
+      }
+    }
+  });
+})();
+
+
+// ── IndexedDB backup — survives cache clears that wipe localStorage ───────────
+const IDB_NAME = 'lunations_db', IDB_STORE = 'entries', IDB_VER = 1;
+
+function openIDB(){
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, IDB_VER);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbSet(key, value){
+  try{
+    const db = await openIDB();
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).put(value, key);
+    return new Promise(res => tx.oncomplete = res);
+  } catch(e){ console.warn('IDB write failed:', e); }
+}
+
+async function idbGet(key){
+  try{
+    const db = await openIDB();
+    return new Promise((resolve, reject) => {
+      const req = db.transaction(IDB_STORE).objectStore(IDB_STORE).get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  } catch(e){ return null; }
+}
+
+// On load — if localStorage entries are empty but IDB has data, restore it
+async function restoreFromIDB(){
+  const lsData = localStorage.getItem(EK);
+  const lsEntries = lsData ? JSON.parse(lsData) : {};
+  if(Object.keys(lsEntries).length === 0){
+    const idbData = await idbGet('entries');
+    if(idbData && Object.keys(idbData).length > 0){
+      localStorage.setItem(EK, JSON.stringify(idbData));
+      console.log('Restored', Object.keys(idbData).length, 'entries from IndexedDB backup');
+      return true;
+    }
+  }
+  return false;
+}
+
+// Mirror entries to IDB every save
+const _origSaveEntries = e => localStorage.setItem(EK, JSON.stringify(e));
 const loadEntries=()=>{try{return JSON.parse(localStorage.getItem(EK)||'{}')}catch(e){return{}}};
-const saveEntries=e=>localStorage.setItem(EK,JSON.stringify(e));
+const saveEntries=e=>{localStorage.setItem(EK,JSON.stringify(e));idbSet('entries',e);};
 const loadProfile=()=>{try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}};
-const saveProfileData=p=>localStorage.setItem(PK,JSON.stringify(p));
+async function loadProfileWithIDBFallback(){
+  const p=loadProfile();
+  if(p)return p;
+  const idbP=await idbGet('profile');
+  if(idbP){localStorage.setItem(PK,JSON.stringify(idbP));return idbP;}
+  return null;
+}
+const saveProfileData=p=>{localStorage.setItem(PK,JSON.stringify(p));idbSet('profile',p);};
 const entryKey=d=>d.toISOString().slice(0,10);
 
 // ─── MOON MATH ────────────────────────────────────────────────────────────────
@@ -761,6 +879,7 @@ function saveEntry(){
     timestamp:now.toISOString()
   };
   saveEntries(entries);
+  pushEntryToCloud(key, entries[key]); // async, non-blocking
   const c=document.getElementById('saveConfirm');c.style.opacity='1';
   setTimeout(()=>c.style.opacity='0',3000);
   // Auto-backup to localStorage secondary key
@@ -1101,6 +1220,193 @@ function importEntries(evt){
 }
 
 
+
+// ─── AUTH & CLOUD SYNC ────────────────────────────────────────────────────────
+// Supabase client — injected at build time via window.SUPABASE_CONFIG
+// For guest mode, all functions gracefully fall back to localStorage
+
+let supabase = null;
+let currentUser = null;
+let syncInProgress = false;
+
+function initSupabase(){
+  const url = window.SUPABASE_URL;
+  const key = window.SUPABASE_ANON_KEY;
+  if(!url || !key || url.includes('YOUR_')) return; // not configured yet
+  // Load Supabase JS from CDN
+  if(window.supabase){
+    supabase = window.supabase.createClient(url, key);
+    checkAuthState();
+  }
+}
+
+async function checkAuthState(){
+  if(!supabase) return;
+  const { data: { session } } = await supabase.auth.getSession();
+  if(session?.user){
+    currentUser = session.user;
+    onSignedIn(session.user, false);
+  }
+  supabase.auth.onAuthStateChange((event, session) => {
+    if(event === 'SIGNED_IN' && session?.user){
+      currentUser = session.user;
+      onSignedIn(session.user, event === 'SIGNED_IN');
+    }
+    if(event === 'SIGNED_OUT'){
+      currentUser = null;
+      onSignedOut();
+    }
+  });
+}
+
+async function onSignedIn(user, isNew){
+  renderAuthBadge();
+  if(isNew){
+    // First sign in — offer to upload existing localStorage entries
+    const localEntries = loadEntries();
+    const count = Object.keys(localEntries).length;
+    if(count > 0) await offerLocalMigration(count, localEntries);
+  }
+  // Load cloud entries and merge with local
+  await pullCloudEntries();
+  renderToday();
+}
+
+function onSignedOut(){
+  renderAuthBadge();
+  renderToday();
+}
+
+async function pullCloudEntries(){
+  if(!currentUser || !supabase) return;
+  try{
+    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const res = await fetch('/api/entries', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if(!res.ok) return;
+    const { entries: cloudEntries } = await res.json();
+    if(cloudEntries && Object.keys(cloudEntries).length > 0){
+      // Merge: cloud wins for conflicts (cloud is source of truth)
+      const local = loadEntries();
+      const merged = { ...local, ...cloudEntries };
+      localStorage.setItem(EK, JSON.stringify(merged));
+      idbSet('entries', merged);
+    }
+  } catch(e){ console.warn('Pull failed:', e); }
+}
+
+async function pushEntryToCloud(date, entry){
+  if(!currentUser || !supabase) return; // guest mode — only localStorage
+  try{
+    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    await fetch('/api/entries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ date, entry })
+    });
+  } catch(e){ console.warn('Push failed, entry saved locally:', e); }
+}
+
+async function offerLocalMigration(count, entries){
+  return new Promise(resolve => {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;';
+    modal.innerHTML = `<div style="background:#1a160e;border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:32px;max-width:440px;width:100%;text-align:center;">
+      <div style="font-size:32px;margin-bottom:16px;">🌙</div>
+      <div style="font-family:Cinzel,serif;font-size:16px;color:#e8d49a;margin-bottom:12px;letter-spacing:.08em;">Upload Local Entries</div>
+      <p style="font-size:15px;color:rgba(245,240,232,.55);line-height:1.7;margin-bottom:24px;">You have ${count} local entries. Upload them to your Lunations account so they're safe and accessible everywhere?</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button onclick="this.closest('div[style]').remove();resolve_migration(true);" style="font-family:Cinzel,serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:#c9a84c;cursor:pointer;">Upload ${count} Entries</button>
+        <button onclick="this.closest('div[style]').remove();resolve_migration(false);" style="font-family:Cinzel,serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;background:transparent;border:1px solid rgba(245,240,232,.15);border-radius:4px;color:rgba(245,240,232,.4);cursor:pointer;">Skip</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+    window.resolve_migration = async (doIt) => {
+      if(doIt){
+        try{
+          const token = (await supabase.auth.getSession()).data.session?.access_token;
+          const res = await fetch('/api/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ entries })
+          });
+          const data = await res.json();
+          if(data.synced) showToast(`✦ ${data.synced} entries uploaded to your account`);
+        } catch(e){ console.warn('Migration failed:', e); }
+      }
+      resolve();
+    };
+  });
+}
+
+function renderAuthBadge(){
+  const wrap = document.getElementById('authBadgeWrap');
+  if(!wrap) return;
+  if(!supabase){
+    wrap.innerHTML = ''; // Supabase not configured yet
+    return;
+  }
+  if(currentUser){
+    wrap.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <div style="font-size:13px;color:rgba(245,240,232,.4);font-style:italic;">✦ Signed in as ${currentUser.email}</div>
+      <button onclick="signOut()" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;background:transparent;border:1px solid rgba(245,240,232,.12);border-radius:20px;color:rgba(245,240,232,.3);cursor:pointer;">Sign out</button>
+    </div>`;
+  } else {
+    wrap.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;">Using local storage only</div>
+      <button onclick="openAuthModal()" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 12px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:20px;color:#c9a84c;cursor:pointer;">Sign in / Sign up</button>
+    </div>`;
+  }
+}
+
+function openAuthModal(){
+  document.getElementById('authModal').classList.add('open');
+}
+function closeAuthModal(){
+  document.getElementById('authModal').classList.remove('open');
+  document.getElementById('authError').textContent = '';
+}
+
+async function signUp(){
+  if(!supabase) return;
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value;
+  if(!email || !pass) return;
+  document.getElementById('authError').textContent = '';
+  const { error } = await supabase.auth.signUp({ email, password: pass });
+  if(error) document.getElementById('authError').textContent = error.message;
+  else {
+    closeAuthModal();
+    showToast('✦ Check your email to confirm your account');
+  }
+}
+
+async function signIn(){
+  if(!supabase) return;
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value;
+  if(!email || !pass) return;
+  document.getElementById('authError').textContent = '';
+  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+  if(error) document.getElementById('authError').textContent = error.message;
+  else closeAuthModal();
+}
+
+async function signOut(){
+  if(!supabase) return;
+  await supabase.auth.signOut();
+}
+
+function showToast(msg){
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a160e;border:1px solid rgba(201,168,76,.3);border-radius:8px;padding:12px 20px;font-size:14px;color:rgba(245,240,232,.7);z-index:500;font-style:italic;white-space:nowrap;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
@@ -1185,7 +1491,12 @@ if('serviceWorker' in navigator){
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderQualityTags();
-renderToday();
+initSupabase();
+// Restore from IDB if localStorage was cleared, then render
+restoreFromIDB().then(restored => {
+  if(restored) console.log('Entries restored from IndexedDB');
+  renderToday();
+});
 
 function enterApp(){
   localStorage.setItem('lj_entered','1');

@@ -1,0 +1,9 @@
+{
+  "name": "lunations",
+  "version": "1.0.0",
+  "description": "Lunations — a lunar journal",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
