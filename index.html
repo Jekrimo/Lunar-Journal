@@ -612,11 +612,12 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
-// Supabase config — set these as window vars from your deployment
-// In Vercel: add SUPABASE_URL and SUPABASE_ANON_KEY as env vars
-// The anon key is safe to expose client-side (RLS protects the data)
-window.SUPABASE_URL = typeof __SUPABASE_URL__ !== 'undefined' ? __SUPABASE_URL__ : '';
-window.SUPABASE_ANON_KEY = typeof __SUPABASE_ANON_KEY__ !== 'undefined' ? __SUPABASE_ANON_KEY__ : '';
+// Supabase config — filled in by api/index.js at serve time
+// To enable cloud sync, set these before this script runs:
+// window.SUPABASE_URL = "https://your-project.supabase.co";
+// window.SUPABASE_ANON_KEY = "your-anon-key";
+window.SUPABASE_URL = window.SUPABASE_URL || '';
+window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 const EK='lunations_v1', PK='lunations_profile_v1', RK='lunations_reading_v1';
@@ -1418,13 +1419,14 @@ let currentUser = null;
 let syncInProgress = false;
 
 function initSupabase(){
-  const url = window.SUPABASE_URL;
-  const key = window.SUPABASE_ANON_KEY;
-  if(!url || !key || url.includes('YOUR_')) return; // not configured yet
-  // Load Supabase JS from CDN
+  const url = window.SUPABASE_URL || '';
+  const key = window.SUPABASE_ANON_KEY || '';
+  if(!url || !key) return; // not configured - guest mode only
   if(window.supabase){
-    supabase = window.supabase.createClient(url, key);
-    checkAuthState();
+    try {
+      supabase = window.supabase.createClient(url, key);
+      checkAuthState();
+    } catch(e) { console.warn('Supabase init failed:', e); }
   }
 }
 
@@ -1500,31 +1502,35 @@ async function offerLocalMigration(count, entries){
   return new Promise(resolve => {
     const modal = document.createElement('div');
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;';
-    modal.innerHTML = `<div style="background:#1a160e;border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:32px;max-width:440px;width:100%;text-align:center;">
-      <div style="font-size:32px;margin-bottom:16px;">🌙</div>
-      <div style="font-family:Cinzel,serif;font-size:16px;color:#e8d49a;margin-bottom:12px;letter-spacing:.08em;">Upload Local Entries</div>
-      <p style="font-size:15px;color:rgba(245,240,232,.55);line-height:1.7;margin-bottom:24px;">You have ${count} local entries. Upload them to your Lunations account so they're safe and accessible everywhere?</p>
-      <div style="display:flex;gap:12px;justify-content:center;">
-        <button onclick="this.closest('div[style]').remove();resolve_migration(true);" style="font-family:Cinzel,serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:#c9a84c;cursor:pointer;">Upload ${count} Entries</button>
-        <button onclick="this.closest('div[style]').remove();resolve_migration(false);" style="font-family:Cinzel,serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;background:transparent;border:1px solid rgba(245,240,232,.15);border-radius:4px;color:rgba(245,240,232,.4);cursor:pointer;">Skip</button>
-      </div>
-    </div>`;
+    const inner = document.createElement('div');
+    inner.style.cssText = 'background:#1a160e;border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:32px;max-width:440px;width:100%;text-align:center;';
+    inner.innerHTML = '<div style="font-size:32px;margin-bottom:16px;">🌙</div>' +
+      '<div style="font-family:Cinzel,serif;font-size:16px;color:#e8d49a;margin-bottom:12px;letter-spacing:.08em;">Upload Local Entries</div>' +
+      '<p style="font-size:15px;color:rgba(245,240,232,.55);line-height:1.7;margin-bottom:24px;">You have ' + count + ' local entries. Upload them to your account so they are safe and accessible everywhere?</p>' +
+      '<div style="display:flex;gap:12px;justify-content:center;">' +
+      '<button id="migYes" style="font-family:Cinzel,serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:#c9a84c;cursor:pointer;">Upload ' + count + ' Entries</button>' +
+      '<button id="migNo" style="font-family:Cinzel,serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:10px 24px;background:transparent;border:1px solid rgba(245,240,232,.15);border-radius:4px;color:rgba(245,240,232,.4);cursor:pointer;">Skip</button>' +
+      '</div>';
+    modal.appendChild(inner);
     document.body.appendChild(modal);
-    window.resolve_migration = async (doIt) => {
+    async function doMigration(doIt){
+      modal.remove();
       if(doIt){
         try{
           const token = (await supabase.auth.getSession()).data.session?.access_token;
           const res = await fetch('/api/sync', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
             body: JSON.stringify({ entries })
           });
           const data = await res.json();
-          if(data.synced) showToast(`✦ ${data.synced} entries uploaded to your account`);
+          if(data.synced) showToast('✦ ' + data.synced + ' entries uploaded to your account');
         } catch(e){ console.warn('Migration failed:', e); }
       }
       resolve();
-    };
+    }
+    inner.querySelector('#migYes').onclick = () => doMigration(true);
+    inner.querySelector('#migNo').onclick = () => doMigration(false);
   });
 }
 

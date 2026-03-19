@@ -4,14 +4,6 @@
     {
       "src": "/api/(.*)",
       "dest": "/api/$1.js"
-    },
-    {
-      "src": "/(sw\\.js|manifest\\.json|icon.*\\.png)",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.js"
     }
   ]
 }
