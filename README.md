@@ -1,24 +1,27 @@
-# 🌙 Lunar Journal
+# 🌙 Lunations
 
-A devotional daily journal that tracks your mood, energy, and inner state alongside the lunar cycle. 13 cycles per year. Personalized daily readings powered by AI. Pattern tracking across cycles.
+**A lunar journal. Track yourself across cycles.**
 
-**Live:** https://lunar-journal-lac.vercel.app
+A lunation is one complete cycle of the moon — 29.5 days of inner weather. Lunations helps you track yours across all 13 cycles of the year, with personalized daily readings, Vedic astrology, and pattern insight that deepens over time.
+
+**Live:** https://lunations.app *(or current: https://lunar-journal-lac.vercel.app)*
 
 ---
 
-## Features
+## What it does
 
-- **Landing screen** — clean intro for new visitors
-- **Daily AI readings** — personalized to your natal chart + today's sky
-- **Moon phase tracking** — astronomically calculated
-- **Planet influence popups** — tap any planet for interpretation + natal cross-reference  
-- **Transit alerts** — flags when current sky hits your natal placements
-- **Cycle intention** — set at new moon, stays visible for 29 days
+- **Daily readings** — AI-generated, personalized to your natal chart against today's sky
+- **Moon phase tracking** — astronomically calculated every day
+- **Vedic day panel** — Tithi, Nakshatra, and Vara with quality indicators and ritual guidance
+- **Planet influence popups** — tap any planet for interpretation cross-referenced with your natal placements
+- **Transit alerts** — flags when current planets hit your natal positions
+- **Cycle intention** — set at the new moon, stays visible the full 29 days
 - **Last Cycle comparison** — side-by-side mirror of today vs 29 days ago
-- **13-cycle calendar** — lunar month grid with entry dots and energy bars
-- **Pattern charts** — energy/mood averaged by moon phase over time
-- **Full sky view** — all planetary positions, zodiac strip, year overview
-- **Export** — download all entries as JSON
+- **13-cycle calendar** — full lunar year view with entry dots and energy bars
+- **Pattern charts** — energy and mood averaged by moon phase, revealing your rhythms over time
+- **Full sky view** — all planetary positions, zodiac strip, 13-cycle year overview
+- **Settings** — icon picker, display toggles, backup and restore
+- **Export / Import** — full JSON backup of all entries and profile
 - **PWA** — installable on phone, works offline
 
 ---
@@ -26,8 +29,8 @@ A devotional daily journal that tracks your mood, energy, and inner state alongs
 ## Stack
 
 - **Frontend** — vanilla HTML/CSS/JS, single file, zero build step
-- **API** — Vercel serverless function proxying Anthropic Claude (rate limited)
-- **Storage** — browser localStorage (private, no database)
+- **API** — Vercel serverless function proxying Anthropic Claude Haiku (rate limited 10/hr per IP)
+- **Storage** — browser localStorage (private, no database required)
 - **Hosting** — Vercel free tier
 
 ---
@@ -35,15 +38,16 @@ A devotional daily journal that tracks your mood, energy, and inner state alongs
 ## Repo structure
 
 ```
-Lunar-Journal/
-├── public/
-│   ├── index.html      # The entire app
-│   ├── manifest.json   # PWA manifest
-│   └── sw.js           # Service worker (offline support)
+Lunations/
+├── index.html              # The entire app
+├── manifest.json           # PWA manifest
+├── sw.js                   # Service worker (offline support)
+├── icon-192.png            # App icon
+├── icon-512.png            # App icon large
 ├── api/
-│   └── reading.js      # Secure Claude API proxy with rate limiting
-├── vercel.json         # Routing config
-├── .env.example        # Required environment variables
+│   └── reading.js          # Secure Claude API proxy with rate limiting
+├── vercel.json             # Routing config
+├── .env.example            # Required environment variables
 ├── .gitignore
 └── README.md
 ```
@@ -52,55 +56,53 @@ Lunar-Journal/
 
 ## Deploy
 
-### 1. Clone and push to your GitHub
+### 1. Clone
 
 ```bash
 git clone https://github.com/Jekrimo/Lunar-Journal
-# drop in files, then:
-git add . && git commit -m "v2" && git push
+cd Lunar-Journal
 ```
 
 ### 2. Connect to Vercel
 
 - [vercel.com](https://vercel.com) → Add New Project → import repo
-- Vercel auto-detects `vercel.json`
+- All build settings blank
 
 ### 3. Add environment variable
 
-In Vercel: **Project Settings → Environment Variables**
-
+**Project Settings → Environment Variables**
 ```
 ANTHROPIC_API_KEY = sk-ant-...
 ```
 
 Get a key at [console.anthropic.com](https://console.anthropic.com)
 
-### 4. Done — auto-deploys on every push to main
+### 4. Deploy — auto-deploys on every push to main
 
 ---
 
 ## Local dev
 
+Open `index.html` directly in a browser for the full UI.
+
+For the API function locally:
 ```bash
 npm i -g vercel
 vercel dev
-```
-
-Create `.env` locally:
-```
-ANTHROPIC_API_KEY=your_key
 ```
 
 ---
 
 ## Roadmap
 
+- [ ] Custom domain — lunations.app
 - [ ] Supabase auth + cloud sync (entries across devices)
 - [ ] Dream symbol tagging + search
-- [ ] Printable cycle report PDF
+- [ ] Printable cycle report
 - [ ] Stripe subscription tier
-- [ ] Custom domain
+- [ ] Transit depth — aspects, not just sign conjunctions
 
 ---
 
-*Made with devotion. The sky is always reading you back.*
+*Lunations — a lunar journal. Track yourself across cycles.*
+*The sky is always reading you back.*
