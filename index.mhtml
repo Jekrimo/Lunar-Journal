@@ -1,22 +1,22 @@
 From: <Saved by Blink>
-Snapshot-Content-Location: file:///C:/Users/jekri/Downloads/index_2.html
+Snapshot-Content-Location: file:///C:/Users/jekri/Downloads/index_3.html
 Subject: Lunar Journal
-Date: Thu, 19 Mar 2026 14:07:16 -0600
+Date: Thu, 19 Mar 2026 14:19:14 -0600
 MIME-Version: 1.0
 Content-Type: multipart/related;
 	type="text/html";
-	boundary="----MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe----"
+	boundary="----MultipartBoundary--z0cPZkbDfsMVuskEIviQQdcmZqkIZPcNZb6WJMzkI5----"
 
 
-------MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe----
+------MultipartBoundary--z0cPZkbDfsMVuskEIviQQdcmZqkIZPcNZb6WJMzkI5----
 Content-Type: text/html
-Content-ID: <frame-893059ADB871D61345A5759A0E0819FF@mhtml.blink>
+Content-ID: <frame-F95ECA5D179F9382473404B33C428604@mhtml.blink>
 Content-Transfer-Encoding: quoted-printable
-Content-Location: file:///C:/Users/jekri/Downloads/index_2.html
+Content-Location: file:///C:/Users/jekri/Downloads/index_3.html
 
 <!DOCTYPE html><html lang=3D"en"><head><meta http-equiv=3D"Content-Type" co=
 ntent=3D"text/html; charset=3DUTF-8"><link rel=3D"stylesheet" type=3D"text/=
-css" href=3D"cid:css-5b529c2c-46db-40bb-a3d5-e19c13ec2f5c@mhtml.blink" />
+css" href=3D"cid:css-8735ea49-bfca-466f-bdbf-377052120bec@mhtml.blink" />
 
 <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1.=
 0">
@@ -45,7 +45,8 @@ ap" rel=3D"stylesheet">
     <span class=3D"landing-feature">=E2=9C=A6 Pattern charts</span>
     <span class=3D"landing-feature">=E2=9C=A6 Last cycle mirror</span>
   </div>
-  <button class=3D"landing-cta">Begin Your Record</button>
+  <button class=3D"landing-cta" id=3D"enterBtn">Begin Your Record</button>
+
 </div>
 <div class=3D"starfield"></div>
 <div class=3D"app-shell">
@@ -353,7 +354,7 @@ ve=E2=80=A6" style=3D"resize:vertical;min-height:80px;"></textarea>
 
 
 </body></html>
-------MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe----
+------MultipartBoundary--z0cPZkbDfsMVuskEIviQQdcmZqkIZPcNZb6WJMzkI5----
 Content-Type: text/css
 Content-Transfer-Encoding: quoted-printable
 Content-Location: https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap
@@ -521,10 +522,10 @@ U+303-304, U+308-309, U+323, U+329, U+1EA0-1EF9, U+20AB; }
 F, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U=
 +2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;=
  }
-------MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe----
+------MultipartBoundary--z0cPZkbDfsMVuskEIviQQdcmZqkIZPcNZb6WJMzkI5----
 Content-Type: text/css
 Content-Transfer-Encoding: quoted-printable
-Content-Location: cid:css-5b529c2c-46db-40bb-a3d5-e19c13ec2f5c@mhtml.blink
+Content-Location: cid:css-8735ea49-bfca-466f-bdbf-377052120bec@mhtml.blink
 
 @charset "utf-8";
 
@@ -1074,4 +1075,4 @@ ay: flex; align-items: center; gap: 6px; }
 
 .landing-cta:hover { background: rgba(201, 168, 76, 0.2); box-shadow: rgba(=
 201, 168, 76, 0.15) 0px 0px 30px; }
-------MultipartBoundary--sgr6wcOXnaJudyOvahmLnmCbJxH7pyIfHOnYgNnINe------
+------MultipartBoundary--z0cPZkbDfsMVuskEIviQQdcmZqkIZPcNZb6WJMzkI5------
