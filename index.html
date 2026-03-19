@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lunar Journal</title>
+<meta name="description" content="Track your mood and energy across lunar cycles. Personalized daily readings, pattern tracking, and celestial data.">
+<meta name="theme-color" content="#0f0c09">
+<link rel="manifest" href="/manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   :root { --gold:#c9a84c; --gold-pale:#e8d49a; --gold-deep:#9b7a28; }
@@ -157,9 +160,52 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* CYCLE INTENTION */
+  .intention-banner{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:18px 22px;margin-bottom:28px;display:flex;align-items:flex-start;gap:14px;position:relative;overflow:hidden;}
+  .intention-banner::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5;}
+  .intention-moon-icon{font-size:28px;flex-shrink:0;line-height:1;margin-top:2px;}
+  .intention-content{flex:1;}
+  .intention-label{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.15em;color:var(--gold);opacity:.6;text-transform:uppercase;margin-bottom:5px;}
+  .intention-text{font-size:16px;color:rgba(245,240,232,.75);line-height:1.7;font-style:italic;}
+  .intention-edit{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.25);background:none;border:none;cursor:pointer;text-transform:uppercase;display:block;margin-top:8px;}
+  .intention-edit:hover{color:rgba(201,168,76,.6);}
+  /* TRANSIT ALERTS */
+  .transit-alert{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(245,240,232,.05);}
+  .transit-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+  .transit-dot.major{background:rgba(201,168,76,.8);box-shadow:0 0 6px rgba(201,168,76,.4);}
+  .transit-dot.minor{background:rgba(245,240,232,.2);}
+  .transit-title{font-family:"Cinzel",serif;font-size:11px;color:rgba(245,240,232,.6);letter-spacing:.05em;margin-bottom:3px;}
+  .transit-desc{font-size:13px;color:rgba(245,240,232,.4);line-height:1.6;font-style:italic;}
+  /* EXPORT */
+  .export-btn{font-family:"Cinzel",serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:8px 18px;background:transparent;border:1px solid rgba(245,240,232,.15);border-radius:4px;color:rgba(245,240,232,.4);cursor:pointer;transition:all .2s;}
+  .export-btn:hover{border-color:rgba(201,168,76,.3);color:var(--gold);}
+  /* LANDING */
+  .landing{position:fixed;inset:0;background:#0a0806;z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;}
+  .landing.hidden{display:none;}
+  .landing-moon{font-size:72px;margin-bottom:24px;animation:moonPulse 3s ease-in-out infinite;}
+  .landing-title{font-family:"Cinzel",serif;font-size:clamp(32px,6vw,56px);color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;text-shadow:0 0 40px rgba(201,168,76,.3);}
+  .landing-sub{font-size:18px;color:rgba(245,240,232,.5);font-style:italic;max-width:400px;line-height:1.7;margin-bottom:40px;}
+  .landing-features{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-bottom:40px;}
+  .landing-feature{font-size:13px;color:rgba(245,240,232,.35);display:flex;align-items:center;gap:6px;}
+  .landing-cta{font-family:"Cinzel",serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:14px 36px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:var(--gold);cursor:pointer;transition:all .2s;}
+  .landing-cta:hover{background:rgba(201,168,76,.2);box-shadow:0 0 30px rgba(201,168,76,.15);}
 </style>
 </head>
 <body>
+<!-- LANDING SCREEN -->
+<div class="landing" id="landingScreen">
+  <div class="landing-moon">🌙</div>
+  <h1 class="landing-title">Lunar Journal</h1>
+  <p class="landing-sub">Track your inner weather across 13 lunar cycles. Personalized readings, pattern insight, celestial data.</p>
+  <div class="landing-features">
+    <span class="landing-feature">✦ Daily AI readings</span>
+    <span class="landing-feature">✦ Moon phase tracking</span>
+    <span class="landing-feature">✦ 13-cycle calendar</span>
+    <span class="landing-feature">✦ Pattern charts</span>
+    <span class="landing-feature">✦ Last cycle mirror</span>
+  </div>
+  <button class="landing-cta" onclick="enterApp()">Begin Your Record</button>
+</div>
 <div class="starfield"></div>
 <div class="app-shell">
 
@@ -182,6 +228,17 @@
 <!-- TODAY -->
 <div id="view-today" class="view active">
   <div id="natalBadgeWrap"></div>
+  <!-- CYCLE INTENTION BANNER -->
+  <div class="intention-banner" id="intentionBanner" style="display:none;">
+    <span class="intention-moon-icon">🌑</span>
+    <div class="intention-content">
+      <div class="intention-label">Cycle Intention</div>
+      <div class="intention-text" id="intentionBannerText">—</div>
+      <button class="intention-edit" onclick="openIntentionModal()">Edit intention ✎</button>
+    </div>
+  </div>
+  <!-- TRANSIT ALERTS -->
+  <div id="transitAlertsWrap"></div>
   <div class="reading-card">
     <div class="card-label">Today's Reading</div>
     <div class="reading-text" id="readingText"><span class="reading-loading">Consulting the sky…</span></div>
@@ -277,7 +334,10 @@
 
 <!-- JOURNAL ENTRIES -->
 <div id="view-entries" class="view">
-  <div class="section-heading" style="margin-bottom:0;">Past Entries</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+    <div class="section-heading" style="margin-bottom:0;">Past Entries</div>
+    <button class="export-btn" onclick="exportEntries()">↓ Export JSON</button>
+  </div>
   <div class="section-rule"></div>
   <div id="entriesList"></div>
 </div>
@@ -320,6 +380,17 @@
   <div class="planet-popup-title" id="ppTitle"></div>
   <div class="planet-popup-body" id="ppBody"></div>
   <div class="planet-popup-natal" id="ppNatal"></div>
+</div>
+
+<!-- INTENTION MODAL -->
+<div class="modal-overlay" id="intentionModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeIntentionModal()">×</button>
+    <div class="modal-title">Cycle Intention</div>
+    <p style="font-size:15px;color:rgba(245,240,232,.45);font-style:italic;line-height:1.7;margin-bottom:20px;">Set an intention at the new moon. It will remain visible throughout this 29-day cycle as your thread of continuity.</p>
+    <textarea class="journal-text" id="intentionInput" style="min-height:100px;" placeholder="This cycle I intend to…"></textarea>
+    <button class="save-btn" onclick="saveIntention()">Set Intention</button>
+  </div>
 </div>
 
 <!-- DAY MODAL -->
@@ -520,6 +591,8 @@ function renderToday(){
   const planets=allPlanets(now);
   document.getElementById('planetGridToday').innerHTML=planets.slice(0,8).map(p=>`<div class="planet-card" onclick="openPlanetPopup('${p.name}','${p.symbol}','${p.sign.name}',event)"><div style="display:flex;justify-content:space-between;align-items:start;"><div class="planet-name">${p.name}</div><div class="planet-symbol">${p.symbol}</div></div><div class="planet-sign">${p.sign.symbol} ${p.sign.name}</div><div class="planet-tap-hint">tap for influence</div></div>`).join('');
   generateReading();
+  renderIntentionBanner();
+  renderTransitAlerts();
 }
 
 // ─── COMPARISON ───────────────────────────────────────────────────────────────
@@ -640,6 +713,94 @@ function switchView(name,btn){
   if(name==='patterns')renderPatterns();
   if(name==='sky')renderSky();
   closePlanetPopup();
+}
+
+
+// ─── LANDING ──────────────────────────────────────────────────────────────────
+function enterApp(){
+  localStorage.setItem('lj_entered','1');
+  document.getElementById('landingScreen').classList.add('hidden');
+  if(!loadProfile())setTimeout(openOnboarding,800);
+}
+if(localStorage.getItem('lj_entered')){
+  document.getElementById('landingScreen').classList.add('hidden');
+}
+
+// ─── CYCLE INTENTION ─────────────────────────────────────────────────────────
+const IK='lunar_intention_v1';
+const loadIntentions=()=>{try{return JSON.parse(localStorage.getItem(IK)||'{}')}catch(e){return{}}};
+const saveIntentions=i=>localStorage.setItem(IK,JSON.stringify(i));
+function getCurrentCycleKey(){return entryKey(prevNewMoon(new Date()));}
+
+function renderIntentionBanner(){
+  const text=loadIntentions()[getCurrentCycleKey()];
+  const banner=document.getElementById('intentionBanner');
+  if(text){
+    document.getElementById('intentionBannerText').textContent=text;
+    banner.querySelector('.intention-moon-icon').textContent=moonPhaseInfo(new Date()).emoji;
+    banner.style.display='flex';
+  } else {
+    banner.style.display='none';
+  }
+}
+
+function openIntentionModal(){
+  document.getElementById('intentionInput').value=loadIntentions()[getCurrentCycleKey()]||'';
+  document.getElementById('intentionModal').classList.add('open');
+}
+function closeIntentionModal(){document.getElementById('intentionModal').classList.remove('open');}
+function saveIntention(){
+  const text=document.getElementById('intentionInput').value.trim();
+  if(!text)return;
+  const i=loadIntentions();i[getCurrentCycleKey()]=text;saveIntentions(i);
+  closeIntentionModal();renderIntentionBanner();
+}
+document.getElementById('intentionModal').onclick=function(e){if(e.target===this)closeIntentionModal();};
+
+// ─── TRANSIT ALERTS ───────────────────────────────────────────────────────────
+function getTransitAlerts(){
+  const profile=loadProfile();
+  if(!profile?.dob)return[];
+  const now=new Date(),bd=new Date(profile.dob+'T12:00:00');
+  const cp=allPlanets(now),np=allPlanets(bd),alerts=[];
+  const highlighted=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn'];
+  for(const c of cp){
+    if(!highlighted.includes(c.name))continue;
+    // Planet return — back in its natal sign
+    const natal=np.find(n=>n.name===c.name);
+    if(natal&&c.sign.name===natal.sign.name){
+      alerts.push({title:`${c.symbol} ${c.name} in natal ${c.sign.name} — a return`,desc:`${c.name} has cycled back to where it was at your birth. A cycle completes. ${c.sign.keywords}.`,major:true});
+    }
+    // Cross-planet conjunctions in same sign
+    for(const n of np){
+      if(c.name===n.name)continue;
+      if(c.sign.name===n.sign.name&&highlighted.includes(n.name)){
+        alerts.push({title:`${c.symbol} ${c.name} conjunct natal ${n.symbol} ${n.name} in ${c.sign.name}`,desc:`These two energies are meeting in your sky. ${c.sign.keywords}.`,major:['Sun','Moon','Saturn','Jupiter'].includes(c.name)});
+        break;
+      }
+    }
+  }
+  return alerts.slice(0,4);
+}
+
+function renderTransitAlerts(){
+  const wrap=document.getElementById('transitAlertsWrap'),alerts=getTransitAlerts();
+  if(!alerts.length){wrap.innerHTML='';return;}
+  wrap.innerHTML=`<div class="astro-card" style="margin-bottom:20px;"><div class="card-label">Active Transits</div><div style="margin-top:8px;">${alerts.map(a=>`<div class="transit-alert"><div class="transit-dot ${a.major?'major':'minor'}"></div><div><div class="transit-title">${a.title}</div><div class="transit-desc">${a.desc}</div></div></div>`).join('')}</div></div>`;
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────────────────
+function exportEntries(){
+  const data={exportDate:new Date().toISOString(),profile:loadProfile()||{},entries:loadEntries()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=`lunar-journal-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ─── SERVICE WORKER REGISTRATION ─────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────

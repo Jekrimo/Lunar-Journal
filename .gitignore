@@ -1,14 +1,7 @@
-# Environment secrets — NEVER commit this
 .env
 .env.local
 .env.production
-
-# Vercel
 .vercel
-
-# OS noise
 .DS_Store
 Thumbs.db
-
-# Node (if you ever add dependencies)
 node_modules/
