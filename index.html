@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lunar Journal</title>
-<meta name="description" content="Track your mood and energy across lunar cycles. Personalized daily readings, pattern tracking, and celestial data.">
+<title>Lunations</title>
+<meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -159,6 +159,20 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* SETTINGS TOGGLES */
+  .toggle-wrap{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
+  .toggle-wrap input{opacity:0;width:0;height:0;}
+  .toggle{position:absolute;inset:0;background:rgba(245,240,232,.1);border-radius:24px;cursor:pointer;transition:.2s;border:1px solid rgba(245,240,232,.15);}
+  .toggle:before{content:'';position:absolute;width:18px;height:18px;left:2px;top:2px;background:rgba(245,240,232,.4);border-radius:50%;transition:.2s;}
+  .toggle-wrap input:checked+.toggle{background:rgba(201,168,76,.25);border-color:rgba(201,168,76,.4);}
+  .toggle-wrap input:checked+.toggle:before{transform:translateX(20px);background:var(--gold);}
+  /* ICON PICKER */
+  .icon-option{width:64px;height:64px;border-radius:12px;background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:all .15s;}
+  .icon-option:hover{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.05);}
+  .icon-option.selected{border-color:rgba(201,168,76,.6);background:rgba(201,168,76,.1);}
+  .icon-option .icon-glyph{font-size:28px;line-height:1;}
+  .icon-option .icon-label{font-family:'Cinzel',serif;font-size:8px;color:rgba(245,240,232,.3);letter-spacing:.05em;}
+
   /* CYCLE INTENTION */
   .intention-banner{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:18px 22px;margin-bottom:28px;display:flex;align-items:flex-start;gap:14px;position:relative;overflow:hidden;}
   .intention-banner::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5;}
@@ -194,8 +208,8 @@
 <!-- LANDING SCREEN -->
 <div class="landing" id="landingScreen">
   <div class="landing-moon">🌙</div>
-  <h1 class="landing-title">Lunar Journal</h1>
-  <p class="landing-sub">Track your inner weather across 13 lunar cycles. Personalized readings, pattern insight, celestial data.</p>
+  <h1 class="landing-title">Lunations</h1>
+  <p class="landing-sub">A lunation is one complete cycle of the moon — 29.5 days of inner weather. Track yours across all 13.</p>
   <div class="landing-features">
     <span class="landing-feature">✦ Daily AI readings</span>
     <span class="landing-feature">✦ Moon phase tracking</span>
@@ -210,8 +224,8 @@
 
 <header class="site-header">
   <span class="moon-glyph" id="headerMoon">🌙</span>
-  <h1 class="site-title">Lunar Journal</h1>
-  <p class="site-subtitle">13 cycles · daily devotion · pattern & prophecy</p>
+  <h1 class="site-title">Lunations</h1>
+  <p class="site-subtitle">a lunar journal · track yourself across cycles</p>
   <div class="header-rule"></div>
 </header>
 
@@ -222,6 +236,7 @@
   <button class="nav-tab" onclick="switchView('entries',this)">Journal</button>
   <button class="nav-tab" onclick="switchView('patterns',this)">Patterns</button>
   <button class="nav-tab" onclick="switchView('sky',this)">Full Sky</button>
+  <button class="nav-tab" onclick="switchView('settings',this)">Settings</button>
 </nav>
 
 <!-- TODAY -->
@@ -369,6 +384,79 @@
     <div id="profileDisplay" style="font-size:15px;color:rgba(245,240,232,.5);line-height:1.9;"></div>
     <button class="save-btn" style="margin-top:16px;" onclick="openOnboarding()">Edit Birth Profile</button>
   </div>
+
+<!-- SETTINGS VIEW -->
+<div id="view-settings" class="view">
+
+  <div class="astro-card" style="margin-bottom:20px;">
+    <div class="card-label" style="margin-bottom:16px;">App Icon</div>
+    <div style="font-size:14px;color:rgba(245,240,232,.5);font-style:italic;margin-bottom:16px;">Choose your moon glyph — appears in the header and throughout the app.</div>
+    <div id="iconGrid" style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;"></div>
+  </div>
+
+  <div class="astro-card" style="margin-bottom:20px;">
+    <div class="card-label" style="margin-bottom:16px;">Display</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:15px;color:rgba(245,240,232,.7);">Show Vedic Panel</div>
+          <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;">Tithi, Nakshatra, Vara on Today view</div>
+        </div>
+        <label class="toggle-wrap"><input type="checkbox" id="toggleVedic" onchange="saveSetting('showVedic',this.checked);renderToday()"><span class="toggle"></span></label>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:15px;color:rgba(245,240,232,.7);">Show Transit Alerts</div>
+          <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;">Active planetary transits on Today view</div>
+        </div>
+        <label class="toggle-wrap"><input type="checkbox" id="toggleTransits" onchange="saveSetting('showTransits',this.checked);renderToday()"><span class="toggle"></span></label>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:15px;color:rgba(245,240,232,.7);">Show Cycle Intention</div>
+          <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;">Banner at top of Today view</div>
+        </div>
+        <label class="toggle-wrap"><input type="checkbox" id="toggleIntention" onchange="saveSetting('showIntention',this.checked);renderIntentionBanner()"><span class="toggle"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="astro-card" style="margin-bottom:20px;">
+    <div class="card-label" style="margin-bottom:16px;">Data & Backup</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <div style="font-size:15px;color:rgba(245,240,232,.7);margin-bottom:4px;">Export Journal</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:10px;">Download all entries + profile as JSON. Keep a local backup regularly.</div>
+        <button class="save-btn" style="margin-top:0;" onclick="exportEntries()">↓ Download Backup</button>
+      </div>
+      <div style="border-top:1px solid rgba(245,240,232,.07);padding-top:12px;">
+        <div style="font-size:15px;color:rgba(245,240,232,.7);margin-bottom:4px;">Import Journal</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:10px;">Restore from a previously exported JSON backup.</div>
+        <input type="file" id="importFile" accept=".json" onchange="importEntries(event)" style="display:none;">
+        <button class="save-btn" style="margin-top:0;" onclick="document.getElementById('importFile').click()">↑ Import from File</button>
+      </div>
+      <div style="border-top:1px solid rgba(245,240,232,.07);padding-top:12px;">
+        <div style="font-size:15px;color:rgba(245,240,232,.7);margin-bottom:4px;">Storage Info</div>
+        <div id="storageInfo" style="font-size:13px;color:rgba(245,240,232,.35);font-style:italic;line-height:1.8;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="astro-card" style="margin-bottom:20px;">
+    <div class="card-label" style="margin-bottom:16px;">Birth Profile</div>
+    <div id="settingsProfilePreview" style="font-size:15px;color:rgba(245,240,232,.5);line-height:1.8;margin-bottom:16px;"></div>
+    <button class="save-btn" style="margin-top:0;" onclick="openOnboarding()">Edit Profile</button>
+  </div>
+
+  <div class="astro-card">
+    <div class="card-label" style="margin-bottom:8px;">About</div>
+    <div style="font-size:15px;color:rgba(245,240,232,.4);line-height:1.9;font-style:italic;">
+      Your data lives entirely in your browser — private, local, yours. Nothing is sent to any server except the daily reading request to generate your personalized sky interpretation.<br><br>
+      Moon positions are calculated astronomically. Planetary positions are approximate and intended for contemplative use. Vedic Tithi and Nakshatra calculations use tropical longitude.<br><br>
+      <span style="color:rgba(245,240,232,.25);">Lunations — a lunar journal. Built with devotion. The sky is always reading you back.</span>
+    </div>
+  </div>
+
 </div>
 
 </div><!-- /app-shell -->
@@ -430,7 +518,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
-const EK='lunar_journal_v1', PK='lunar_profile_v1', RK='lunar_reading_v1';
+const EK='lunations_v1', PK='lunations_profile_v1', RK='lunations_reading_v1';
 const loadEntries=()=>{try{return JSON.parse(localStorage.getItem(EK)||'{}')}catch(e){return{}}};
 const saveEntries=e=>localStorage.setItem(EK,JSON.stringify(e));
 const loadProfile=()=>{try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}};
@@ -551,7 +639,7 @@ async function generateReading(force=false){
     if(profile.name)profileCtx+=` Name: ${profile.name}.`;
   }
   const planetSummary=planets.slice(0,6).map(p=>`${p.name} in ${p.sign.name}`).join(', ');
-  const prompt=`You are a skilled astrologer writing a daily reading for someone's private lunar journal. Tone: direct and interpretive — specific, not vague or generic. Second person, present tense. Under 130 words total. One paragraph.
+  const prompt=`You are a skilled astrologer writing a daily reading for someone's private Lunations journal. Tone: direct and interpretive — specific, not vague or generic. Second person, present tense. Under 130 words total. One paragraph.
 
 Today's sky: ${phase.name} (day ${Math.floor(phase.age)} of 29-day cycle), Moon in ${mSign.name} (${mSign.element} sign — ${mSign.keywords}), Sun in ${sSign.name}. Planets: ${planetSummary}.
 ${profileCtx}
@@ -573,7 +661,7 @@ function buildFallbackReading(phase,mSign,sSign,profile){
 // ─── RENDER TODAY ─────────────────────────────────────────────────────────────
 function renderToday(){
   const now=new Date(),phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now),nm=prevNewMoon(now),dayInCycle=Math.floor((now-nm)/86400000)+1,profile=loadProfile();
-  document.getElementById('headerMoon').textContent=phase.emoji;
+  document.getElementById('headerMoon').textContent=getSetting('icon',phase.emoji);
   document.getElementById('moonPhaseName').textContent=phase.name;
   document.getElementById('moonPhasePercent').textContent=`${phase.pct}% illuminated · Day ${Math.floor(phase.age)} of cycle`;
   document.getElementById('moonSign').textContent=`${mSign.symbol} ${mSign.name}`;
@@ -591,8 +679,8 @@ function renderToday(){
   document.getElementById('planetGridToday').innerHTML=planets.slice(0,8).map(p=>`<div class="planet-card" onclick="openPlanetPopup('${p.name}','${p.symbol}','${p.sign.name}',event)"><div style="display:flex;justify-content:space-between;align-items:start;"><div class="planet-name">${p.name}</div><div class="planet-symbol">${p.symbol}</div></div><div class="planet-sign">${p.sign.symbol} ${p.sign.name}</div><div class="planet-tap-hint">tap for influence</div></div>`).join('');
   generateReading();
   renderIntentionBanner();
-  renderTransitAlerts();
-  renderVedicPanel();
+  if(getSetting('showTransits',true))renderTransitAlerts(); else {var tw=document.getElementById('transitAlertsWrap');if(tw)tw.innerHTML='';}
+  if(getSetting('showVedic',true))renderVedicPanel(); else {var vw=document.getElementById('vedicPanelWrap');if(vw)vw.innerHTML='';}
 }
 
 // ─── COMPARISON ───────────────────────────────────────────────────────────────
@@ -645,8 +733,38 @@ function selectedQualities(){return[...document.querySelectorAll('#qualityTags .
 // ─── SAVE ENTRY ───────────────────────────────────────────────────────────────
 function saveEntry(){
   const now=new Date(),key=entryKey(now),entries=loadEntries();
-  entries[key]={energy:+document.getElementById('sliderEnergy').value,mood:+document.getElementById('sliderMood').value,clarity:+document.getElementById('sliderClarity').value,creativity:+document.getElementById('sliderCreativity').value,qualities:selectedQualities(),text:document.getElementById('entryText').value.trim(),dream:document.getElementById('dreamText').value.trim(),intention:document.getElementById('intentionText').value.trim(),phase:moonPhaseInfo(now).name,moonSign:moonSignApprox(now).name,timestamp:now.toISOString()};
-  saveEntries(entries);const c=document.getElementById('saveConfirm');c.style.opacity='1';setTimeout(()=>c.style.opacity='0',3000);
+  const phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now);
+  const tithi=getTithi(now),nakshatra=getNakshatra(now),vara=getVara(now);
+  const transits=getTransitAlerts().map(a=>a.title);
+  const planets=allPlanets(now).slice(0,6).map(p=>p.name+' in '+p.sign.name);
+  entries[key]={
+    energy:+document.getElementById('sliderEnergy').value,
+    mood:+document.getElementById('sliderMood').value,
+    clarity:+document.getElementById('sliderClarity').value,
+    creativity:+document.getElementById('sliderCreativity').value,
+    qualities:selectedQualities(),
+    text:document.getElementById('entryText').value.trim(),
+    dream:document.getElementById('dreamText').value.trim(),
+    intention:document.getElementById('intentionText').value.trim(),
+    phase:phase.name,
+    phaseAge:Math.floor(phase.age),
+    phasePct:phase.pct,
+    moonSign:mSign.name,
+    sunSign:sSign.name,
+    tithi:tithi.num+' '+tithi.name,
+    tithiQuality:tithi.quality,
+    nakshatra:nakshatra.name,
+    nakshatraPada:nakshatra.pada,
+    vara:vara.name,
+    planets:planets,
+    activeTransits:transits,
+    timestamp:now.toISOString()
+  };
+  saveEntries(entries);
+  const c=document.getElementById('saveConfirm');c.style.opacity='1';
+  setTimeout(()=>c.style.opacity='0',3000);
+  // Auto-backup to localStorage secondary key
+  localStorage.setItem('lunations_backup_'+key, JSON.stringify(entries[key]));
 }
 
 // ─── ENTRIES LIST ─────────────────────────────────────────────────────────────
@@ -712,6 +830,7 @@ function switchView(name,btn){
   if(name==='entries')renderEntries();
   if(name==='patterns')renderPatterns();
   if(name==='sky')renderSky();
+  if(name==='settings')renderSettings();
   closePlanetPopup();
 }
 
@@ -886,16 +1005,113 @@ function renderVedicPanel() {
 }
 
 
+
+// ─── SETTINGS ────────────────────────────────────────────────────────────────
+const SK = 'lunations_settings_v1';
+const ICON_OPTIONS = [
+  { glyph:'🌙', label:'Crescent' },
+  { glyph:'🌕', label:'Full Moon' },
+  { glyph:'🌑', label:'New Moon' },
+  { glyph:'✦',  label:'Star' },
+  { glyph:'☽',  label:'Luna' },
+  { glyph:'⊛',  label:'Mandala' },
+  { glyph:'🌸', label:'Lotus' },
+  { glyph:'♀',  label:'Venus' },
+  { glyph:'☯',  label:'Yin Yang' },
+  { glyph:'🔥', label:'Flame' },
+  { glyph:'💫', label:'Comet' },
+  { glyph:'🪷', label:'Lotus' },
+];
+
+function loadSettings(){
+  try{ return JSON.parse(localStorage.getItem(SK)||'{}'); }catch(e){return{};}
+}
+function saveSetting(key, val){
+  const s=loadSettings(); s[key]=val;
+  localStorage.setItem(SK, JSON.stringify(s));
+}
+function getSetting(key, defaultVal){
+  const s=loadSettings();
+  return s[key]!==undefined ? s[key] : defaultVal;
+}
+
+function renderSettings(){
+  const s=loadSettings(), profile=loadProfile();
+  const entries=loadEntries(), entryCount=Object.keys(entries).length;
+
+  // Icon grid
+  const currentIcon = getSetting('icon','🌙');
+  document.getElementById('iconGrid').innerHTML = ICON_OPTIONS.map(opt=>`
+    <div class="icon-option ${opt.glyph===currentIcon?'selected':''}" onclick="setIcon('${opt.glyph}',this)">
+      <span class="icon-glyph">${opt.glyph}</span>
+      <span class="icon-label">${opt.label}</span>
+    </div>`).join('');
+
+  // Toggle states
+  document.getElementById('toggleVedic').checked = getSetting('showVedic', true);
+  document.getElementById('toggleTransits').checked = getSetting('showTransits', true);
+  document.getElementById('toggleIntention').checked = getSetting('showIntention', true);
+
+  // Storage info
+  const totalSize = JSON.stringify(entries).length;
+  const kb = (totalSize/1024).toFixed(1);
+  document.getElementById('storageInfo').innerHTML =
+    `${entryCount} entries recorded · ${kb} KB used<br>` +
+    `First entry: ${entryCount ? Object.keys(entries).sort()[0] : '—'}<br>` +
+    `Latest entry: ${entryCount ? Object.keys(entries).sort().pop() : '—'}`;
+
+  // Profile preview
+  const pp = document.getElementById('settingsProfilePreview');
+  if(profile?.dob){
+    const bd=new Date(profile.dob+'T12:00:00'),ns=sunSignForDate(bd),nm=moonSignApprox(bd);
+    pp.innerHTML=`${profile.name||'Anonymous'} · ${ns.symbol} ${ns.name} Sun · ${nm.symbol} ${nm.name} Moon${profile.rising?' · '+profile.rising+' Rising':''}`;
+  } else {
+    pp.innerHTML='No profile set yet.';
+  }
+}
+
+function setIcon(glyph, el){
+  saveSetting('icon', glyph);
+  document.querySelectorAll('.icon-option').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  // Update all moon glyphs in the app
+  document.getElementById('headerMoon').textContent = glyph;
+}
+
+function importEntries(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      const entries = data.entries || data; // handle both formats
+      const existing = loadEntries();
+      const merged = {...existing, ...entries};
+      saveEntries(merged);
+      const count = Object.keys(entries).length;
+      alert(`Imported ${count} entries successfully. Your existing entries were preserved.`);
+      renderSettings();
+    } catch(err){
+      alert('Could not read file. Make sure it is a valid Lunations JSON export.');
+    }
+  };
+  reader.readAsText(file);
+  evt.target.value = ''; // reset input
+}
+
+
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
 // ─── CYCLE INTENTION ─────────────────────────────────────────────────────────
-const IK='lunar_intention_v1';
+const IK='lunations_intention_v1';
 const loadIntentions=()=>{try{return JSON.parse(localStorage.getItem(IK)||'{}')}catch(e){return{}}};
 const saveIntentions=i=>localStorage.setItem(IK,JSON.stringify(i));
 function getCurrentCycleKey(){return entryKey(prevNewMoon(new Date()));}
 
 function renderIntentionBanner(){
+  if(!getSetting('showIntention',true)){document.getElementById('intentionBanner').style.display='none';return;}
   const text=loadIntentions()[getCurrentCycleKey()];
   const banner=document.getElementById('intentionBanner');
   if(text){
