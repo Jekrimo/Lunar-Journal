@@ -6,7 +6,6 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   :root { --gold:#c9a84c; --gold-pale:#e8d49a; --gold-deep:#9b7a28; }
@@ -287,7 +286,6 @@
 
 <!-- TODAY -->
 <div id="view-today" class="view active">
-  <div id="authBadgeWrap"></div>
   <div id="natalBadgeWrap"></div>
   <!-- CYCLE INTENTION BANNER -->
   <div class="intention-banner" id="intentionBanner" style="display:none;">
@@ -566,64 +564,6 @@
 </div><!-- /app-shell -->
 
 
-<!-- AUTH MODAL -->
-<div class="modal-overlay" id="authModal">
-  <div class="modal-box" style="max-width:400px;">
-    <button class="modal-close" onclick="closeAuthModal()">×</button>
-    <div class="modal-title">Sign in to Lunations</div>
-    <p style="font-size:15px;color:rgba(245,240,232,.45);font-style:italic;line-height:1.6;margin-bottom:24px;">Your entries sync across all your devices and are safely backed up in the cloud.</p>
-    <div class="ob-field">
-      <label class="ob-label">Email</label>
-      <input class="ob-input" type="email" id="authEmail" placeholder="your@email.com" autocomplete="email">
-    </div>
-    <div class="ob-field">
-      <label class="ob-label">Password</label>
-      <input class="ob-input" type="password" id="authPass" placeholder="••••••••" autocomplete="current-password">
-    </div>
-    <div id="authError" style="font-size:13px;color:#cc7a7a;min-height:20px;margin-bottom:8px;"></div>
-    <div style="display:flex;gap:10px;">
-      <button class="save-btn" style="margin-top:0;flex:1;text-align:center;" onclick="signIn()">Sign In</button>
-      <button class="save-btn" style="margin-top:0;flex:1;text-align:center;" onclick="signUp()">Sign Up</button>
-    </div>
-    <p style="font-size:12px;color:rgba(245,240,232,.2);text-align:center;margin-top:16px;font-style:italic;">No account needed — the app works fully without signing in.</p>
-  </div>
-</div>
-
-
-<!-- EDIT ENTRY MODAL -->
-<div class="modal-overlay" id="editModal">
-  <div class="modal-box" style="max-width:560px;">
-    <button class="modal-close" onclick="closeEditModal()">×</button>
-    <div class="modal-title" id="editModalTitle">Edit Entry</div>
-    <input type="hidden" id="editDateKey">
-
-    <div class="section-heading">Energy & Mood</div>
-    <div class="form-row" style="margin-bottom:20px;">
-      <div class="form-group"><label class="form-label">Energy ⚡</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editEnergy" oninput="document.getElementById('valEditEnergy').textContent=this.value"><span class="slider-val" id="valEditEnergy">5</span></div></div>
-      <div class="form-group"><label class="form-label">Mood 🌙</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editMood" oninput="document.getElementById('valEditMood').textContent=this.value"><span class="slider-val" id="valEditMood">5</span></div></div>
-      <div class="form-group"><label class="form-label">Clarity ✦</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editClarity" oninput="document.getElementById('valEditClarity').textContent=this.value"><span class="slider-val" id="valEditClarity">5</span></div></div>
-      <div class="form-group"><label class="form-label">Creativity 🔥</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editCreativity" oninput="document.getElementById('valEditCreativity').textContent=this.value"><span class="slider-val" id="valEditCreativity">5</span></div></div>
-    </div>
-
-    <div class="section-heading">Qualities</div>
-    <div class="tag-row" id="editQualityTags"></div>
-
-    <div class="section-heading">Dreams / Visions</div>
-    <textarea class="journal-text" id="editDream" rows="2" style="margin-bottom:14px;min-height:60px;" placeholder="Dreams or visions…"></textarea>
-
-    <div class="section-heading">Reflection</div>
-    <textarea class="journal-text" id="editText" style="margin-bottom:14px;" placeholder="What were you feeling, sensing, knowing?"></textarea>
-
-    <div class="section-heading">Intention</div>
-    <textarea class="journal-text" id="editIntention" rows="2" style="min-height:60px;" placeholder="I dedicated this day to…"></textarea>
-
-    <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
-      <button class="save-btn" style="margin-top:0;" onclick="saveEditEntry()">Save Changes</button>
-      <button class="save-btn" style="margin-top:0;border-color:rgba(139,58,42,.4);color:#cc7a7a;" onclick="deleteEntry()">Delete Entry</button>
-    </div>
-  </div>
-</div>
-
 <!-- PLANET POPUP -->
 <div class="planet-popup" id="planetPopup">
   <button class="planet-popup-close" onclick="closePlanetPopup()">×</button>
@@ -884,6 +824,7 @@ function drawMoon(el,age,size){
 async function generateReading(force=false){
   const todayKey=entryKey(new Date()),cached=localStorage.getItem(RK);
   if(!force&&cached){try{const c=JSON.parse(cached);if(c.date===todayKey){document.getElementById('readingText').textContent=c.text;return;}}catch(e){}}
+  document.getElementById('readingText').textContent=buildFallbackReading(moonPhaseInfo(new Date()),moonSignApprox(new Date()),sunSignForDate(new Date()),loadProfile());return;
   document.getElementById('readingText').innerHTML='<span class="reading-loading">Reading the sky for you…</span>';
   const now=new Date(),phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now),planets=allPlanets(now),profile=loadProfile();
   let profileCtx='';
@@ -2054,15 +1995,9 @@ function exportEntries(){
   a.click();URL.revokeObjectURL(url);
 }
 
-// ─── SERVICE WORKER REGISTRATION ─────────────────────────────────────────────
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
-}
-
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderQualityTags();
-initSupabase();
 injectMockData();
 // Restore from IDB if localStorage was cleared, then render
 restoreFromIDB().then(restored => {
