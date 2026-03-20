@@ -411,10 +411,56 @@
 <div class="app-shell">
 
 <header class="site-header">
-  <span class="moon-glyph" id="headerMoon">🌙</span>
-  <h1 class="site-title">Lunations</h1>
-  <p class="site-subtitle">a lunar journal · track yourself across cycles</p>
-  <div class="header-rule"></div>
+  <div style="margin-bottom:8px;">
+    <svg width="100%" viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" style="max-width:500px;display:block;margin:0 auto;">
+      <defs>
+        <mask id="hcm"><circle cx="100" cy="100" r="78" fill="white"/><circle cx="136" cy="86" r="64" fill="black"/></mask>
+        <clipPath id="hdc"><circle cx="136" cy="86" r="64"/></clipPath>
+        <radialGradient id="hmg" cx="35%" cy="38%" r="65%">
+          <stop offset="0%" stop-color="#f8f0a0"/><stop offset="30%" stop-color="#d4a840"/><stop offset="100%" stop-color="#5a4010"/>
+        </radialGradient>
+        <linearGradient id="htg" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#c8a830"/><stop offset="40%" stop-color="#907820"/><stop offset="70%" stop-color="#406880"/><stop offset="100%" stop-color="#284060"/>
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="100" r="90" fill="none" stroke="#c9a84c" stroke-width="0.4" opacity="0.12"/>
+      <g clip-path="url(#hdc)">
+        <circle cx="136" cy="86" r="3.5" fill="#e8c870" opacity="0.45"/>
+        <ellipse cx="136" cy="86" rx="11" ry="7" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.16" transform="rotate(-20,136,86)"/>
+        <circle cx="146" cy="80" r="1" fill="#c9a84c" opacity="0.35"/>
+        <ellipse cx="136" cy="86" rx="18" ry="11" fill="none" stroke="#c9a84c" stroke-width="0.4" opacity="0.12" transform="rotate(10,136,86)"/>
+        <circle cx="150" cy="74" r="1.4" fill="#c9a84c" opacity="0.28"/>
+        <ellipse cx="136" cy="86" rx="26" ry="16" fill="none" stroke="#c9a84c" stroke-width="0.4" opacity="0.09" transform="rotate(-6,136,86)"/>
+        <ellipse cx="136" cy="86" rx="36" ry="22" fill="none" stroke="#c9a84c" stroke-width="0.3" opacity="0.07" transform="rotate(16,136,86)"/>
+        <ellipse cx="136" cy="86" rx="46" ry="30" fill="none" stroke="#c9a84c" stroke-width="0.3" opacity="0.05" transform="rotate(-3,136,86)"/>
+      </g>
+      <g mask="url(#hcm)">
+        <circle cx="100" cy="100" r="78" fill="url(#hmg)"/>
+        <circle cx="80" cy="84" r="14" fill="#8a6818" opacity="0.28"/>
+        <circle cx="98" cy="74" r="10" fill="#7a5c14" opacity="0.22"/>
+        <circle cx="110" cy="92" r="8" fill="#8a6818" opacity="0.2"/>
+        <circle cx="74" cy="100" r="7" fill="#7a5c14" opacity="0.18"/>
+        <circle cx="68" cy="86" r="4.5" fill="none" stroke="#f0d060" stroke-width="0.7" opacity="0.44"/>
+        <circle cx="88" cy="110" r="3.2" fill="none" stroke="#e8c850" stroke-width="0.6" opacity="0.38"/>
+        <circle cx="76" cy="72" r="2.8" fill="none" stroke="#e8c850" stroke-width="0.5" opacity="0.36"/>
+        <circle cx="60" cy="94" r="5" fill="none" stroke="#d4a830" stroke-width="0.7" opacity="0.32"/>
+        <circle cx="102" cy="118" r="3.5" fill="none" stroke="#e8c850" stroke-width="0.6" opacity="0.3"/>
+        <circle cx="116" cy="103" r="2.2" fill="none" stroke="#f0d060" stroke-width="0.5" opacity="0.38"/>
+        <circle cx="84" cy="96" r="1.8" fill="none" stroke="#e8c850" stroke-width="0.4" opacity="0.32"/>
+        <circle cx="136" cy="86" r="66" fill="#060404" opacity="0.28"/>
+      </g>
+      <circle cx="100" cy="100" r="78" fill="none" stroke="#f8e870" stroke-width="0.6" opacity="0.22" mask="url(#hcm)"/>
+      <line x1="196" y1="58" x2="264" y2="74" stroke="#f8f0c0" stroke-width="1" opacity="0.45" stroke-dasharray="4,3"/>
+      <circle cx="266" cy="74" r="2" fill="#fff8d0" opacity="0.85"/>
+      <circle cx="186" cy="55" r="0.7" fill="#f8f0c0" opacity="0.35"/>
+      <g transform="translate(200,46)"><path d="M0,-4 L0.7,-0.7 L4,0 L0.7,0.7 L0,4 L-0.7,0.7 L-4,0 L-0.7,-0.7 Z" fill="#e8d49a" opacity="0.8"/></g>
+      <text x="188" y="120" style="font-family:'Cinzel',Georgia,serif;font-size:52px;font-weight:700;fill:none;stroke:#1a0808;stroke-width:3px;stroke-opacity:0.3;letter-spacing:0.06em;">LUNATIONS</text>
+      <text x="188" y="120" style="font-family:'Cinzel',Georgia,serif;font-size:52px;font-weight:700;fill:url(#htg);letter-spacing:0.06em;">LUNATIONS</text>
+      <path d="M 188 130 Q 218 135 250 128 Q 282 121 314 130 Q 346 139 378 129 Q 410 119 440 128 Q 460 133 472 130" fill="none" stroke="#c9a84c" stroke-width="0.9" opacity="0.35"/>
+      <text x="190" y="154" style="font-family:'EB Garamond','Georgia',serif;font-size:13px;font-style:italic;fill:#8c7b6e;letter-spacing:0.09em;">the sky remembers who you are</text>
+    </svg>
+  </div>
+  <div class="header-rule" style="margin-top:0;"></div>
 </header>
 
 <div class="top-bar">
@@ -723,6 +769,13 @@
 
 <!-- SETTINGS VIEW -->
 <div id="view-settings" class="view">
+
+  <!-- TRADITION MODE SELECTOR -->
+  <div class="astro-card" style="margin-bottom:20px;">
+    <div class="card-label" style="margin-bottom:6px;">Tradition</div>
+    <div style="font-size:14px;color:rgba(245,240,232,.4);font-style:italic;margin-bottom:16px;">Choose the lens through which the sky speaks to you. Changes readings, daily cards, and language throughout the app.</div>
+    <div id="modeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;"></div>
+  </div>
 
   <div class="astro-card" style="margin-bottom:20px;">
     <div class="card-label" style="margin-bottom:16px;">App Icon</div>
@@ -1865,6 +1918,7 @@ function getSetting(key, defaultVal){
 }
 
 function renderSettings(){
+  renderModeGrid();
   const s=loadSettings(), profile=loadProfile();
   const entries=loadEntries(), entryCount=Object.keys(entries).length;
 
@@ -2732,6 +2786,206 @@ Write the collective reading.`;
   }
 }
 
+
+// ─── TRADITION MODES ──────────────────────────────────────────────────────────
+const MODES = {
+  vedic: {
+    name: 'Vedic',
+    icon: '🕉',
+    desc: 'Tithi, Nakshatra, Vara. Sanskrit-rooted precision.',
+    tone: 'precise, practitioner, Sanskrit-grounded',
+    readingLens: 'Use Vedic astrological language — tithi, nakshatra, graha. Reference Sanskrit concepts naturally. Speak to a serious practitioner.',
+    phaseNames: { 0:'Amavasya', 5:'Purnima' },
+    dailyCardLabel: 'Vedic Day',
+  },
+  goddess: {
+    name: 'Goddess',
+    icon: '🌹',
+    desc: 'Mythological archetypes. The divine feminine speaks.',
+    tone: 'mythological, archetypal, poetic, Jungian',
+    readingLens: 'Speak through goddess archetypes and mythological symbolism. Reference Hecate, Isis, Artemis, Parvati, Kali, Aphrodite, Persephone. The moon is a living deity. Rich, poetic, feminine-divine tone.',
+    dailyCardLabel: 'Goddess of the Day',
+    phaseGoddesses: {
+      0: {name:'Hecate', desc:'Queen of the crossroads. The void between worlds. Magic, shadow work, ancestors.'},
+      1: {name:'Artemis', desc:'The huntress sets her bow. New intentions, wild beginnings, independence.'},
+      2: {name:'Parvati', desc:'Devoted ascent. Will meets devotion. Build toward the sacred.'},
+      3: {name:'Isis', desc:'Wings spread gathering power. Preparation, healing, gathering light.'},
+      4: {name:'Selene', desc:'Full radiance. The goddess unveiled. Celebrate, offer, be seen.'},
+      5: {name:'Demeter', desc:'Harvest and integration. Gratitude for what grew this cycle.'},
+      6: {name:'Kali', desc:'The great dissolver. Release what no longer serves. Cut clean.'},
+      7: {name:'Persephone', desc:'Descent before return. Rest in the underworld. The seed prepares.'},
+    },
+  },
+  crystal: {
+    name: 'Crystal',
+    icon: '💎',
+    desc: 'Stones, chakras, ritual. Sensory and sacred.',
+    tone: 'warm, tactile, ritual-focused, accessible',
+    readingLens: 'Speak through crystal energy, chakras, and ritual suggestion. Warm, practical, and sensory. Include what stone to work with, what chakra is active, and one ritual suggestion for the day.',
+    dailyCardLabel: 'Crystal Energy',
+    phaseStones: {
+      0: {stone:'Black Tourmaline', chakra:'Root', ritual:'Cleanse your space. Set one protected intention.'},
+      1: {stone:'Moonstone', chakra:'Crown', ritual:'Hold your stone and speak your new moon wish aloud.'},
+      2: {stone:'Citrine', chakra:'Solar Plexus', ritual:'Carry citrine in your pocket. Take one courageous action.'},
+      3: {stone:'Green Aventurine', chakra:'Heart', ritual:'Place stone on heart. Breathe into what you are growing.'},
+      4: {stone:'Selenite', chakra:'Crown & Third Eye', ritual:'Charge your crystals under the full moon tonight.'},
+      5: {stone:'Amethyst', chakra:'Third Eye', ritual:'Meditate with amethyst. Journal what you are grateful for.'},
+      6: {stone:'Obsidian', chakra:'Root', ritual:'Release ritual: write what you are letting go, burn or bury.'},
+      7: {stone:'Labradorite', chakra:'Throat', ritual:'Rest. Dream. Let labradorite reveal what needs to be seen.'},
+    },
+  },
+  elemental: {
+    name: 'Elemental',
+    icon: '🔥',
+    desc: 'Fire, water, earth, air. The ancient wheel turns.',
+    tone: 'animist, Wiccan-adjacent, earthy, directional',
+    readingLens: 'Speak through elemental forces — fire, water, earth, air, aether. Reference directions, seasons, the wheel of the year, and elemental correspondences. Animist and nature-based tone.',
+    dailyCardLabel: 'Elemental Current',
+    signElements: {
+      Fire: {direction:'South', season:'Summer', quality:'transformation, will, passion'},
+      Earth: {direction:'North', season:'Winter', quality:'grounding, manifestation, patience'},
+      Air: {direction:'East', season:'Spring', quality:'clarity, communication, new beginnings'},
+      Water: {direction:'West', season:'Autumn', quality:'emotion, intuition, release'},
+    },
+  },
+  nature: {
+    name: 'Nature',
+    icon: '🌿',
+    desc: 'Animal medicine, plant spirits, the body as landscape.',
+    tone: 'indigenous-influenced, seasonal, embodied, quiet',
+    readingLens: 'Speak through nature medicine — animal guides, plant spirits, seasonal rhythms, the body as earth. Indigenous-influenced wisdom. Quiet, grounded, embodied tone. No spiritual bypassing.',
+    dailyCardLabel: 'Nature Medicine',
+    phaseAnimals: {
+      0: {animal:'Owl', medicine:'Deep seeing. What do you know that you have not yet named?'},
+      1: {animal:'Deer', medicine:'Gentle new steps. Trust your sensitivity as a gift.'},
+      2: {animal:'Hawk', medicine:'Rising vision. See the whole terrain before you move.'},
+      3: {animal:'Bear', medicine:'Gathering strength. Prepare your den for what you are growing.'},
+      4: {animal:'Wolf', medicine:'Full voice. Howl what is true. Your pack needs your song.'},
+      5: {animal:'Salmon', medicine:'Return journey. What wisdom are you carrying back?'},
+      6: {animal:'Snake', medicine:'Shedding time. What skin no longer fits?'},
+      7: {animal:'Badger', medicine:'Rest in the underground. Roots deepen in the dark.'},
+    },
+  },
+  source: {
+    name: 'Source',
+    icon: '✦',
+    desc: 'Pure energy and field. No tradition, all traditions.',
+    tone: 'universal, consciousness-first, frequency-based, inclusive',
+    readingLens: 'Speak in the language of energy, frequency, and field. No specific tradition. Reference quantum coherence, resonance, the unified field, consciousness. Speak to anyone regardless of background. Warm, clear, universal.',
+    dailyCardLabel: 'Field Reading',
+  },
+};
+
+const MK = 'lunations_mode_v1';
+function getCurrentMode(){ return localStorage.getItem(MK) || 'vedic'; }
+function setMode(mode){ localStorage.setItem(MK, mode); localStorage.removeItem(RK); renderToday(); renderVedicPanel(); }
+function getModeData(){ return MODES[getCurrentMode()] || MODES.vedic; }
+
+
+// ─── MODE RENDERING ───────────────────────────────────────────────────────────
+function renderModeGrid(){
+  const current = getCurrentMode();
+  const grid = document.getElementById('modeGrid');
+  if(!grid) return;
+  grid.innerHTML = Object.entries(MODES).map(([key, m]) => `
+    <div onclick="setMode('${key}')" style="
+      background:${current===key?'rgba(201,168,76,.1)':'rgba(245,240,232,.02)'};
+      border:1px solid ${current===key?'rgba(201,168,76,.5)':'rgba(245,240,232,.08)'};
+      border-radius:8px;padding:14px 12px;cursor:pointer;transition:all .15s;text-align:center;">
+      <div style="font-size:24px;margin-bottom:6px;">${m.icon}</div>
+      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:${current===key?'var(--gold)':'rgba(245,240,232,.5)'};text-transform:uppercase;margin-bottom:4px;">${m.name}</div>
+      <div style="font-size:11px;color:rgba(245,240,232,.3);font-style:italic;line-height:1.4;">${m.desc}</div>
+    </div>
+  `).join('');
+}
+
+// Override renderVedicPanel to be mode-aware
+const _origRenderVedicPanel = renderVedicPanel;
+function renderVedicPanel(){
+  const mode = getModeData();
+  const now = new Date();
+  const phase = moonPhaseInfo(now);
+  const container = document.getElementById('vedicPanelWrap') ||
+    (() => { const d=document.createElement('div'); d.id='vedicPanelWrap';
+      const ct = document.getElementById('cycleTone')?.closest('.astro-card');
+      if(ct) ct.after(d); return d; })();
+
+  if(!getSetting('showVedic',true)){ container.innerHTML=''; return; }
+
+  let cardHTML = '';
+
+  if(mode.name === 'Vedic'){
+    _origRenderVedicPanel();
+    return;
+  } else if(mode.name === 'Goddess'){
+    const g = mode.phaseGoddesses[phase.quarter] || {name:'Selene',desc:'The eternal moon.'};
+    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
+      <div class="card-label">${mode.dailyCardLabel}</div>
+      <div style="margin-top:12px;display:flex;align-items:flex-start;gap:16px;">
+        <div style="font-size:36px;">${mode.icon}</div>
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-pale);margin-bottom:6px;">${g.name}</div>
+          <div style="font-size:15px;color:rgba(245,240,232,.6);line-height:1.7;font-style:italic;">${g.desc}</div>
+        </div>
+      </div>
+    </div>`;
+  } else if(mode.name === 'Crystal'){
+    const c = mode.phaseStones[phase.quarter] || {stone:'Clear Quartz',chakra:'Crown',ritual:'Set your intention.'};
+    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
+      <div class="card-label">${mode.dailyCardLabel}</div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:rgba(245,240,232,.03);border-radius:6px;padding:12px;">
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.3);margin-bottom:6px;">STONE</div>
+          <div style="font-size:15px;color:rgba(245,240,232,.8);">${mode.icon} ${c.stone}</div>
+        </div>
+        <div style="background:rgba(245,240,232,.03);border-radius:6px;padding:12px;">
+          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.3);margin-bottom:6px;">CHAKRA</div>
+          <div style="font-size:15px;color:rgba(245,240,232,.8);">${c.chakra}</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:12px;background:rgba(201,168,76,.05);border-radius:6px;font-size:14px;color:rgba(245,240,232,.55);font-style:italic;line-height:1.7;">${c.ritual}</div>
+    </div>`;
+  } else if(mode.name === 'Elemental'){
+    const mSign = moonSignApprox(now);
+    const el = mode.signElements[mSign.element] || {direction:'Centre',season:'The Turning',quality:'all forces present'};
+    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
+      <div class="card-label">${mode.dailyCardLabel}</div>
+      <div style="margin-top:12px;text-align:center;padding:8px 0;">
+        <div style="font-size:42px;margin-bottom:8px;">${mode.icon}</div>
+        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-pale);margin-bottom:4px;">${mSign.element} · ${el.direction}</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.4);font-style:italic;">${el.season} · ${el.quality}</div>
+      </div>
+    </div>`;
+  } else if(mode.name === 'Nature'){
+    const a = mode.phaseAnimals[phase.quarter] || {animal:'Crow',medicine:'Watch. Listen. Adapt.'};
+    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
+      <div class="card-label">${mode.dailyCardLabel}</div>
+      <div style="margin-top:12px;display:flex;align-items:flex-start;gap:16px;">
+        <div style="font-size:36px;">${mode.icon}</div>
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-pale);margin-bottom:6px;">${a.animal} Medicine</div>
+          <div style="font-size:15px;color:rgba(245,240,232,.6);line-height:1.75;font-style:italic;">${a.medicine}</div>
+        </div>
+      </div>
+    </div>`;
+  } else if(mode.name === 'Source'){
+    const sourceMessages = [
+      'The field is coherent today. Your signal is clear. What frequency are you broadcasting?',
+      'Interference patterns dissolve at the node points. You are at a node point.',
+      'Resonance precedes manifestation. The quantum field collapses toward your attention.',
+      'You are not in the universe. The universe is in you. Act accordingly.',
+      'The observer and the observed are one. What you witness, you participate in.',
+    ];
+    const msg = sourceMessages[new Date().getDate() % sourceMessages.length];
+    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
+      <div class="card-label">${mode.dailyCardLabel}</div>
+      <div style="margin-top:10px;font-size:16px;color:rgba(245,240,232,.7);line-height:1.85;font-style:italic;">${msg}</div>
+    </div>`;
+  }
+
+  container.innerHTML = cardHTML;
+}
+
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
@@ -2820,7 +3074,7 @@ renderAuthBadge();
 initHeartbeats();
 initSliders(); // show guest badge immediately
 initSupabase(); // then upgrade once Supabase CDN loads
-injectMockData();
+// injectMockData() — disabled, use Settings > Import to load data
 // Restore from IDB if localStorage was cleared, then render
 restoreFromIDB().then(restored => {
   if(restored) console.log('Entries restored from IndexedDB');
