@@ -567,24 +567,47 @@
 
 <!-- AUTH MODAL -->
 <div class="modal-overlay" id="authModal">
-  <div class="modal-box" style="max-width:400px;">
+  <div class="modal-box" style="max-width:420px;">
     <button class="modal-close" onclick="closeAuthModal()">×</button>
-    <div class="modal-title">Sign in to Lunations</div>
-    <p style="font-size:15px;color:rgba(245,240,232,.45);font-style:italic;line-height:1.6;margin-bottom:24px;">Your entries sync across all your devices and are safely backed up in the cloud.</p>
-    <div class="ob-field">
-      <label class="ob-label">Email</label>
-      <input class="ob-input" type="email" id="authEmail" placeholder="your@email.com" autocomplete="email">
+
+    <!-- Sign in / Sign up panel -->
+    <div id="authPanel">
+      <div class="modal-title" id="authModalTitle">Sign in to Lunations</div>
+      <p style="font-size:15px;color:rgba(245,240,232,.45);font-style:italic;line-height:1.6;margin-bottom:24px;">Your entries sync across devices and are safely backed up.</p>
+      <div class="ob-field">
+        <label class="ob-label">Email</label>
+        <input class="ob-input" type="email" id="authEmail" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="ob-field">
+        <label class="ob-label">Password</label>
+        <input class="ob-input" type="password" id="authPass" placeholder="min. 6 characters" autocomplete="current-password">
+      </div>
+      <div id="authError" style="font-size:13px;color:#cc7a7a;min-height:18px;margin-bottom:12px;font-style:italic;"></div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="save-btn" style="margin-top:0;flex:1;text-align:center;" onclick="signIn()">Sign In</button>
+        <button class="save-btn" style="margin-top:0;flex:1;text-align:center;" onclick="signUp()">Create Account</button>
+      </div>
+      <p style="font-size:12px;color:rgba(245,240,232,.2);text-align:center;font-style:italic;">The app works fully without an account. Sign in only to sync across devices.</p>
     </div>
-    <div class="ob-field">
-      <label class="ob-label">Password</label>
-      <input class="ob-input" type="password" id="authPass" placeholder="••••••••" autocomplete="current-password">
+
+    <!-- Confirm email notice (shown after sign up) -->
+    <div id="authConfirmPanel" style="display:none;text-align:center;padding:8px 0;">
+      <div style="font-size:36px;margin-bottom:16px;">📬</div>
+      <div class="modal-title">Check your email</div>
+      <p style="font-size:15px;color:rgba(245,240,232,.5);line-height:1.7;margin-bottom:20px;">We sent a confirmation link to <strong id="authConfirmEmail" style="color:rgba(245,240,232,.7);"></strong>.<br>Click the link to activate your account, then come back and sign in.</p>
+      <button class="save-btn" style="margin-top:0;" onclick="showAuthPanel()">Back to Sign In</button>
     </div>
-    <div id="authError" style="font-size:13px;color:#cc7a7a;min-height:20px;margin-bottom:8px;"></div>
-    <div style="display:flex;gap:10px;">
-      <button class="save-btn" style="margin-top:0;flex:1;text-align:center;" onclick="signIn()">Sign In</button>
-      <button class="save-btn" style="margin-top:0;flex:1;text-align:center;" onclick="signUp()">Sign Up</button>
+
+    <!-- Account panel (shown when signed in) -->
+    <div id="authAccountPanel" style="display:none;">
+      <div class="modal-title">Your Account</div>
+      <div id="authAccountInfo" style="font-size:15px;color:rgba(245,240,232,.55);line-height:1.9;margin-bottom:20px;"></div>
+      <div style="border-top:1px solid rgba(245,240,232,.08);padding-top:16px;display:flex;flex-direction:column;gap:10px;">
+        <button class="save-btn" style="margin-top:0;" onclick="syncNow()">↑ Sync Local Entries to Cloud</button>
+        <button class="save-btn" style="margin-top:0;border-color:rgba(139,58,42,.3);color:#cc7a7a;" onclick="confirmSignOut()">Sign Out</button>
+      </div>
     </div>
-    <p style="font-size:12px;color:rgba(245,240,232,.2);text-align:center;margin-top:16px;font-style:italic;">No account needed — the app works fully without signing in.</p>
+
   </div>
 </div>
 
@@ -1686,7 +1709,7 @@ function onSignedOut(){
 }
 
 async function pullCloudEntries(){
-  if(!currentUser || !supabase) return;
+  if(!currentUser || !sbClient) return;
   try{
     const token = (await sbClient.auth.getSession()).data.session?.access_token;
     const res = await fetch('/api/entries', {
@@ -1705,7 +1728,7 @@ async function pullCloudEntries(){
 }
 
 async function pushEntryToCloud(date, entry){
-  if(!currentUser || !supabase) return; // guest mode — only localStorage
+  if(!currentUser || !sbClient) return; // guest mode — only localStorage
   try{
     const token = (await sbClient.auth.getSession()).data.session?.access_token;
     await fetch('/api/entries', {
@@ -1764,9 +1787,10 @@ function renderAuthBadge(){
     return;
   }
   if(currentUser){
-    wrap.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-      <div style="font-size:13px;color:rgba(245,240,232,.4);font-style:italic;">✦ Signed in as ${currentUser.email}</div>
-      <button onclick="signOut()" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;background:transparent;border:1px solid rgba(245,240,232,.12);border-radius:20px;color:rgba(245,240,232,.3);cursor:pointer;">Sign out</button>
+    wrap.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+      <div style="font-size:13px;color:rgba(245,240,232,.5);font-style:italic;">✦ ${currentUser.email}</div>
+      <button onclick="openAuthModal()" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 12px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:20px;color:#c9a84c;cursor:pointer;">Account</button>
+      <button onclick="confirmSignOut()" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;background:transparent;border:1px solid rgba(245,240,232,.1);border-radius:20px;color:rgba(245,240,232,.25);cursor:pointer;">Sign out</button>
     </div>`;
   } else {
     wrap.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
@@ -1777,41 +1801,108 @@ function renderAuthBadge(){
 }
 
 function openAuthModal(){
-  document.getElementById('authModal').classList.add('open');
+  const modal = document.getElementById('authModal');
+  modal.classList.add('open');
+  if(currentUser) showAccountPanel();
+  else showAuthPanel();
 }
+
 function closeAuthModal(){
   document.getElementById('authModal').classList.remove('open');
   document.getElementById('authError').textContent = '';
 }
 
-async function signUp(){
-  if(!sbClient) return;
-  const email = document.getElementById('authEmail').value.trim();
-  const pass = document.getElementById('authPass').value;
-  if(!email || !pass) return;
-  document.getElementById('authError').textContent = '';
-  const { error } = await sbClient.auth.signUp({ email, password: pass });
-  if(error) document.getElementById('authError').textContent = error.message;
-  else {
-    closeAuthModal();
-    showToast('✦ Check your email to confirm your account');
+function showAuthPanel(){
+  document.getElementById('authPanel').style.display = 'block';
+  document.getElementById('authConfirmPanel').style.display = 'none';
+  document.getElementById('authAccountPanel').style.display = 'none';
+}
+
+function showConfirmPanel(email){
+  document.getElementById('authPanel').style.display = 'none';
+  document.getElementById('authConfirmPanel').style.display = 'block';
+  document.getElementById('authAccountPanel').style.display = 'none';
+  document.getElementById('authConfirmEmail').textContent = email;
+}
+
+function showAccountPanel(){
+  document.getElementById('authPanel').style.display = 'none';
+  document.getElementById('authConfirmPanel').style.display = 'none';
+  document.getElementById('authAccountPanel').style.display = 'block';
+  if(currentUser){
+    const entries = loadEntries();
+    const count = Object.keys(entries).length;
+    document.getElementById('authAccountInfo').innerHTML =
+      '<strong style="color:rgba(245,240,232,.75);">'+currentUser.email+'</strong><br>'+
+      count + ' entries in local storage<br>'+
+      '<span style="font-size:13px;font-style:italic;color:rgba(245,240,232,.3);">Last sync: '+(localStorage.getItem('lunations_last_sync')||'never')+'</span>';
   }
 }
 
-async function signIn(){
-  if(!sbClient) return;
+async function signUp(){
+  if(!sbClient){ showToast('Cloud sync loading, try again in a moment'); return; }
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value;
-  if(!email || !pass) return;
+  if(!email || !pass){ document.getElementById('authError').textContent = 'Email and password required.'; return; }
+  if(pass.length < 6){ document.getElementById('authError').textContent = 'Password must be at least 6 characters.'; return; }
   document.getElementById('authError').textContent = '';
-  const { error } = await sbClient.auth.signInWithPassword({ email, password: pass });
+  const { error } = await sbClient.auth.signUp({ email, password: pass });
   if(error) document.getElementById('authError').textContent = error.message;
-  else closeAuthModal();
+  else showConfirmPanel(email);
+}
+
+async function signIn(){
+  if(!sbClient){ showToast('Cloud sync loading, try again in a moment'); return; }
+  const email = document.getElementById('authEmail').value.trim();
+  const pass = document.getElementById('authPass').value;
+  if(!email || !pass){ document.getElementById('authError').textContent = 'Email and password required.'; return; }
+  document.getElementById('authError').textContent = 'Signing in…';
+  const { data, error } = await sbClient.auth.signInWithPassword({ email, password: pass });
+  if(error){
+    document.getElementById('authError').textContent = error.message;
+  } else {
+    currentUser = data.user;
+    renderAuthBadge();
+    closeAuthModal();
+    showToast('✦ Signed in — syncing your entries');
+    await pullCloudEntries();
+    renderToday();
+  }
 }
 
 async function signOut(){
   if(!sbClient) return;
   await sbClient.auth.signOut();
+  currentUser = null;
+  renderAuthBadge();
+  closeAuthModal();
+  showToast('Signed out');
+}
+
+function confirmSignOut(){
+  if(confirm('Sign out of Lunations? Your local entries will remain on this device.')) signOut();
+}
+
+async function syncNow(){
+  if(!currentUser || !sbClient) return;
+  const entries = loadEntries();
+  const count = Object.keys(entries).length;
+  if(!count){ showToast('No local entries to sync'); return; }
+  showToast('Syncing ' + count + ' entries…');
+  try {
+    const token = (await sbClient.auth.getSession()).data.session?.access_token;
+    const res = await fetch('/api/sync', {
+      method:'POST',
+      headers:{'Content-Type':'application/json', Authorization:'Bearer '+token},
+      body: JSON.stringify({ entries })
+    });
+    const data = await res.json();
+    if(data.synced){
+      localStorage.setItem('lunations_last_sync', new Date().toLocaleDateString());
+      showToast('✦ ' + data.synced + ' entries synced to cloud');
+      showAccountPanel();
+    }
+  } catch(e){ showToast('Sync failed — check connection'); }
 }
 
 function showToast(msg){
