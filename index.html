@@ -234,6 +234,38 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* BODY SCROLLBAR */
+  html::-webkit-scrollbar{width:5px;}
+  html::-webkit-scrollbar-track{background:transparent;}
+  html::-webkit-scrollbar-thumb{background:rgba(201,168,76,.15);border-radius:4px;}
+  html::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.3);}
+  html{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.15) transparent;}
+  /* HEARTBEAT GRAPH */
+  .heartbeat-wrap{margin-bottom:20px;}
+  .heartbeat-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .heartbeat-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.3);text-transform:uppercase;min-width:70px;text-align:right;}
+  .heartbeat-track{flex:1;height:28px;position:relative;cursor:pointer;}
+  .heartbeat-svg{width:100%;height:28px;overflow:visible;}
+  .heartbeat-val{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);min-width:20px;text-align:center;}
+  /* SKY PAGE */
+  .sky-hero{text-align:center;padding:24px 0 32px;position:relative;}
+  .sky-hero-moon{font-size:72px;display:block;margin-bottom:8px;filter:drop-shadow(0 0 30px rgba(201,168,76,.5));animation:moonPulse 4s ease-in-out infinite;}
+  .sky-hero-phase{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-pale);letter-spacing:.1em;margin-bottom:4px;}
+  .sky-hero-sub{font-size:15px;color:rgba(245,240,232,.4);font-style:italic;}
+  .planet-wheel{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:20px;}
+  .planet-wheel-card{background:rgba(245,240,232,.02);border:1px solid rgba(245,240,232,.06);border-radius:8px;padding:12px 10px;cursor:pointer;transition:all .15s;text-align:center;}
+  .planet-wheel-card:hover{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.04);}
+  .planet-wheel-symbol{font-size:22px;display:block;margin-bottom:4px;opacity:.7;}
+  .planet-wheel-name{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;color:rgba(245,240,232,.3);text-transform:uppercase;margin-bottom:4px;}
+  .planet-wheel-sign{font-size:13px;color:rgba(245,240,232,.75);}
+  .collective-card{background:rgba(245,240,232,.03);border:1px solid rgba(201,168,76,.12);border-radius:8px;padding:22px;margin-bottom:20px;position:relative;overflow:hidden;}
+  .collective-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent);}
+  .collective-loading{font-style:italic;color:rgba(245,240,232,.25);font-size:15px;}
+  .collective-text{font-size:16px;color:rgba(245,240,232,.75);line-height:1.85;}
+  .collective-refresh{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(201,168,76,.35);background:none;border:none;cursor:pointer;margin-top:12px;display:block;text-transform:uppercase;}
+  .collective-refresh:hover{color:var(--gold);}
+  .sky-section-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.15em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .sky-section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.15),transparent);}
   /* SUBMITTED ENTRY CARD */
   .entry-submitted-card{background:rgba(245,240,232,.03);border:1px solid rgba(201,168,76,.18);border-radius:8px;padding:20px 22px;margin-bottom:28px;position:relative;overflow:hidden;display:none;}
   .entry-submitted-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5;}
@@ -508,11 +540,11 @@
   <div class="entry-form" id="entryFormWrap">
     <div class="form-title">Today's Entry</div>
     <div class="section-heading">Energy & Mood</div>
-    <div class="form-row" style="margin-bottom:20px;">
-      <div class="form-group"><label class="form-label">Energy ⚡</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderEnergy" oninput="document.getElementById('valEnergy').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valEnergy">5</span></div></div>
-      <div class="form-group"><label class="form-label">Mood 🌙</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderMood" oninput="document.getElementById('valMood').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valMood">5</span></div></div>
-      <div class="form-group"><label class="form-label">Clarity ✦</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderClarity" oninput="document.getElementById('valClarity').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valClarity">5</span></div></div>
-      <div class="form-group"><label class="form-label">Creativity 🔥</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderCreativity" oninput="document.getElementById('valCreativity').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valCreativity">5</span></div></div>
+    <div class="heartbeat-wrap" id="heartbeatGraph">
+      <div class="heartbeat-row"><span class="heartbeat-label">Energy ⚡</span><div class="heartbeat-track"><svg class="heartbeat-svg" id="hbEnergy"></svg><input type="range" min="1" max="10" value="5" id="sliderEnergy" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;" oninput="updateHeartbeat('Energy',this.value);document.getElementById('valEnergy').textContent=this.value"></div><span class="heartbeat-val" id="valEnergy">5</span></div>
+      <div class="heartbeat-row"><span class="heartbeat-label">Mood 🌙</span><div class="heartbeat-track"><svg class="heartbeat-svg" id="hbMood"></svg><input type="range" min="1" max="10" value="5" id="sliderMood" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;" oninput="updateHeartbeat('Mood',this.value);document.getElementById('valMood').textContent=this.value"></div><span class="heartbeat-val" id="valMood">5</span></div>
+      <div class="heartbeat-row"><span class="heartbeat-label">Clarity ✦</span><div class="heartbeat-track"><svg class="heartbeat-svg" id="hbClarity"></svg><input type="range" min="1" max="10" value="5" id="sliderClarity" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;" oninput="updateHeartbeat('Clarity',this.value);document.getElementById('valClarity').textContent=this.value"></div><span class="heartbeat-val" id="valClarity">5</span></div>
+      <div class="heartbeat-row"><span class="heartbeat-label">Creativity 🔥</span><div class="heartbeat-track"><svg class="heartbeat-svg" id="hbCreativity"></svg><input type="range" min="1" max="10" value="5" id="sliderCreativity" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;" oninput="updateHeartbeat('Creativity',this.value);document.getElementById('valCreativity').textContent=this.value"></div><span class="heartbeat-val" id="valCreativity">5</span></div>
     </div>
     <div class="section-heading">Qualities Present</div>
     <div class="tag-row" id="qualityTags"></div>
@@ -655,18 +687,38 @@
 
 <!-- FULL SKY -->
 <div id="view-sky" class="view">
-  <div class="astro-card" style="margin-bottom:20px;">
-    <div class="card-label">Zodiac Positions</div>
-    <div style="font-size:11px;color:rgba(245,240,232,.2);font-style:italic;margin:4px 0 12px;">Positions are approximate / symbolic</div>
+
+  <!-- HERO: current moon -->
+  <div class="sky-hero">
+    <span class="sky-hero-moon" id="skyHeroMoon">🌙</span>
+    <div class="sky-hero-phase" id="skyHeroPhase">—</div>
+    <div class="sky-hero-sub" id="skyHeroSub">—</div>
+  </div>
+
+  <!-- COLLECTIVE HOROSCOPE -->
+  <div class="collective-card" id="collectiveCard">
+    <div class="card-label" style="margin-bottom:12px;">Collective Sky — What's Moving for Everyone</div>
+    <div id="collectiveText"><span class="collective-loading">Reading the collective field…</span></div>
+    <button class="collective-refresh" onclick="generateCollectiveReading(true)">↺ Refresh</button>
+  </div>
+
+  <!-- PLANETARY POSITIONS -->
+  <div style="margin-bottom:20px;">
+    <div class="sky-section-title">Planetary Positions</div>
+    <div style="font-size:11px;color:rgba(245,240,232,.18);font-style:italic;margin-bottom:12px;">Approximate positions · tap any planet for interpretation</div>
+    <div class="planet-wheel" id="planetGridFull"></div>
+  </div>
+
+  <!-- ZODIAC STRIP -->
+  <div style="margin-bottom:20px;">
+    <div class="sky-section-title">Zodiac Wheel</div>
     <div class="sign-strip" id="signStrip"></div>
   </div>
-  <div class="astro-card" style="margin-bottom:20px;">
-    <div class="card-label">All Planets — tap for interpretation</div>
-    <div class="planet-grid" id="planetGridFull" style="margin-top:12px;"></div>
-  </div>
-  <div class="astro-card" style="margin-bottom:20px;">
-    <div class="card-label">13-Cycle Year Overview</div>
-    <div id="yearOverview" style="margin-top:12px;"></div>
+
+  <!-- 13 CYCLE YEAR -->
+  <div style="margin-bottom:20px;">
+    <div class="sky-section-title">13-Cycle Year</div>
+    <div id="yearOverview"></div>
   </div>
 
 <!-- SETTINGS VIEW -->
@@ -1145,6 +1197,7 @@ function renderToday(){
     showSubmittedCard(todayEntry);
   } else {
     showEntryForm();
+    setTimeout(initHeartbeats, 50);
     // Reset sliders to 5
     ['sliderEnergy','sliderMood','sliderClarity','sliderCreativity'].forEach(id => {
       const el = document.getElementById(id);
@@ -1528,10 +1581,30 @@ function renderPatterns(){
 
 // ─── FULL SKY ─────────────────────────────────────────────────────────────────
 function renderSky(){
-  const now=new Date(),ms=moonSignApprox(now),ss=sunSignForDate(now);
+  const now=new Date(),ms=moonSignApprox(now),ss=sunSignForDate(now),phase=moonPhaseInfo(now);
+
+  // Hero section
+  const heroMoon=document.getElementById('skyHeroMoon');
+  const heroPhase=document.getElementById('skyHeroPhase');
+  const heroSub=document.getElementById('skyHeroSub');
+  if(heroMoon) heroMoon.textContent=phase.emoji;
+  if(heroPhase) heroPhase.textContent=phase.name+' · Moon in '+ms.name;
+  if(heroSub) heroSub.textContent=phase.pct+'% illuminated · '+ms.keywords;
+
+  // Zodiac strip
   document.getElementById('signStrip').innerHTML=SIGNS.map(s=>`<div class="sign-chip ${s.name===ms.name||s.name===ss.name?'current':''}"><span class="sign-symbol">${s.symbol}</span><span class="sign-name">${s.name}</span></div>`).join('');
+
+  // Planet wheel - bigger cards
   const planets=allPlanets(now);
-  document.getElementById('planetGridFull').innerHTML=planets.map(p=>`<div class="planet-card" onclick="openPlanetPopup('${p.name}','${p.symbol}','${p.sign.name}',event)"><div style="display:flex;justify-content:space-between;align-items:start;"><div class="planet-name">${p.name}</div><div class="planet-symbol">${p.symbol}</div></div><div class="planet-sign">${p.sign.symbol} ${p.sign.name}</div><div style="font-size:11px;color:rgba(245,240,232,.3);margin-top:3px;">${p.sign.element}</div></div>`).join('');
+  document.getElementById('planetGridFull').innerHTML=planets.map(p=>`
+    <div class="planet-wheel-card" onclick="openPlanetPopup('${p.name}','${p.symbol}','${p.sign.name}',event)">
+      <span class="planet-wheel-symbol">${p.symbol}</span>
+      <div class="planet-wheel-name">${p.name}</div>
+      <div class="planet-wheel-sign">${p.sign.symbol} ${p.sign.name}</div>
+    </div>`).join('');
+
+  // Generate collective reading
+  generateCollectiveReading();
   // Profile now in Settings tab
   // Year overview
   const ys=new Date(now.getFullYear(),0,1),firstNm=prevNewMoon(ys);let d=new Date(firstNm),cycles=[];
@@ -2300,9 +2373,13 @@ function saveEditEntry(){
   };
 
   saveEntries(entries);
+  pushEntryToCloud(dateKey, entries[dateKey]);
   closeEditModal();
   showToast('✦ Entry updated');
-  // Refresh current view
+  // If editing today's entry, refresh submitted card + reflection
+  if(dateKey === entryKey(new Date())){
+    showSubmittedCard(entries[dateKey]);
+  }
   if(document.getElementById('view-entries').classList.contains('active')) renderEntries();
   if(document.getElementById('view-cycle').classList.contains('active')) renderCycle();
   if(document.getElementById('view-patterns').classList.contains('active')) renderPatterns();
@@ -2316,7 +2393,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 function injectMockData(){
   const existing = loadEntries();
-  if(Object.keys(existing).length > 3) return; // don't overwrite real data
+  const realEntries = Object.values(existing).filter(e => !e.isMockData);
+  if(realEntries.length > 0) return; // don't inject if ANY real entries exist
 
   const phases = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
   const moonSigns = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
@@ -2438,6 +2516,75 @@ function updateSideMenuAccount(){
 }
 
 
+
+// ─── HEARTBEAT GRAPH ─────────────────────────────────────────────────────────
+const HB_COLORS = {
+  Energy: 'rgba(201,168,76,.8)',
+  Mood: 'rgba(180,120,100,.8)',
+  Clarity: 'rgba(120,160,200,.8)',
+  Creativity: 'rgba(160,120,200,.8)'
+};
+
+function drawHeartbeat(svgId, value, label){
+  const svg = document.getElementById(svgId);
+  if(!svg) return;
+  const W = svg.parentElement.offsetWidth || 200;
+  const H = 28;
+  const v = Math.max(1, Math.min(10, +value));
+  const color = HB_COLORS[label] || HB_COLORS.Energy;
+
+  // Generate heartbeat path based on value
+  // Higher value = more dramatic spike
+  const amplitude = (v / 10) * (H * 0.85);
+  const mid = H / 2;
+  const step = W / 20;
+
+  // Build a heartbeat-style path
+  // Flat line, then spike up, sharp down, small recovery, flat
+  const x1 = W * 0.05;
+  const x2 = W * 0.25;  // start of spike
+  const x3 = W * 0.35;  // peak up
+  const x4 = W * 0.42;  // trough down
+  const x5 = W * 0.52;  // small recovery
+  const x6 = W * 0.60;  // back to baseline
+  const x7 = W * 0.95;  // end
+
+  const baseline = mid;
+  const peak = mid - amplitude;
+  const trough = mid + amplitude * 0.4;
+  const recovery = mid - amplitude * 0.2;
+
+  const path = `M${x1},${baseline} L${x2},${baseline} L${x3},${peak} L${x4},${trough} L${x5},${recovery} L${x6},${baseline} L${x7},${baseline}`;
+
+  // Background fill under line
+  const fillPath = `M${x1},${mid} L${x2},${mid} L${x3},${peak} L${x4},${trough} L${x5},${recovery} L${x6},${mid} L${x7},${mid} L${x7},${H} L${x1},${H} Z`;
+
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = `
+    <path d="${fillPath}" fill="${color.replace('.8', '.08')}" stroke="none"/>
+    <path d="${path}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${x3}" cy="${peak}" r="2.5" fill="${color}"/>
+  `;
+}
+
+function updateHeartbeat(label, value){
+  const svgId = 'hb' + label;
+  drawHeartbeat(svgId, value, label);
+}
+
+function initHeartbeats(){
+  const metrics = [
+    {id:'hbEnergy', sliderId:'sliderEnergy', label:'Energy'},
+    {id:'hbMood', sliderId:'sliderMood', label:'Mood'},
+    {id:'hbClarity', sliderId:'sliderClarity', label:'Clarity'},
+    {id:'hbCreativity', sliderId:'sliderCreativity', label:'Creativity'},
+  ];
+  metrics.forEach(m => {
+    const slider = document.getElementById(m.sliderId);
+    if(slider) drawHeartbeat(m.id, slider.value, m.label);
+  });
+}
+
 // ─── SLIDER FILL ──────────────────────────────────────────────────────────────
 function updateSliderFill(input){
   const min = +input.min||1, max = +input.max||10, val = +input.value;
@@ -2544,6 +2691,47 @@ Write the reflection now. 2-3 sentences only.`;
   }
 }
 
+
+// ─── COLLECTIVE HOROSCOPE ─────────────────────────────────────────────────────
+const CK = 'lunations_collective_v1';
+
+async function generateCollectiveReading(force=false){
+  const todayKey = entryKey(new Date());
+  if(!force){
+    try{
+      const c=JSON.parse(localStorage.getItem(CK)||'null');
+      if(c&&c.date===todayKey){document.getElementById('collectiveText').innerHTML=`<div class="collective-text">${c.text}</div>`;return;}
+    } catch(e){}
+  }
+
+  document.getElementById('collectiveText').innerHTML='<span class="collective-loading">Reading the collective field…</span>';
+
+  const now=new Date(),phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now);
+  const planets=allPlanets(now).slice(0,7).map(p=>p.name+' in '+p.sign.name).join(', ');
+  const tithi=getTithi(now),nakshatra=getNakshatra(now);
+
+  const prompt=`You are a collective astrologer writing a brief sky reading for everyone — not a personal reading, but what the sky is doing for humanity right now. 3-4 sentences. Be specific about the actual planetary positions. Mention one dominant theme or tension in the collective field, and one practical or spiritual invitation for the day. Direct, grounded, not vague.
+
+Today's sky: ${phase.name}, Moon in ${mSign.name} (${mSign.keywords}), Sun in ${sSign.name}. Tithi: ${tithi.name}. Nakshatra: ${nakshatra.name}. Planets: ${planets}.
+
+Write the collective reading.`;
+
+  try{
+    const res=await fetch('/api/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    if(!res.ok) throw new Error(res.status);
+    const data=await res.json();
+    const text=data.text||'';
+    if(text){
+      document.getElementById('collectiveText').innerHTML=`<div class="collective-text">${text}</div>`;
+      localStorage.setItem(CK,JSON.stringify({date:todayKey,text}));
+    } else {
+      document.getElementById('collectiveText').innerHTML='<span class="collective-loading">Reading unavailable today.</span>';
+    }
+  } catch(e){
+    document.getElementById('collectiveText').innerHTML='<span class="collective-loading">Reading unavailable — check connection.</span>';
+  }
+}
+
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
@@ -2629,6 +2817,7 @@ if('serviceWorker' in navigator){
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderQualityTags();
 renderAuthBadge();
+initHeartbeats();
 initSliders(); // show guest badge immediately
 initSupabase(); // then upgrade once Supabase CDN loads
 injectMockData();
