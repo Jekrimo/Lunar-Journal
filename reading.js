@@ -1,3 +1,4 @@
+// v2026.03.20.2
 // Simple in-memory rate limiter — 10 requests per IP per hour
 const rateLimitMap = new Map();
 

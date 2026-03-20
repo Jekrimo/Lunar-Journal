@@ -784,19 +784,19 @@
       <div class="pattern-title" style="margin-bottom:0;">Energy & Mood by Moon Phase</div>
       <div id="phaseChartLegend" style="font-size:11px;color:rgba(245,240,232,.3);font-style:italic;"></div>
     </div>
-    <canvas class="chart-canvas" id="phaseEnergyChart"></canvas>
+    <div style="position:relative;height:200px;width:100%;"><canvas id="phaseEnergyChart"></canvas></div>
   </div>
 
   <div class="pattern-chart">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <div class="pattern-title" style="margin-bottom:0;" id="arcChartTitle">Energy & Mood Arc</div>
     </div>
-    <canvas style="width:100%!important;height:220px!important;" id="arcChart"></canvas>
+    <div style="position:relative;height:220px;width:100%;"><canvas id="arcChart"></canvas></div>
   </div>
 
   <div class="pattern-chart">
     <div class="pattern-title">Clarity & Creativity Arc</div>
-    <canvas style="width:100%!important;height:180px!important;" id="clarityArcChart"></canvas>
+    <div style="position:relative;height:180px;width:100%;"><canvas id="clarityArcChart"></canvas></div>
   </div>
 
   <!-- PHASE HEATMAP -->
@@ -1311,16 +1311,16 @@ function renderToday(){
   try{
 
   const now=new Date(),phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now),nm=prevNewMoon(now),dayInCycle=Math.floor((now-nm)/86400000)+1,profile=loadProfile();
-  document.getElementById('headerMoon').textContent=getSetting('icon',phase.emoji);
-  document.getElementById('moonPhaseName').textContent=phase.name;
-  document.getElementById('moonPhasePercent').textContent=`${phase.pct}% illuminated · Day ${Math.floor(phase.age)} of cycle`;
-  document.getElementById('moonSign').textContent=`${mSign.symbol} ${mSign.name}`;
-  document.getElementById('moonSignKeywords').textContent=mSign.keywords;
-  document.getElementById('cycleDayNum').textContent=`Day ${dayInCycle}`;
-  document.getElementById('cycleContext').textContent=`${dayInCycle} of ≈29 in current cycle`;
-  document.getElementById('sunSign').textContent=`${sSign.symbol} ${sSign.name}`;
-  document.getElementById('sunSignSub').textContent=`${sSign.element} · ${sSign.quality}`;
-  document.getElementById('cycleTone').textContent=PHASE_TONES[phase.quarter]||'';
+  {const _e=document.getElementById('headerMoon');if(_e)_e.textContent=getSetting('icon',phase.emoji);}
+  {const _e=document.getElementById('moonPhaseName');if(_e)_e.textContent=phase.name;}
+  {const _e=document.getElementById('moonPhasePercent');if(_e)_e.textContent=`${phase.pct}% illuminated · Day ${Math.floor(phase.age)} of cycle`;}
+  {const _e=document.getElementById('moonSign');if(_e)_e.textContent=`${mSign.symbol} ${mSign.name}`;}
+  {const _e=document.getElementById('moonSignKeywords');if(_e)_e.textContent=mSign.keywords;}
+  {const _e=document.getElementById('cycleDayNum');if(_e)_e.textContent=`Day ${dayInCycle}`;}
+  {const _e=document.getElementById('cycleContext');if(_e)_e.textContent=`${dayInCycle} of ≈29 in current cycle`;}
+  {const _e=document.getElementById('sunSign');if(_e)_e.textContent=`${sSign.symbol} ${sSign.name}`;}
+  {const _e=document.getElementById('sunSignSub');if(_e)_e.textContent=`${sSign.element} · ${sSign.quality}`;}
+  {const _e=document.getElementById('cycleTone');if(_e)_e.textContent=PHASE_TONES[phase.quarter]||'';}
   drawMoon(document.getElementById('moonSVG'),phase.age,56);
   const bw=document.getElementById('natalBadgeWrap');
   if(profile?.name){const ns=sunSignForDate(new Date(profile.dob+'T12:00:00'));bw.innerHTML=`<div class="natal-badge" onclick="openOnboarding()">✦ ${profile.name} · ${ns.symbol} ${ns.name}${profile.rising?' · '+profile.rising+' Rising':''}</div>`;}
