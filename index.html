@@ -80,10 +80,56 @@
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
   .form-group{display:flex;flex-direction:column;gap:6px;}
   .form-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;color:rgba(245,240,232,.5);text-transform:uppercase;}
-  .slider-wrap{display:flex;align-items:center;gap:10px;}
-  .slider-wrap input[type=range]{flex:1;-webkit-appearance:none;height:2px;background:rgba(201,168,76,.2);border-radius:2px;outline:none;}
-  .slider-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 8px rgba(201,168,76,.5);}
-  .slider-val{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);min-width:20px;text-align:right;}
+  .slider-wrap{display:flex;align-items:center;gap:12px;}
+  .slider-wrap input[type=range]{
+    flex:1;-webkit-appearance:none;appearance:none;
+    height:36px;background:transparent;outline:none;cursor:pointer;
+    padding:0;margin:0;
+  }
+  /* Track */
+  .slider-wrap input[type=range]::-webkit-slider-runnable-track{
+    height:3px;border-radius:3px;
+    background:linear-gradient(90deg,rgba(201,168,76,.6) var(--pct,50%),rgba(245,240,232,.1) var(--pct,50%));
+  }
+  .slider-wrap input[type=range]::-moz-range-track{
+    height:3px;border-radius:3px;background:rgba(245,240,232,.1);
+  }
+  .slider-wrap input[type=range]::-moz-range-progress{
+    height:3px;border-radius:3px;background:rgba(201,168,76,.6);
+  }
+  /* Thumb */
+  .slider-wrap input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:22px;height:22px;border-radius:50%;
+    background:var(--gold);
+    border:2px solid rgba(15,12,9,.8);
+    cursor:pointer;
+    box-shadow:0 0 0 3px rgba(201,168,76,.15), 0 2px 8px rgba(0,0,0,.4);
+    transition:box-shadow .15s, transform .15s;
+    margin-top:-10px;
+  }
+  .slider-wrap input[type=range]::-moz-range-thumb{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--gold);
+    border:2px solid rgba(15,12,9,.8);
+    cursor:pointer;
+    box-shadow:0 0 0 3px rgba(201,168,76,.15);
+  }
+  .slider-wrap input[type=range]:active::-webkit-slider-thumb{
+    box-shadow:0 0 0 6px rgba(201,168,76,.2), 0 2px 12px rgba(0,0,0,.4);
+    transform:scale(1.1);
+  }
+  .slider-wrap input[type=range]:focus::-webkit-slider-thumb{
+    box-shadow:0 0 0 5px rgba(201,168,76,.25);
+  }
+  .slider-val{
+    font-family:'Cinzel',serif;font-size:14px;color:var(--gold);
+    min-width:24px;text-align:center;
+    background:rgba(201,168,76,.08);
+    border:1px solid rgba(201,168,76,.2);
+    border-radius:6px;padding:2px 6px;
+    line-height:1.4;
+  }
   .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
   .tag-btn{font-family:'EB Garamond',serif;font-size:13px;padding:4px 12px;background:transparent;border:1px solid rgba(245,240,232,.15);border-radius:20px;color:rgba(245,240,232,.45);cursor:pointer;transition:all .15s;}
   .tag-btn:hover,.tag-btn.selected{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.4);color:#e8d49a;}
@@ -416,10 +462,10 @@
     <div class="form-title">Today's Entry</div>
     <div class="section-heading">Energy & Mood</div>
     <div class="form-row" style="margin-bottom:20px;">
-      <div class="form-group"><label class="form-label">Energy ⚡</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderEnergy" oninput="document.getElementById('valEnergy').textContent=this.value"><span class="slider-val" id="valEnergy">5</span></div></div>
-      <div class="form-group"><label class="form-label">Mood 🌙</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderMood" oninput="document.getElementById('valMood').textContent=this.value"><span class="slider-val" id="valMood">5</span></div></div>
-      <div class="form-group"><label class="form-label">Clarity ✦</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderClarity" oninput="document.getElementById('valClarity').textContent=this.value"><span class="slider-val" id="valClarity">5</span></div></div>
-      <div class="form-group"><label class="form-label">Creativity 🔥</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderCreativity" oninput="document.getElementById('valCreativity').textContent=this.value"><span class="slider-val" id="valCreativity">5</span></div></div>
+      <div class="form-group"><label class="form-label">Energy ⚡</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderEnergy" oninput="document.getElementById('valEnergy').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valEnergy">5</span></div></div>
+      <div class="form-group"><label class="form-label">Mood 🌙</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderMood" oninput="document.getElementById('valMood').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valMood">5</span></div></div>
+      <div class="form-group"><label class="form-label">Clarity ✦</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderClarity" oninput="document.getElementById('valClarity').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valClarity">5</span></div></div>
+      <div class="form-group"><label class="form-label">Creativity 🔥</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="sliderCreativity" oninput="document.getElementById('valCreativity').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valCreativity">5</span></div></div>
     </div>
     <div class="section-heading">Qualities Present</div>
     <div class="tag-row" id="qualityTags"></div>
@@ -709,10 +755,10 @@
 
     <div class="section-heading">Energy & Mood</div>
     <div class="form-row" style="margin-bottom:20px;">
-      <div class="form-group"><label class="form-label">Energy ⚡</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editEnergy" oninput="document.getElementById('valEditEnergy').textContent=this.value"><span class="slider-val" id="valEditEnergy">5</span></div></div>
-      <div class="form-group"><label class="form-label">Mood 🌙</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editMood" oninput="document.getElementById('valEditMood').textContent=this.value"><span class="slider-val" id="valEditMood">5</span></div></div>
-      <div class="form-group"><label class="form-label">Clarity ✦</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editClarity" oninput="document.getElementById('valEditClarity').textContent=this.value"><span class="slider-val" id="valEditClarity">5</span></div></div>
-      <div class="form-group"><label class="form-label">Creativity 🔥</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editCreativity" oninput="document.getElementById('valEditCreativity').textContent=this.value"><span class="slider-val" id="valEditCreativity">5</span></div></div>
+      <div class="form-group"><label class="form-label">Energy ⚡</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editEnergy" oninput="document.getElementById('valEditEnergy').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valEditEnergy">5</span></div></div>
+      <div class="form-group"><label class="form-label">Mood 🌙</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editMood" oninput="document.getElementById('valEditMood').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valEditMood">5</span></div></div>
+      <div class="form-group"><label class="form-label">Clarity ✦</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editClarity" oninput="document.getElementById('valEditClarity').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valEditClarity">5</span></div></div>
+      <div class="form-group"><label class="form-label">Creativity 🔥</label><div class="slider-wrap"><input type="range" min="1" max="10" value="5" id="editCreativity" oninput="document.getElementById('valEditCreativity').textContent=this.value;updateSliderFill(this)"><span class="slider-val" id="valEditCreativity">5</span></div></div>
     </div>
 
     <div class="section-heading">Qualities</div>
@@ -2054,6 +2100,7 @@ function editEntry(dateKey){
   }).join('');
 
   modal.classList.add('open');
+  initSliders();
 }
 
 
@@ -2237,6 +2284,21 @@ function updateSideMenuAccount(){
   }
 }
 
+
+// ─── SLIDER FILL ──────────────────────────────────────────────────────────────
+function updateSliderFill(input){
+  const min = +input.min||1, max = +input.max||10, val = +input.value;
+  const pct = ((val - min) / (max - min)) * 100;
+  input.style.setProperty('--pct', pct + '%');
+  // Also update the track directly for better cross-browser support
+  input.style.background = `linear-gradient(90deg, rgba(201,168,76,.7) ${pct}%, rgba(245,240,232,.1) ${pct}%)`;
+}
+function initSliders(){
+  document.querySelectorAll('input[type=range]').forEach(s => {
+    updateSliderFill(s);
+    s.addEventListener('input', () => updateSliderFill(s));
+  });
+}
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
@@ -2321,7 +2383,8 @@ if('serviceWorker' in navigator){
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderQualityTags();
-renderAuthBadge(); // show guest badge immediately
+renderAuthBadge();
+initSliders(); // show guest badge immediately
 initSupabase(); // then upgrade once Supabase CDN loads
 injectMockData();
 // Restore from IDB if localStorage was cleared, then render
