@@ -1059,8 +1059,9 @@ ${profileCtx}
 Write the reading. Include: one specific tension or opportunity in today's sky, one practical or internal suggestion. No filler phrases. Do not begin with "Today" as the first word.`;
   try{
     const res=await fetch('/api/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    if(!res.ok) throw new Error('API '+res.status);
     const data=await res.json();
-    const text=data.content?.find(b=>b.type==='text')?.text||buildFallbackReading(phase,mSign,sSign,profile);
+    const text=data.text||buildFallbackReading(phase,mSign,sSign,profile);
     document.getElementById('readingText').textContent=text;
     localStorage.setItem(RK,JSON.stringify({date:todayKey,text}));
   }catch(e){document.getElementById('readingText').textContent=buildFallbackReading(phase,mSign,sSign,profile);}
