@@ -677,12 +677,12 @@
   </div>
 </div>
 
+<script src="/api/config"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 // Supabase config — filled in by api/index.js at serve time
-// To enable cloud sync, set these before this script runs:
-// window.SUPABASE_URL = "https://your-project.supabase.co";
-// window.SUPABASE_ANON_KEY = "your-anon-key";
+// Config injected by /api/config — Supabase public keys
+// Falls back to empty strings (guest mode) if not configured
 window.SUPABASE_URL = window.SUPABASE_URL || '';
 window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
 
