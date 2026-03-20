@@ -270,13 +270,14 @@
   html::-webkit-scrollbar-thumb{background:rgba(201,168,76,.15);border-radius:4px;}
   html::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.3);}
   html{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.15) transparent;}
-  /* HEARTBEAT GRAPH */
-  .heartbeat-wrap{margin-bottom:20px;}
-  .heartbeat-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-  .heartbeat-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.3);text-transform:uppercase;min-width:70px;text-align:right;}
-  .heartbeat-track{flex:1;height:28px;position:relative;cursor:pointer;}
-  .heartbeat-svg{width:100%;height:28px;overflow:visible;}
-  .heartbeat-val{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);min-width:20px;text-align:center;}
+  /* GLOW BARS */
+  .glow-bars-wrap{margin-bottom:20px;}
+  .glow-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .glow-bar-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.35);text-transform:uppercase;min-width:72px;text-align:right;flex-shrink:0;}
+  .glow-bar-track{flex:1;height:10px;background:rgba(245,240,232,.06);border-radius:6px;position:relative;overflow:hidden;cursor:pointer;}
+  .glow-bar-fill{height:100%;border-radius:6px;transition:width .12s ease,box-shadow .12s ease;pointer-events:none;}
+  .glow-bar-input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;margin:0;padding:0;height:100%;}
+  .glow-bar-val{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);min-width:22px;text-align:center;flex-shrink:0;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);border-radius:5px;padding:2px 6px;line-height:1.4;}
   /* SKY PAGE */
   .sky-hero{text-align:center;padding:24px 0 32px;position:relative;}
   .sky-hero-moon{font-size:72px;display:block;margin-bottom:8px;filter:drop-shadow(0 0 30px rgba(201,168,76,.5));animation:moonPulse 4s ease-in-out infinite;}
@@ -616,11 +617,39 @@
   <div class="entry-form" id="entryFormWrap">
     <div class="form-title">Today's Entry</div>
     <div class="section-heading">Energy & Mood</div>
-    <div class="heartbeat-wrap" id="heartbeatGraph">
-      <div class="heartbeat-row"><span class="heartbeat-label">Energy ⚡</span><div class="heartbeat-track"><svg class="heartbeat-svg" id="hbEnergy"></svg><input type="range" min="1" max="10" value="5" id="sliderEnergy" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;" oninput="updateHeartbeat('Energy',this.value);document.getElementById('valEnergy').textContent=this.value"></div><span class="heartbeat-val" id="valEnergy">5</span></div>
-      <div class="heartbeat-row"><span class="heartbeat-label">Mood 🌙</span><div class="heartbeat-track"><svg class="heartbeat-svg" id="hbMood"></svg><input type="range" min="1" max="10" value="5" id="sliderMood" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;" oninput="updateHeartbeat('Mood',this.value);document.getElementById('valMood').textContent=this.value"></div><span class="heartbeat-val" id="valMood">5</span></div>
-      <div class="heartbeat-row"><span class="heartbeat-label">Clarity ✦</span><div class="heartbeat-track"><svg class="heartbeat-svg" id="hbClarity"></svg><input type="range" min="1" max="10" value="5" id="sliderClarity" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;" oninput="updateHeartbeat('Clarity',this.value);document.getElementById('valClarity').textContent=this.value"></div><span class="heartbeat-val" id="valClarity">5</span></div>
-      <div class="heartbeat-row"><span class="heartbeat-label">Creativity 🔥</span><div class="heartbeat-track"><svg class="heartbeat-svg" id="hbCreativity"></svg><input type="range" min="1" max="10" value="5" id="sliderCreativity" style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer;" oninput="updateHeartbeat('Creativity',this.value);document.getElementById('valCreativity').textContent=this.value"></div><span class="heartbeat-val" id="valCreativity">5</span></div>
+    <div class="glow-bars-wrap" id="heartbeatGraph">
+      <div class="glow-bar-row">
+        <span class="glow-bar-label">Energy ⚡</span>
+        <div class="glow-bar-track">
+          <div class="glow-bar-fill" id="fillEnergy" style="width:50%;background:rgba(201,168,76,.7);box-shadow:0 0 10px rgba(201,168,76,.4);"></div>
+          <input type="range" min="1" max="10" value="5" id="sliderEnergy" class="glow-bar-input" oninput="updateGlowBar('Energy',this.value);document.getElementById('valEnergy').textContent=this.value">
+        </div>
+        <span class="glow-bar-val" id="valEnergy">5</span>
+      </div>
+      <div class="glow-bar-row">
+        <span class="glow-bar-label">Mood 🌙</span>
+        <div class="glow-bar-track">
+          <div class="glow-bar-fill" id="fillMood" style="width:50%;background:rgba(180,120,100,.65);box-shadow:0 0 10px rgba(180,120,100,.35);"></div>
+          <input type="range" min="1" max="10" value="5" id="sliderMood" class="glow-bar-input" oninput="updateGlowBar('Mood',this.value);document.getElementById('valMood').textContent=this.value">
+        </div>
+        <span class="glow-bar-val" id="valMood">5</span>
+      </div>
+      <div class="glow-bar-row">
+        <span class="glow-bar-label">Clarity ✦</span>
+        <div class="glow-bar-track">
+          <div class="glow-bar-fill" id="fillClarity" style="width:50%;background:rgba(100,150,210,.6);box-shadow:0 0 10px rgba(100,150,210,.3);"></div>
+          <input type="range" min="1" max="10" value="5" id="sliderClarity" class="glow-bar-input" oninput="updateGlowBar('Clarity',this.value);document.getElementById('valClarity').textContent=this.value">
+        </div>
+        <span class="glow-bar-val" id="valClarity">5</span>
+      </div>
+      <div class="glow-bar-row">
+        <span class="glow-bar-label">Creativity 🔥</span>
+        <div class="glow-bar-track">
+          <div class="glow-bar-fill" id="fillCreativity" style="width:50%;background:rgba(150,100,200,.6);box-shadow:0 0 10px rgba(150,100,200,.3);"></div>
+          <input type="range" min="1" max="10" value="5" id="sliderCreativity" class="glow-bar-input" oninput="updateGlowBar('Creativity',this.value);document.getElementById('valCreativity').textContent=this.value">
+        </div>
+        <span class="glow-bar-val" id="valCreativity">5</span>
+      </div>
     </div>
     <div class="section-heading">Qualities Present</div>
     <div class="tag-row" id="qualityTags"></div>
@@ -2994,73 +3023,33 @@ function updateSideMenuAccount(){
 
 
 
-// ─── HEARTBEAT GRAPH ─────────────────────────────────────────────────────────
-const HB_COLORS = {
-  Energy: 'rgba(201,168,76,.8)',
-  Mood: 'rgba(180,120,100,.8)',
-  Clarity: 'rgba(120,160,200,.8)',
-  Creativity: 'rgba(160,120,200,.8)'
+// ─── GLOW BARS ───────────────────────────────────────────────────────────────
+const GLOW_COLORS = {
+  Energy:     ['rgba(201,168,76,.75)',  'rgba(201,168,76,.45)'],
+  Mood:       ['rgba(180,120,100,.7)', 'rgba(180,120,100,.35)'],
+  Clarity:    ['rgba(100,150,210,.65)','rgba(100,150,210,.3)'],
+  Creativity: ['rgba(150,100,200,.65)','rgba(150,100,200,.3)'],
 };
 
-function drawHeartbeat(svgId, value, label){
-  const svg = document.getElementById(svgId);
-  if(!svg) return;
-  const W = svg.parentElement.offsetWidth || 200;
-  const H = 28;
-  const v = Math.max(1, Math.min(10, +value));
-  const color = HB_COLORS[label] || HB_COLORS.Energy;
-
-  // Generate heartbeat path based on value
-  // Higher value = more dramatic spike
-  const amplitude = (v / 10) * (H * 0.85);
-  const mid = H / 2;
-  const step = W / 20;
-
-  // Build a heartbeat-style path
-  // Flat line, then spike up, sharp down, small recovery, flat
-  const x1 = W * 0.05;
-  const x2 = W * 0.25;  // start of spike
-  const x3 = W * 0.35;  // peak up
-  const x4 = W * 0.42;  // trough down
-  const x5 = W * 0.52;  // small recovery
-  const x6 = W * 0.60;  // back to baseline
-  const x7 = W * 0.95;  // end
-
-  const baseline = mid;
-  const peak = mid - amplitude;
-  const trough = mid + amplitude * 0.4;
-  const recovery = mid - amplitude * 0.2;
-
-  const path = `M${x1},${baseline} L${x2},${baseline} L${x3},${peak} L${x4},${trough} L${x5},${recovery} L${x6},${baseline} L${x7},${baseline}`;
-
-  // Background fill under line
-  const fillPath = `M${x1},${mid} L${x2},${mid} L${x3},${peak} L${x4},${trough} L${x5},${recovery} L${x6},${mid} L${x7},${mid} L${x7},${H} L${x1},${H} Z`;
-
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.innerHTML = `
-    <path d="${fillPath}" fill="${color.replace('.8', '.08')}" stroke="none"/>
-    <path d="${path}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="${x3}" cy="${peak}" r="2.5" fill="${color}"/>
-  `;
-}
-
-function updateHeartbeat(label, value){
-  const svgId = 'hb' + label;
-  drawHeartbeat(svgId, value, label);
+function updateGlowBar(label, value){
+  const fill = document.getElementById('fill'+label);
+  if(!fill) return;
+  const pct = ((+value - 1) / 9) * 100;
+  const [bg, glow] = GLOW_COLORS[label] || GLOW_COLORS.Energy;
+  fill.style.width = pct + '%';
+  fill.style.background = bg;
+  fill.style.boxShadow = pct > 10 ? `0 0 12px ${glow}, 0 0 4px ${glow}` : 'none';
 }
 
 function initHeartbeats(){
-  const metrics = [
-    {id:'hbEnergy', sliderId:'sliderEnergy', label:'Energy'},
-    {id:'hbMood', sliderId:'sliderMood', label:'Mood'},
-    {id:'hbClarity', sliderId:'sliderClarity', label:'Clarity'},
-    {id:'hbCreativity', sliderId:'sliderCreativity', label:'Creativity'},
-  ];
-  metrics.forEach(m => {
-    const slider = document.getElementById(m.sliderId);
-    if(slider) drawHeartbeat(m.id, slider.value, m.label);
+  ['Energy','Mood','Clarity','Creativity'].forEach(label => {
+    const slider = document.getElementById('slider'+label);
+    if(slider) updateGlowBar(label, slider.value);
   });
 }
+
+// Keep updateHeartbeat as alias for any existing calls
+function updateHeartbeat(label, value){ updateGlowBar(label, value); }
 
 // ─── SLIDER FILL ──────────────────────────────────────────────────────────────
 function updateSliderFill(input){
