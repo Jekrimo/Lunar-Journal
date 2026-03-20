@@ -1881,13 +1881,26 @@ async function pullCloudEntries(){
 async function pushEntryToCloud(date, entry){
   if(!currentUser || !sbClient) return; // guest mode — only localStorage
   try{
-    const token = (await sbClient.auth.getSession()).data.session?.access_token;
-    await fetch('/api/entries', {
+    const sessionData = await sbClient.auth.getSession();
+    const token = sessionData.data.session?.access_token;
+    if(!token){ console.warn('No auth token — not signed in?'); return; }
+
+    const res = await fetch('/api/entries', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ date, entry })
     });
-  } catch(e){ console.warn('Push failed, entry saved locally:', e); }
+
+    if(!res.ok){
+      const err = await res.text();
+      console.error('Entry push failed:', res.status, err);
+      showToast('⚠ Entry saved locally — cloud sync failed (' + res.status + ')');
+    } else {
+      console.log('Entry synced to cloud:', date);
+    }
+  } catch(e){
+    console.warn('Push failed, entry saved locally:', e);
+  }
 }
 
 async function offerLocalMigration(count, entries){
