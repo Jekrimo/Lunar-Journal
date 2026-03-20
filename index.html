@@ -1697,7 +1697,10 @@ function renderEntries(){
       const preview = (e.text||'').slice(0,100) + ((e.text||'').length>100?'…':'');
       const eData = JSON.stringify(e).replace(/'/g,"\'");
       const pData = JSON.stringify(phase).replace(/'/g,"\'");
-      html += `<div class="entry-item" onclick='openDayModal(new Date("${k}T12:00:00"),${JSON.stringify(e)},${JSON.stringify(phase)})'>
+      // Store entry in cache to avoid JSON-in-template issues
+      window._ec = window._ec || {};
+      window._ec[k] = {e, phase};
+      html += `<div class="entry-item" data-ekey="${k}" onclick="(function(el){const d=el.getAttribute('data-ekey');const c=window._ec&&window._ec[d];if(c)openDayModal(new Date(d+'T12:00:00'),c.e,c.phase);})(this)">
         <div class="entry-date-col" style="text-align:center;">
           <span class="entry-moon-icon">${phase.emoji}</span>
           <span class="entry-date-num">${d.getDate()}</span>
@@ -1732,7 +1735,7 @@ function toggleGroup(id){
   body.style.maxHeight = isCollapsed ? '9999px' : '0';
 }
 
-// ─── PATTERNS ─────────────────────────────────────────────────────────────────
+// --- PATTERNS ---
 let patternMonths = 1;
 let chartInstances = {};
 
@@ -2569,7 +2572,7 @@ async function onSignedIn(user, isNew){
     }
   }
   // Load cloud entries and merge with local
-  await pullCloudEntries();
+  await syncEntriesFromCloud();
   renderToday();
 }
 
@@ -2598,11 +2601,19 @@ async function pullCloudEntries(){
 }
 
 async function pushEntryToCloud(date, entry){
-  if(!currentUser || !sbClient) return; // guest mode — only localStorage
+  if(!currentUser || !sbClient){
+    console.log('pushEntryToCloud: skipping — no user or client');
+    return;
+  }
   try{
     const sessionData = await sbClient.auth.getSession();
-    const token = sessionData.data.session?.access_token;
-    if(!token){ console.warn('No auth token — not signed in?'); return; }
+    const token = sessionData?.data?.session?.access_token;
+    if(!token){
+      console.warn('pushEntryToCloud: no token — session may have expired');
+      showToast('⚠ Session expired — please sign in again');
+      return;
+    }
+    console.log('pushEntryToCloud: pushing', date, 'token present:', !!token);
 
     const res = await fetch('/api/entries', {
       method: 'POST',
@@ -2612,14 +2623,42 @@ async function pushEntryToCloud(date, entry){
 
     if(!res.ok){
       const err = await res.text();
-      console.error('Entry push failed:', res.status, err);
-      showToast('⚠ Entry saved locally — cloud sync failed (' + res.status + ')');
+      console.error('pushEntryToCloud FAILED:', res.status, err);
+      showToast('⚠ Cloud sync failed (' + res.status + ') — saved locally');
     } else {
-      console.log('Entry synced to cloud:', date);
+      const result = await res.json();
+      console.log('pushEntryToCloud SUCCESS:', date, result);
     }
   } catch(e){
-    console.warn('Push failed, entry saved locally:', e);
+    console.error('pushEntryToCloud ERROR:', e.message);
   }
+}
+
+// Call this on app load when signed in to restore entries from cloud
+async function syncEntriesFromCloud(){
+  if(!currentUser || !sbClient) return;
+  try{
+    const token = (await sbClient.auth.getSession())?.data?.session?.access_token;
+    if(!token) return;
+    console.log('syncEntriesFromCloud: pulling...');
+    const res = await fetch('/api/entries', { headers:{ Authorization:'Bearer '+token } });
+    if(!res.ok){ console.error('syncEntriesFromCloud failed:', res.status); return; }
+    const { entries: cloud } = await res.json();
+    if(!cloud){ return; }
+    const count = Object.keys(cloud).length;
+    console.log('syncEntriesFromCloud: got', count, 'entries from cloud');
+    if(count > 0){
+      const local = loadEntries();
+      const localCount = Object.keys(local).length;
+      // Cloud wins — it's source of truth
+      const merged = { ...local, ...cloud };
+      saveEntries(merged);
+      console.log('syncEntriesFromCloud: merged', localCount, 'local +', count, 'cloud =', Object.keys(merged).length);
+      // Re-render if on today or entries view
+      if(document.getElementById('view-today')?.classList.contains('active')) renderToday();
+      if(document.getElementById('view-entries')?.classList.contains('active')) renderEntries();
+    }
+  } catch(e){ console.error('syncEntriesFromCloud error:', e); }
 }
 
 async function offerLocalMigration(count, entries){
@@ -3011,7 +3050,8 @@ function updateSideMenuAccount(){
   if(currentUser){
     emailEl.textContent = '✦ ' + currentUser.email;
     btnsEl.innerHTML =
-      '<button class="sma-btn gold" onclick="syncNow()">↑ Sync</button>' +
+      '<button class="sma-btn gold" onclick="syncNow()">Push to cloud</button>' +
+      '<button class="sma-btn dim" onclick="syncEntriesFromCloud()">Pull from cloud</button>' +
       '<button class="sma-btn dim" onclick="openAuthModal()">Account</button>' +
       '<button class="sma-btn red" onclick="confirmSignOut()">Sign out</button>';
   } else {
