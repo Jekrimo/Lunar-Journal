@@ -233,6 +233,19 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* CUSTOM SCROLLBARS — Chrome/Safari */
+  .side-menu::-webkit-scrollbar{width:4px;}
+  .side-menu::-webkit-scrollbar-track{background:transparent;}
+  .side-menu::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:4px;}
+  .side-menu::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.4);}
+  .nav-tabs::-webkit-scrollbar{height:0;display:none;}
+  .modal-box::-webkit-scrollbar{width:4px;}
+  .modal-box::-webkit-scrollbar-track{background:transparent;}
+  .modal-box::-webkit-scrollbar-thumb{background:rgba(201,168,76,.15);border-radius:4px;}
+  /* Firefox */
+  .side-menu{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.2) transparent;}
+  .nav-tabs{scrollbar-width:none;}
+  .modal-box{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.15) transparent;}
   /* HAMBURGER MENU */
   .top-bar{display:flex;align-items:center;justify-content:space-between;padding:0 0 0 0;margin-bottom:0;}
   .hamburger{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0;margin-left:8px;}
@@ -1478,9 +1491,32 @@ function openOnboarding(){
   document.getElementById('obOverlay').classList.add('open');
 }
 function closeOnboarding(){document.getElementById('obOverlay').classList.remove('open');}
-function saveProfile(){
-  const p={name:document.getElementById('obName').value.trim(),dob:document.getElementById('obDOB').value,time:document.getElementById('obTime').value,rising:document.getElementById('obRising').value,notes:document.getElementById('obNotes').value.trim()};
-  saveProfileData(p);closeOnboarding();localStorage.removeItem(RK);renderToday();generateReading(true);
+async function saveProfile(){
+  const p={
+    name:document.getElementById('obName').value.trim(),
+    dob:document.getElementById('obDOB').value,
+    time:document.getElementById('obTime').value,
+    rising:document.getElementById('obRising').value,
+    notes:document.getElementById('obNotes').value.trim()
+  };
+  saveProfileData(p);
+  closeOnboarding();
+  localStorage.removeItem(RK);
+  renderToday();
+  generateReading(true);
+  // Push to DB if signed in
+  if(currentUser && sbClient){
+    try{
+      const token=(await sbClient.auth.getSession()).data.session?.access_token;
+      const res=await fetch('/api/profile',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
+        body:JSON.stringify({profile:p})
+      });
+      if(res.ok) console.log('Profile saved to cloud');
+      else console.warn('Profile cloud save failed:', await res.text());
+    } catch(e){ console.warn('Profile sync failed:', e); }
+  }
 }
 document.getElementById('obOverlay').onclick=function(e){if(e.target===this)closeOnboarding();};
 
@@ -1811,12 +1847,12 @@ async function checkAuthState(){
   const { data: { session } } = await sbClient.auth.getSession();
   if(session?.user){
     currentUser = session.user;
-    onSignedIn(session.user, false);
+    await onSignedIn(session.user, false);
   }
-  sbClient.auth.onAuthStateChange((event, session) => {
+  sbClient.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session?.user){
       currentUser = session.user;
-      onSignedIn(session.user, event === 'SIGNED_IN');
+      await onSignedIn(session.user, false);
     }
     if(event === 'SIGNED_OUT'){
       currentUser = null;
@@ -1825,9 +1861,57 @@ async function checkAuthState(){
   });
 }
 
+
+async function pullCloudProfile(){
+  if(!currentUser || !sbClient) return false;
+  try{
+    const token=(await sbClient.auth.getSession()).data.session?.access_token;
+    const res=await fetch('/api/profile',{
+      headers:{Authorization:'Bearer '+token}
+    });
+    if(!res.ok) return false;
+    const {profile} = await res.json();
+    if(profile && profile.dob){
+      // Map DB columns back to our local format
+      const localProfile = {
+        name: profile.name||'',
+        dob: profile.dob||'',
+        time: profile.birth_time||'',
+        rising: profile.rising||'',
+        notes: profile.notes||'',
+      };
+      saveProfileData(localProfile);
+      console.log('Profile loaded from cloud:', localProfile.name);
+      return true;
+    }
+  } catch(e){ console.warn('Profile pull failed:', e); }
+  return false;
+}
 async function onSignedIn(user, isNew){
   renderAuthBadge();
+
+  // Always pull profile from cloud first — this is the source of truth
+  const profileLoaded = await pullCloudProfile();
+  if(!profileLoaded && !loadProfile()){
+    // No profile anywhere — prompt once after a short delay
+    setTimeout(openOnboarding, 1000);
+  }
+
   if(isNew){
+    // Also push local profile to cloud if we have one and cloud didn't have it
+    if(!profileLoaded){
+      const localP = loadProfile();
+      if(localP?.dob){
+        try{
+          const token=(await sbClient.auth.getSession()).data.session?.access_token;
+          await fetch('/api/profile',{
+            method:'POST',
+            headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
+            body:JSON.stringify({profile:localP})
+          });
+        } catch(e){}
+      }
+    }
     // First sign in — silently sync local entries to cloud in background
     const localEntries = loadEntries();
     const realEntries = Object.fromEntries(
