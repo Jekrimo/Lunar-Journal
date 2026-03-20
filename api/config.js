@@ -2,7 +2,7 @@
 // The anon key is safe to expose client-side — RLS handles all security
 // Called as <script src="/api/config"></script> from index.html
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   const url = process.env.SUPABASE_URL || '';
   const key = process.env.SUPABASE_ANON_KEY || '';
 

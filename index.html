@@ -1618,30 +1618,30 @@ function importEntries(evt){
 // Supabase client — injected at build time via window.SUPABASE_CONFIG
 // For guest mode, all functions gracefully fall back to localStorage
 
-let supabase = null;
+let sbClient = null;
 let currentUser = null;
 let syncInProgress = false;
 
 function initSupabase(){
   const url = window.SUPABASE_URL || '';
   const key = window.SUPABASE_ANON_KEY || '';
-  if(!url || !key) return; // not configured - guest mode only
+  if(!url || !key) return; // guest mode // not configured - guest mode only
   if(window.supabase){
     try {
-      supabase = window.supabase.createClient(url, key);
+      sbClient = window.supabase.createClient(url, key);
       checkAuthState();
     } catch(e) { console.warn('Supabase init failed:', e); }
   }
 }
 
 async function checkAuthState(){
-  if(!supabase) return;
-  const { data: { session } } = await supabase.auth.getSession();
+  if(!sbClient) return;
+  const { data: { session } } = await sbClient.auth.getSession();
   if(session?.user){
     currentUser = session.user;
     onSignedIn(session.user, false);
   }
-  supabase.auth.onAuthStateChange((event, session) => {
+  sbClient.auth.onAuthStateChange((event, session) => {
     if(event === 'SIGNED_IN' && session?.user){
       currentUser = session.user;
       onSignedIn(session.user, event === 'SIGNED_IN');
@@ -1674,7 +1674,7 @@ function onSignedOut(){
 async function pullCloudEntries(){
   if(!currentUser || !supabase) return;
   try{
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const token = (await sbClient.auth.getSession()).data.session?.access_token;
     const res = await fetch('/api/entries', {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -1693,7 +1693,7 @@ async function pullCloudEntries(){
 async function pushEntryToCloud(date, entry){
   if(!currentUser || !supabase) return; // guest mode — only localStorage
   try{
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const token = (await sbClient.auth.getSession()).data.session?.access_token;
     await fetch('/api/entries', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -1721,7 +1721,7 @@ async function offerLocalMigration(count, entries){
       modal.remove();
       if(doIt){
         try{
-          const token = (await supabase.auth.getSession()).data.session?.access_token;
+          const token = (await sbClient.auth.getSession()).data.session?.access_token;
           const res = await fetch('/api/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
@@ -1741,7 +1741,7 @@ async function offerLocalMigration(count, entries){
 function renderAuthBadge(){
   const wrap = document.getElementById('authBadgeWrap');
   if(!wrap) return;
-  if(!supabase){
+  if(!sbClient){
     wrap.innerHTML = ''; // Supabase not configured yet
     return;
   }
@@ -1767,12 +1767,12 @@ function closeAuthModal(){
 }
 
 async function signUp(){
-  if(!supabase) return;
+  if(!sbClient) return;
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value;
   if(!email || !pass) return;
   document.getElementById('authError').textContent = '';
-  const { error } = await supabase.auth.signUp({ email, password: pass });
+  const { error } = await sbClient.auth.signUp({ email, password: pass });
   if(error) document.getElementById('authError').textContent = error.message;
   else {
     closeAuthModal();
@@ -1781,19 +1781,19 @@ async function signUp(){
 }
 
 async function signIn(){
-  if(!supabase) return;
+  if(!sbClient) return;
   const email = document.getElementById('authEmail').value.trim();
   const pass = document.getElementById('authPass').value;
   if(!email || !pass) return;
   document.getElementById('authError').textContent = '';
-  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+  const { error } = await sbClient.auth.signInWithPassword({ email, password: pass });
   if(error) document.getElementById('authError').textContent = error.message;
   else closeAuthModal();
 }
 
 async function signOut(){
-  if(!supabase) return;
-  await supabase.auth.signOut();
+  if(!sbClient) return;
+  await sbClient.auth.signOut();
 }
 
 function showToast(msg){
