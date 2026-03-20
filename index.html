@@ -20,7 +20,8 @@
   .site-title{font-family:'Cinzel',serif;font-size:clamp(28px,5vw,48px);color:var(--gold);letter-spacing:.12em;text-transform:uppercase;line-height:1;text-shadow:0 0 40px rgba(201,168,76,.3);}
   .site-subtitle{font-family:'EB Garamond',serif;font-style:italic;color:rgba(245,240,232,.5);font-size:16px;margin-top:8px;letter-spacing:.05em;}
   .header-rule{width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px auto 0;}
-  .nav-tabs{display:flex;border-bottom:1px solid rgba(201,168,76,.2);margin-bottom:32px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .nav-tabs{display:flex;border-bottom:none;margin-bottom:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;}
+  .nav-tabs::-webkit-scrollbar{display:none;}
   .nav-tab{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:rgba(245,240,232,.4);padding:12px 20px;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;}
   .nav-tab:hover{color:rgba(245,240,232,.7);}
   .nav-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
@@ -233,6 +234,23 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* SUBMITTED ENTRY CARD */
+  .entry-submitted-card{background:rgba(245,240,232,.03);border:1px solid rgba(201,168,76,.18);border-radius:8px;padding:20px 22px;margin-bottom:28px;position:relative;overflow:hidden;display:none;}
+  .entry-submitted-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5;}
+  .entry-submitted-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .entry-submitted-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;color:var(--gold);opacity:.7;text-transform:uppercase;}
+  .entry-submitted-edit{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,240,232,.25);background:none;border:none;cursor:pointer;padding:0;}
+  .entry-submitted-edit:hover{color:rgba(245,240,232,.5);}
+  .entry-submitted-metrics{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
+  .entry-submitted-metric{text-align:center;}
+  .entry-submitted-metric-val{font-family:'Cinzel',serif;font-size:18px;color:var(--gold);display:block;line-height:1;}
+  .entry-submitted-metric-label{font-size:10px;color:rgba(245,240,232,.3);font-style:italic;margin-top:2px;}
+  .entry-submitted-qualities{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .entry-submitted-text{font-size:15px;color:rgba(245,240,232,.55);line-height:1.75;font-style:italic;margin-bottom:14px;}
+  .entry-reflection{margin-top:14px;padding-top:14px;border-top:1px solid rgba(245,240,232,.07);}
+  .entry-reflection-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:8px;}
+  .entry-reflection-text{font-size:15px;color:rgba(245,240,232,.65);line-height:1.8;}
+  .entry-reflection-loading{font-size:14px;color:rgba(245,240,232,.25);font-style:italic;}
   /* CUSTOM SCROLLBARS — Chrome/Safari */
   .side-menu::-webkit-scrollbar{width:4px;}
   .side-menu::-webkit-scrollbar-track{background:transparent;}
@@ -471,7 +489,23 @@
     <div class="card-label">Cycle Tone</div>
     <div id="cycleTone" style="font-size:17px;color:rgba(245,240,232,.75);line-height:1.7;margin-top:6px;font-style:italic;"></div>
   </div>
-  <div class="entry-form">
+  <!-- SUBMITTED ENTRY CARD -->
+  <div class="entry-submitted-card" id="entrySubmittedCard">
+    <div class="entry-submitted-header">
+      <div class="entry-submitted-title">✦ Today's Entry</div>
+      <button class="entry-submitted-edit" onclick="showEntryForm()">✎ Edit</button>
+    </div>
+    <div class="entry-submitted-metrics" id="submittedMetrics"></div>
+    <div class="entry-submitted-qualities" id="submittedQualities"></div>
+    <div class="entry-submitted-text" id="submittedText"></div>
+    <div class="entry-reflection" id="entryReflection" style="display:none;">
+      <div class="entry-reflection-label">Reflection from the sky</div>
+      <div class="entry-reflection-text" id="reflectionText"><span class="entry-reflection-loading">Reflecting on your entry…</span></div>
+    </div>
+  </div>
+
+
+  <div class="entry-form" id="entryFormWrap">
     <div class="form-title">Today's Entry</div>
     <div class="section-heading">Energy & Mood</div>
     <div class="form-row" style="margin-bottom:20px;">
@@ -1105,6 +1139,28 @@ function renderToday(){
   document.getElementById('planetGridToday').innerHTML=planets.slice(0,8).map(p=>`<div class="planet-card" onclick="openPlanetPopup('${p.name}','${p.symbol}','${p.sign.name}',event)"><div style="display:flex;justify-content:space-between;align-items:start;"><div class="planet-name">${p.name}</div><div class="planet-symbol">${p.symbol}</div></div><div class="planet-sign">${p.sign.symbol} ${p.sign.name}</div><div class="planet-tap-hint">tap for influence</div></div>`).join('');
   generateReading();
   renderIntentionBanner();
+  // If today already has an entry, show submitted card not blank form
+  const todayEntry = loadEntries()[entryKey(new Date())];
+  if(todayEntry){
+    showSubmittedCard(todayEntry);
+  } else {
+    showEntryForm();
+    // Reset sliders to 5
+    ['sliderEnergy','sliderMood','sliderClarity','sliderCreativity'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el){ el.value = 5; updateSliderFill(el); }
+      const valId = id.replace('slider','val');
+      const valEl = document.getElementById(valId);
+      if(valEl) valEl.textContent = '5';
+    });
+    // Clear text fields
+    ['entryText','dreamText','intentionText'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+    // Clear quality selections
+    document.querySelectorAll('#qualityTags .tag-btn.selected').forEach(b => b.classList.remove('selected'));
+  }
   if(getSetting('showTransits',true))renderTransitAlerts(); else {var tw=document.getElementById('transitAlertsWrap');if(tw)tw.innerHTML='';}
   if(getSetting('showVedic',true))renderVedicPanel(); else {var vw=document.getElementById('vedicPanelWrap');if(vw)vw.innerHTML='';}
 }
@@ -1317,8 +1373,7 @@ function saveEntry(){
   };
   saveEntries(entries);
   pushEntryToCloud(key, entries[key]); // async, non-blocking
-  const c=document.getElementById('saveConfirm');c.style.opacity='1';
-  setTimeout(()=>c.style.opacity='0',3000);
+  showSubmittedCard(entries[key]); // collapse form into summary card
   // Auto-backup to localStorage secondary key
   localStorage.setItem('lunations_backup_'+key, JSON.stringify(entries[key]));
 }
@@ -2397,6 +2452,98 @@ function initSliders(){
     s.addEventListener('input', () => updateSliderFill(s));
   });
 }
+
+// ─── NAV WHEEL SCROLL ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const nav = document.querySelector('.nav-tabs');
+  if(nav){
+    nav.addEventListener('wheel', e => {
+      if(e.deltaY !== 0){
+        e.preventDefault();
+        nav.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+  }
+});
+
+// ─── ENTRY FORM COLLAPSE ──────────────────────────────────────────────────────
+function showEntryForm(){
+  document.getElementById('entryFormWrap').style.display = 'block';
+  document.getElementById('entrySubmittedCard').style.display = 'none';
+}
+
+function showSubmittedCard(entry){
+  const card = document.getElementById('entrySubmittedCard');
+  const form = document.getElementById('entryFormWrap');
+
+  // Populate metrics
+  const metrics = [
+    {val: entry.energy, label: 'Energy'},
+    {val: entry.mood, label: 'Mood'},
+    {val: entry.clarity, label: 'Clarity'},
+    {val: entry.creativity, label: 'Creativity'},
+  ];
+  document.getElementById('submittedMetrics').innerHTML = metrics.map(m =>
+    `<div class="entry-submitted-metric">
+      <span class="entry-submitted-metric-val">${m.val}</span>
+      <span class="entry-submitted-metric-label">${m.label}</span>
+    </div>`
+  ).join('');
+
+  // Qualities
+  document.getElementById('submittedQualities').innerHTML = (entry.qualities||[])
+    .map(q => `<span class="quality-pill">${q}</span>`).join('');
+
+  // Text preview
+  const txt = entry.text || entry.dream || entry.intention || '';
+  document.getElementById('submittedText').textContent = txt.slice(0,200) + (txt.length>200?'…':'');
+  document.getElementById('submittedText').style.display = txt ? 'block' : 'none';
+
+  // Show card, hide form
+  card.style.display = 'block';
+  form.style.display = 'none';
+
+  // Generate reflection if they wrote something
+  if(entry.text && entry.text.length > 20){
+    generateEntryReflection(entry);
+  }
+}
+
+async function generateEntryReflection(entry){
+  const reflectionWrap = document.getElementById('entryReflection');
+  const reflectionEl = document.getElementById('reflectionText');
+  reflectionWrap.style.display = 'block';
+
+  const phase = moonPhaseInfo(new Date());
+  const mSign = moonSignApprox(new Date());
+  const profile = loadProfile();
+  const name = profile?.name ? profile.name : '';
+
+  const prompt = `You are reflecting back to someone what they wrote in their lunar journal today. Be direct, warm, and brief — 2-3 sentences max. Mirror what they actually said, notice one specific thing, and connect it gently to the sky (${phase.name}, Moon in ${mSign.name}). Don't be generic. Don't use filler affirmations. Speak like a wise friend, not a therapist.
+
+${name ? 'Their name is ' + name + '.' : ''}
+They wrote: "${entry.text.slice(0, 300)}"
+Their qualities today: ${(entry.qualities||[]).join(', ')||'none tagged'}
+Energy ${entry.energy}/10, Mood ${entry.mood}/10.
+
+Write the reflection now. 2-3 sentences only.`;
+
+  try{
+    const res = await fetch('/api/reading', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt})
+    });
+    if(!res.ok) throw new Error('API error');
+    const data = await res.json();
+    const text = data.text || '';
+    if(text) reflectionEl.textContent = text;
+    else reflectionWrap.style.display = 'none';
+  } catch(e){
+    reflectionWrap.style.display = 'none';
+  }
+}
+
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
