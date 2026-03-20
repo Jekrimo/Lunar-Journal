@@ -187,6 +187,40 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* HAMBURGER MENU */
+  .top-bar{display:flex;align-items:center;justify-content:space-between;padding:0 0 0 0;margin-bottom:0;}
+  .hamburger{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0;margin-left:8px;}
+  .hamburger span{display:block;width:22px;height:1.5px;background:rgba(245,240,232,.4);transition:all .2s;border-radius:2px;}
+  .hamburger:hover span{background:var(--gold);}
+  .hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);background:var(--gold);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);background:var(--gold);}
+  .side-menu{position:fixed;top:0;right:-320px;width:300px;height:100vh;background:#12100d;border-left:1px solid rgba(201,168,76,.15);z-index:250;transition:right .25s ease;overflow-y:auto;padding:0 0 40px;}
+  .side-menu.open{right:0;}
+  .side-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:249;}
+  .side-menu-overlay.open{display:block;}
+  .side-menu-header{padding:24px 20px 20px;border-bottom:1px solid rgba(201,168,76,.1);display:flex;align-items:center;justify-content:space-between;}
+  .side-menu-title{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:.1em;}
+  .side-menu-close{background:none;border:none;color:rgba(245,240,232,.3);font-size:22px;cursor:pointer;line-height:1;}
+  .side-menu-close:hover{color:rgba(245,240,232,.7);}
+  .side-menu-section{padding:20px 20px 0;}
+  .side-menu-section-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;color:rgba(245,240,232,.25);text-transform:uppercase;margin-bottom:12px;}
+  .side-menu-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:8px;cursor:pointer;transition:background .15s;border:none;background:none;width:100%;text-align:left;margin-bottom:4px;}
+  .side-menu-item:hover{background:rgba(245,240,232,.04);}
+  .side-menu-item-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0;}
+  .side-menu-item-label{font-size:15px;color:rgba(245,240,232,.65);font-family:'EB Garamond',serif;}
+  .side-menu-item-sub{font-size:12px;color:rgba(245,240,232,.25);font-style:italic;margin-top:1px;}
+  .side-menu-divider{height:1px;background:rgba(245,240,232,.06);margin:12px 20px;}
+  .side-menu-account{padding:16px 20px;background:rgba(201,168,76,.05);border-bottom:1px solid rgba(201,168,76,.1);}
+  .side-menu-account-email{font-size:13px;color:rgba(245,240,232,.5);font-style:italic;margin-bottom:8px;}
+  .side-menu-account-btns{display:flex;gap:8px;flex-wrap:wrap;}
+  .sma-btn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid;cursor:pointer;background:none;transition:all .15s;}
+  .sma-btn.gold{border-color:rgba(201,168,76,.3);color:var(--gold);}
+  .sma-btn.gold:hover{background:rgba(201,168,76,.1);}
+  .sma-btn.dim{border-color:rgba(245,240,232,.1);color:rgba(245,240,232,.3);}
+  .sma-btn.dim:hover{border-color:rgba(245,240,232,.25);color:rgba(245,240,232,.5);}
+  .sma-btn.red{border-color:rgba(139,58,42,.3);color:#cc7a7a;}
+  .sma-btn.red:hover{background:rgba(139,58,42,.1);}
   /* ENTRIES ARCHIVE */
   .entries-group{margin-bottom:32px;}
   .entries-group-header{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(201,168,76,.15);margin-bottom:2px;cursor:pointer;user-select:none;}
@@ -274,19 +308,73 @@
   <div class="header-rule"></div>
 </header>
 
-<nav class="nav-tabs">
-  <button class="nav-tab active" onclick="switchView('today',this)">Today</button>
-  <button class="nav-tab" onclick="switchView('compare',this)">Last Cycle</button>
-  <button class="nav-tab" onclick="switchView('cycle',this)">Calendar</button>
-  <button class="nav-tab" onclick="switchView('entries',this)">Journal</button>
-  <button class="nav-tab" onclick="switchView('patterns',this)">Patterns</button>
-  <button class="nav-tab" onclick="switchView('sky',this)">Full Sky</button>
-  <button class="nav-tab" onclick="switchView('settings',this)">Settings</button>
-</nav>
+<div class="top-bar">
+  <nav class="nav-tabs" style="flex:1;margin-bottom:0;border-bottom:none;">
+    <button class="nav-tab active" onclick="switchView('today',this)">Today</button>
+    <button class="nav-tab" onclick="switchView('compare',this)">Last Cycle</button>
+    <button class="nav-tab" onclick="switchView('cycle',this)">Calendar</button>
+    <button class="nav-tab" onclick="switchView('entries',this)">Journal</button>
+    <button class="nav-tab" onclick="switchView('patterns',this)">Patterns</button>
+    <button class="nav-tab" onclick="switchView('sky',this)">Sky</button>
+  </nav>
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleSideMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+<div style="height:1px;background:rgba(201,168,76,.2);margin-bottom:32px;"></div>
+
+<!-- SIDE MENU OVERLAY -->
+<div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu()"></div>
+
+<!-- SIDE MENU -->
+<div class="side-menu" id="sideMenu">
+  <div class="side-menu-header">
+    <span class="side-menu-title">LUNATIONS</span>
+    <button class="side-menu-close" onclick="closeSideMenu()">×</button>
+  </div>
+
+  <!-- Account section -->
+  <div class="side-menu-account" id="sideMenuAccount">
+    <div class="side-menu-account-email" id="sideMenuEmail">Not signed in</div>
+    <div class="side-menu-account-btns" id="sideMenuAccountBtns"></div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="side-menu-section" style="padding-top:16px;">
+    <div class="side-menu-section-label">Navigate</div>
+    <button class="side-menu-item" onclick="navTo('today')"><span class="side-menu-item-icon">🌙</span><div><div class="side-menu-item-label">Today</div></div></button>
+    <button class="side-menu-item" onclick="navTo('compare')"><span class="side-menu-item-icon">⟳</span><div><div class="side-menu-item-label">Last Cycle</div></div></button>
+    <button class="side-menu-item" onclick="navTo('cycle')"><span class="side-menu-item-icon">📅</span><div><div class="side-menu-item-label">Calendar</div></div></button>
+    <button class="side-menu-item" onclick="navTo('entries')"><span class="side-menu-item-icon">📖</span><div><div class="side-menu-item-label">Journal</div></div></button>
+    <button class="side-menu-item" onclick="navTo('patterns')"><span class="side-menu-item-icon">◈</span><div><div class="side-menu-item-label">Patterns</div></div></button>
+    <button class="side-menu-item" onclick="navTo('sky')"><span class="side-menu-item-icon">✦</span><div><div class="side-menu-item-label">Full Sky</div></div></button>
+  </div>
+
+  <div class="side-menu-divider"></div>
+
+  <!-- Settings -->
+  <div class="side-menu-section">
+    <div class="side-menu-section-label">Settings</div>
+    <button class="side-menu-item" onclick="openOnboarding();closeSideMenu()"><span class="side-menu-item-icon">♄</span><div><div class="side-menu-item-label">Birth Profile</div><div class="side-menu-item-sub">Personalize your readings</div></div></button>
+    <button class="side-menu-item" onclick="navTo('settings')"><span class="side-menu-item-icon">⚙</span><div><div class="side-menu-item-label">App Settings</div><div class="side-menu-item-sub">Icons, display, backup</div></div></button>
+  </div>
+
+  <div class="side-menu-divider"></div>
+
+  <!-- Data -->
+  <div class="side-menu-section">
+    <div class="side-menu-section-label">Data</div>
+    <button class="side-menu-item" onclick="exportEntries();closeSideMenu()"><span class="side-menu-item-icon">↓</span><div><div class="side-menu-item-label">Export Journal</div><div class="side-menu-item-sub">Download JSON backup</div></div></button>
+    <button class="side-menu-item" onclick="document.getElementById('importFile').click();closeSideMenu()"><span class="side-menu-item-icon">↑</span><div><div class="side-menu-item-label">Import Journal</div><div class="side-menu-item-sub">Restore from backup</div></div></button>
+  </div>
+
+  <div style="padding:20px;margin-top:8px;">
+    <div style="font-size:11px;color:rgba(245,240,232,.15);text-align:center;font-style:italic;">lunations.app · track yourself across cycles</div>
+  </div>
+</div>
 
 <!-- TODAY -->
 <div id="view-today" class="view active">
-  <div id="authBadgeWrap"></div>
   <div id="natalBadgeWrap"></div>
   <!-- CYCLE INTENTION BANNER -->
   <div class="intention-banner" id="intentionBanner" style="display:none;">
@@ -1693,10 +1781,27 @@ async function checkAuthState(){
 async function onSignedIn(user, isNew){
   renderAuthBadge();
   if(isNew){
-    // First sign in — offer to upload existing localStorage entries
+    // First sign in — silently sync local entries to cloud in background
     const localEntries = loadEntries();
-    const count = Object.keys(localEntries).length;
-    if(count > 0) await offerLocalMigration(count, localEntries);
+    const realEntries = Object.fromEntries(
+      Object.entries(localEntries).filter(([k,v]) => !v.isMockData)
+    );
+    const count = Object.keys(realEntries).length;
+    if(count > 0){
+      try {
+        const token = (await sbClient.auth.getSession()).data.session?.access_token;
+        const res = await fetch('/api/sync', {
+          method:'POST',
+          headers:{'Content-Type':'application/json', Authorization:'Bearer '+token},
+          body: JSON.stringify({ entries: realEntries })
+        });
+        const data = await res.json();
+        if(data.synced){
+          localStorage.setItem('lunations_last_sync', new Date().toLocaleDateString());
+          if(data.synced > 0) showToast('✦ ' + data.synced + ' entries backed up to your account');
+        }
+      } catch(e){ console.warn('Background sync failed:', e); }
+    }
   }
   // Load cloud entries and merge with local
   await pullCloudEntries();
@@ -1775,7 +1880,7 @@ async function offerLocalMigration(count, entries){
   });
 }
 
-function renderAuthBadge(){
+function renderAuthBadge(){ updateSideMenuAccount();
   const wrap = document.getElementById('authBadgeWrap');
   if(!wrap) return;
   if(!sbClient){
@@ -2085,6 +2190,52 @@ function injectMockData(){
   console.log('Mock data injected:', Object.keys(entries).length, 'entries');
 }
 
+
+
+// ─── SIDE MENU ────────────────────────────────────────────────────────────────
+function toggleSideMenu(){
+  const menu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('sideMenuOverlay');
+  const btn = document.getElementById('hamburgerBtn');
+  const isOpen = menu.classList.contains('open');
+  if(isOpen){ closeSideMenu(); }
+  else {
+    menu.classList.add('open');
+    overlay.classList.add('open');
+    btn.classList.add('open');
+    updateSideMenuAccount();
+  }
+}
+
+function closeSideMenu(){
+  document.getElementById('sideMenu').classList.remove('open');
+  document.getElementById('sideMenuOverlay').classList.remove('open');
+  document.getElementById('hamburgerBtn').classList.remove('open');
+}
+
+function navTo(view){
+  const btn = document.querySelector(`.nav-tab[onclick*="'${view}'"]`);
+  switchView(view, btn);
+  closeSideMenu();
+}
+
+function updateSideMenuAccount(){
+  const emailEl = document.getElementById('sideMenuEmail');
+  const btnsEl = document.getElementById('sideMenuAccountBtns');
+  if(!emailEl || !btnsEl) return;
+
+  if(currentUser){
+    emailEl.textContent = '✦ ' + currentUser.email;
+    btnsEl.innerHTML =
+      '<button class="sma-btn gold" onclick="syncNow()">↑ Sync</button>' +
+      '<button class="sma-btn dim" onclick="openAuthModal()">Account</button>' +
+      '<button class="sma-btn red" onclick="confirmSignOut()">Sign out</button>';
+  } else {
+    emailEl.textContent = 'Local storage only';
+    btnsEl.innerHTML =
+      '<button class="sma-btn gold" onclick="openAuthModal()">Sign in / Sign up</button>';
+  }
+}
 
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
