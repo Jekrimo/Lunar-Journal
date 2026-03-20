@@ -1625,13 +1625,27 @@ let syncInProgress = false;
 function initSupabase(){
   const url = window.SUPABASE_URL || '';
   const key = window.SUPABASE_ANON_KEY || '';
-  if(!url || !key) return; // guest mode // not configured - guest mode only
-  if(window.supabase){
-    try {
-      sbClient = window.supabase.createClient(url, key);
-      checkAuthState();
-    } catch(e) { console.warn('Supabase init failed:', e); }
-  }
+  if(!url || !key){ renderAuthBadge(); return; } // guest mode — still show the badge
+
+  // Supabase CDN loads with defer — poll until available
+  let attempts = 0;
+  const tryInit = setInterval(() => {
+    attempts++;
+    if(window.supabase){
+      clearInterval(tryInit);
+      try {
+        sbClient = window.supabase.createClient(url, key);
+        checkAuthState();
+      } catch(e) {
+        console.warn('Supabase init failed:', e);
+        renderAuthBadge();
+      }
+    } else if(attempts > 20) {
+      // CDN failed to load after 2s — show guest badge anyway
+      clearInterval(tryInit);
+      renderAuthBadge();
+    }
+  }, 100);
 }
 
 async function checkAuthState(){
@@ -1742,7 +1756,11 @@ function renderAuthBadge(){
   const wrap = document.getElementById('authBadgeWrap');
   if(!wrap) return;
   if(!sbClient){
-    wrap.innerHTML = ''; // Supabase not configured yet
+    // Show sign-in option even before Supabase loads — clicking will init it
+    wrap.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;">Using local storage only</div>
+      <button onclick="openAuthModal()" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 12px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:20px;color:#c9a84c;cursor:pointer;">Sign in / Sign up</button>
+    </div>`;
     return;
   }
   if(currentUser){
@@ -2061,7 +2079,8 @@ if('serviceWorker' in navigator){
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderQualityTags();
-initSupabase();
+renderAuthBadge(); // show guest badge immediately
+initSupabase(); // then upgrade once Supabase CDN loads
 injectMockData();
 // Restore from IDB if localStorage was cleared, then render
 restoreFromIDB().then(restored => {
