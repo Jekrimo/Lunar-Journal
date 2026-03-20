@@ -235,6 +235,35 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* PATTERNS */
+  .pattern-range-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;padding:7px 14px;background:none;border:none;border-right:1px solid rgba(245,240,232,.1);color:rgba(245,240,232,.35);cursor:pointer;transition:all .15s;text-transform:uppercase;}
+  .pattern-range-btn:last-child{border-right:none;}
+  .pattern-range-btn:hover{background:rgba(245,240,232,.04);color:rgba(245,240,232,.6);}
+  .pattern-range-btn.active{background:rgba(201,168,76,.1);color:var(--gold);}
+  .phase-fingerprint-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .phase-fingerprint-label{font-size:12px;color:rgba(245,240,232,.4);min-width:110px;font-style:italic;}
+  .phase-fingerprint-bar-wrap{flex:1;height:20px;background:rgba(245,240,232,.05);border-radius:3px;overflow:hidden;position:relative;}
+  .phase-fingerprint-bar{height:100%;border-radius:3px;transition:width .4s ease;}
+  .phase-fingerprint-bar.energy{background:rgba(201,168,76,.6);}
+  .phase-fingerprint-bar.mood{background:rgba(180,100,80,.5);}
+  .phase-fingerprint-val{font-family:'Cinzel',serif;font-size:10px;color:rgba(245,240,232,.35);min-width:28px;text-align:right;}
+  .pattern-obs{padding:14px 16px;border-radius:6px;margin-bottom:10px;border-left:3px solid;display:flex;align-items:flex-start;gap:12px;}
+  .pattern-obs.warning{background:rgba(139,58,42,.1);border-color:rgba(200,100,70,.4);}
+  .pattern-obs.insight{background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.3);}
+  .pattern-obs.positive{background:rgba(60,120,60,.08);border-color:rgba(100,180,100,.3);}
+  .pattern-obs-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+  .pattern-obs-text{font-size:14px;color:rgba(245,240,232,.65);line-height:1.7;}
+  .pattern-obs-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;margin-bottom:4px;text-transform:uppercase;}
+  .pattern-obs.warning .pattern-obs-title{color:#cc7a5a;}
+  .pattern-obs.insight .pattern-obs-title{color:var(--gold);}
+  .pattern-obs.positive .pattern-obs-title{color:#7acc7a;}
+  .stat-card{background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.07);border-radius:8px;padding:14px;text-align:center;}
+  .stat-card-val{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);display:block;line-height:1;}
+  .stat-card-label{font-size:11px;color:rgba(245,240,232,.3);font-style:italic;margin-top:4px;}
+  .stat-card-delta{font-size:11px;margin-top:3px;}
+  .stat-card-delta.up{color:#7acc7a;}
+  .stat-card-delta.down{color:#cc7a7a;}
+  .stat-card-delta.same{color:rgba(245,240,232,.2);}
   /* BODY SCROLLBAR */
   html::-webkit-scrollbar{width:5px;}
   html::-webkit-scrollbar-track{background:transparent;}
@@ -726,10 +755,63 @@
 
 <!-- PATTERNS -->
 <div id="view-patterns" class="view">
-  <div class="pattern-chart"><div class="pattern-title">Energy & Mood by Moon Phase</div><canvas class="chart-canvas" id="phaseEnergyChart"></canvas></div>
-  <div class="pattern-chart"><div class="pattern-title">Mood Arc — Last 28 Days</div><canvas class="chart-canvas" id="moodArcChart"></canvas></div>
-  <div class="pattern-chart"><div class="pattern-title">Energy Arc — Last 28 Days</div><canvas class="chart-canvas" id="energyArcChart"></canvas></div>
-  <div id="patternInsights"></div>
+
+  <!-- TIME RANGE SELECTOR -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+    <div style="display:flex;gap:0;border:1px solid rgba(245,240,232,.1);border-radius:6px;overflow:hidden;" id="patternRangeSelector">
+      <button class="pattern-range-btn active" onclick="setPatternRange(1,this)">1M</button>
+      <button class="pattern-range-btn" onclick="setPatternRange(3,this)">3M</button>
+      <button class="pattern-range-btn" onclick="setPatternRange(6,this)">6M</button>
+      <button class="pattern-range-btn" onclick="setPatternRange(12,this)">1Y</button>
+      <button class="pattern-range-btn" onclick="setPatternRange(0,this)">All</button>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(245,240,232,.4);cursor:pointer;">
+      <input type="checkbox" id="showComparison" onchange="renderPatterns()" style="accent-color:var(--gold);">
+      <span>Compare previous period</span>
+    </label>
+  </div>
+
+  <!-- PATTERN INSIGHT CARD -->
+  <div id="patternInsightCard" style="display:none;" class="astro-card" style="margin-bottom:20px;">
+    <div class="card-label" style="margin-bottom:10px;">Pattern Reading</div>
+    <div id="patternInsightText" style="font-size:15px;color:rgba(245,240,232,.75);line-height:1.85;"></div>
+    <button class="reading-refresh" onclick="generatePatternInsight(true)">↺ Refresh insight</button>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="pattern-chart">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="pattern-title" style="margin-bottom:0;">Energy & Mood by Moon Phase</div>
+      <div id="phaseChartLegend" style="font-size:11px;color:rgba(245,240,232,.3);font-style:italic;"></div>
+    </div>
+    <canvas class="chart-canvas" id="phaseEnergyChart"></canvas>
+  </div>
+
+  <div class="pattern-chart">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="pattern-title" style="margin-bottom:0;" id="arcChartTitle">Energy & Mood Arc</div>
+    </div>
+    <canvas style="width:100%!important;height:220px!important;" id="arcChart"></canvas>
+  </div>
+
+  <div class="pattern-chart">
+    <div class="pattern-title">Clarity & Creativity Arc</div>
+    <canvas style="width:100%!important;height:180px!important;" id="clarityArcChart"></canvas>
+  </div>
+
+  <!-- PHASE HEATMAP -->
+  <div class="pattern-chart">
+    <div class="pattern-title">Your Phase Fingerprint</div>
+    <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:16px;">Average scores across all 8 phases in selected period</div>
+    <div id="phaseFingerprint"></div>
+  </div>
+
+  <!-- STATS SUMMARY -->
+  <div id="patternStats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:20px;"></div>
+
+  <!-- WARNINGS / OBSERVATIONS -->
+  <div id="patternObservations"></div>
+
 </div>
 
 <!-- FULL SKY -->
@@ -1247,6 +1329,7 @@ function renderToday(){
   document.getElementById('planetGridToday').innerHTML=planets.slice(0,8).map(p=>`<div class="planet-card" onclick="openPlanetPopup('${p.name}','${p.symbol}','${p.sign.name}',event)"><div style="display:flex;justify-content:space-between;align-items:start;"><div class="planet-name">${p.name}</div><div class="planet-symbol">${p.symbol}</div></div><div class="planet-sign">${p.sign.symbol} ${p.sign.name}</div><div class="planet-tap-hint">tap for influence</div></div>`).join('');
   generateReading();
   renderIntentionBanner();
+  renderDailyPatternMessage();
   // If today already has an entry, show submitted card not blank form
   const todayEntry = loadEntries()[entryKey(new Date())];
   if(todayEntry){
@@ -1621,21 +1704,356 @@ function toggleGroup(id){
 }
 
 // ─── PATTERNS ─────────────────────────────────────────────────────────────────
-let chartInstances={};
-function renderPatterns(){
-  const entries=loadEntries(),keys=Object.keys(entries).sort();
-  if(keys.length<2){document.getElementById('patternInsights').innerHTML=`<div class="empty-state">Record at least a week of entries to see patterns emerge.</div>`;return;}
-  const pd={};keys.forEach(k=>{const e=entries[k],p=e.phase||'Unknown';if(!pd[p])pd[p]={energy:[],mood:[]};pd[p].energy.push(e.energy);pd[p].mood.push(e.mood);});
-  const po=['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'],pl=po.filter(p=>pd[p]);
-  const avg=arr=>arr.length?+(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1):0;
-  const pe=pl.map(p=>avg(pd[p].energy)),pm=pl.map(p=>avg(pd[p].mood));
-  const cd={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'rgba(245,240,232,.5)',font:{family:'EB Garamond',size:13}}}},scales:{x:{ticks:{color:'rgba(245,240,232,.4)',font:{size:11}},grid:{color:'rgba(245,240,232,.05)'}},y:{min:0,max:10,ticks:{color:'rgba(245,240,232,.4)'},grid:{color:'rgba(245,240,232,.05)'}}}};
-  const l28=keys.slice(-28),dL=l28.map(k=>new Date(k+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),mD=l28.map(k=>entries[k].mood),eD=l28.map(k=>entries[k].energy);
-  function mk(id,cfg){if(chartInstances[id])chartInstances[id].destroy();const ctx=document.getElementById(id);if(ctx)chartInstances[id]=new Chart(ctx,cfg);}
-  mk('phaseEnergyChart',{type:'bar',data:{labels:pl.map(p=>p.replace(' Moon','').replace('ing ','')),datasets:[{label:'Energy',data:pe,backgroundColor:'rgba(201,168,76,.4)',borderColor:'rgba(201,168,76,.7)',borderWidth:1},{label:'Mood',data:pm,backgroundColor:'rgba(138,98,76,.4)',borderColor:'rgba(200,150,120,.7)',borderWidth:1}]},options:cd});
-  mk('moodArcChart',{type:'line',data:{labels:dL,datasets:[{label:'Mood',data:mD,borderColor:'rgba(200,150,120,.8)',backgroundColor:'rgba(200,150,120,.07)',tension:.4,pointRadius:3,pointBackgroundColor:'rgba(200,150,120,.8)'}]},options:cd});
-  mk('energyArcChart',{type:'line',data:{labels:dL,datasets:[{label:'Energy',data:eD,borderColor:'rgba(201,168,76,.8)',backgroundColor:'rgba(201,168,76,.07)',tension:.4,pointRadius:3,pointBackgroundColor:'rgba(201,168,76,.8)'}]},options:cd});
+let patternMonths = 1;
+let chartInstances = {};
+
+function setPatternRange(months, btn){
+  patternMonths = months;
+  document.querySelectorAll('.pattern-range-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPatterns();
 }
+
+function getFilteredEntries(months){
+  const all = loadEntries();
+  if(!months) return all; // 0 = all time
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - months);
+  const cutoffKey = entryKey(cutoff);
+  return Object.fromEntries(Object.entries(all).filter(([k]) => k >= cutoffKey));
+}
+
+function getPreviousPeriodEntries(months){
+  if(!months) return {};
+  const all = loadEntries();
+  const end = new Date(); end.setMonth(end.getMonth() - months);
+  const start = new Date(end); start.setMonth(start.getMonth() - months);
+  const endKey = entryKey(end), startKey = entryKey(start);
+  return Object.fromEntries(Object.entries(all).filter(([k]) => k >= startKey && k < endKey));
+}
+
+function avg(arr){ return arr.length ? +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1) : 0; }
+
+function renderPatterns(){
+  const entries = getFilteredEntries(patternMonths);
+  const keys = Object.keys(entries).sort();
+  const showComp = document.getElementById('showComparison')?.checked;
+  const prevEntries = showComp ? getPreviousPeriodEntries(patternMonths) : {};
+  const prevKeys = Object.keys(prevEntries).sort();
+  const container = document.getElementById('patternInsights');
+
+  if(keys.length < 3){
+    if(container) container.innerHTML = '<div class="empty-state">Record at least a few entries to see patterns emerge.</div>';
+    return;
+  }
+
+  const PHASES = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+  const PHASE_SHORT = ['New','Wax.Cres','1st Qtr','Wax.Gib','Full','Wan.Gib','Last Qtr','Wan.Cres'];
+  const PHASE_EMOJIS = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];
+
+  // Build phase data
+  const phaseData = {};
+  PHASES.forEach(p => { phaseData[p] = {energy:[],mood:[],clarity:[],creativity:[]}; });
+  keys.forEach(k => {
+    const e = entries[k];
+    if(phaseData[e.phase]){
+      phaseData[e.phase].energy.push(e.energy||0);
+      phaseData[e.phase].mood.push(e.mood||0);
+      phaseData[e.phase].clarity.push(e.clarity||5);
+      phaseData[e.phase].creativity.push(e.creativity||5);
+    }
+  });
+
+  const chartOpts = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'rgba(245,240,232,.5)',font:{family:'EB Garamond',size:13},boxWidth:12}}},
+    scales:{
+      x:{ticks:{color:'rgba(245,240,232,.4)',font:{size:10},maxRotation:45},grid:{color:'rgba(245,240,232,.04)'}},
+      y:{min:0,max:10,ticks:{color:'rgba(245,240,232,.4)',font:{size:10}},grid:{color:'rgba(245,240,232,.05)'}}
+    }
+  };
+
+  function mk(id,cfg){
+    if(chartInstances[id]) chartInstances[id].destroy();
+    const ctx = document.getElementById(id);
+    if(ctx) chartInstances[id] = new Chart(ctx, cfg);
+  }
+
+  // ── PHASE ENERGY CHART ───────────────────────────────────────────────────
+  const phaseLabels = PHASES.filter(p => phaseData[p].energy.length > 0);
+  const phaseEmojis = phaseLabels.map(p => PHASE_EMOJIS[PHASES.indexOf(p)] + ' ' + PHASE_SHORT[PHASES.indexOf(p)]);
+  const phaseEn = phaseLabels.map(p => avg(phaseData[p].energy));
+  const phaseMo = phaseLabels.map(p => avg(phaseData[p].mood));
+
+  // Previous period comparison
+  const prevPhaseData = {};
+  PHASES.forEach(p => { prevPhaseData[p] = {energy:[],mood:[]}; });
+  prevKeys.forEach(k => {
+    const e = prevEntries[k];
+    if(prevPhaseData[e.phase]){ prevPhaseData[e.phase].energy.push(e.energy||0); prevPhaseData[e.phase].mood.push(e.mood||0); }
+  });
+  const prevPhaseEn = phaseLabels.map(p => avg(prevPhaseData[p].energy));
+  const prevPhaseMo = phaseLabels.map(p => avg(prevPhaseData[p].mood));
+
+  const phaseDatasets = [
+    {label:'Energy',data:phaseEn,backgroundColor:'rgba(201,168,76,.45)',borderColor:'rgba(201,168,76,.8)',borderWidth:1.5},
+    {label:'Mood',data:phaseMo,backgroundColor:'rgba(180,100,80,.35)',borderColor:'rgba(200,130,100,.7)',borderWidth:1.5},
+  ];
+  if(showComp && prevKeys.length){
+    phaseDatasets.push({label:'Energy (prev)',data:prevPhaseEn,backgroundColor:'rgba(201,168,76,.15)',borderColor:'rgba(201,168,76,.3)',borderWidth:1,borderDash:[4,3]});
+    phaseDatasets.push({label:'Mood (prev)',data:prevPhaseMo,backgroundColor:'rgba(180,100,80,.12)',borderColor:'rgba(200,130,100,.3)',borderWidth:1,borderDash:[4,3]});
+  }
+  mk('phaseEnergyChart',{type:'bar',data:{labels:phaseEmojis,datasets:phaseDatasets},options:{...chartOpts,plugins:{...chartOpts.plugins,legend:{display:true,labels:{color:'rgba(245,240,232,.4)',font:{size:11},boxWidth:10}}}}});
+
+  // ── ARC CHART (energy + mood over time) ──────────────────────────────────
+  const arcTitle = document.getElementById('arcChartTitle');
+  const rangeLabel = patternMonths ? `Last ${patternMonths} Month${patternMonths>1?'s':''}` : 'All Time';
+  if(arcTitle) arcTitle.textContent = `Energy & Mood — ${rangeLabel}`;
+
+  // Sample down if too many points
+  let arcKeys = keys;
+  if(arcKeys.length > 60) {
+    const step = Math.floor(arcKeys.length / 60);
+    arcKeys = arcKeys.filter((_,i) => i % step === 0);
+  }
+  const arcLabels = arcKeys.map(k => {
+    const d = new Date(k+'T12:00:00');
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  });
+  const arcEn = arcKeys.map(k => entries[k].energy||0);
+  const arcMo = arcKeys.map(k => entries[k].mood||0);
+
+  const arcDatasets = [
+    {label:'Energy',data:arcEn,borderColor:'rgba(201,168,76,.8)',backgroundColor:'rgba(201,168,76,.06)',tension:.35,pointRadius:arcKeys.length>30?0:3,fill:true},
+    {label:'Mood',data:arcMo,borderColor:'rgba(200,130,100,.7)',backgroundColor:'rgba(200,130,100,.05)',tension:.35,pointRadius:arcKeys.length>30?0:3,fill:true},
+  ];
+
+  if(showComp && prevKeys.length){
+    let prevArcKeys = prevKeys;
+    if(prevArcKeys.length > 60){ const step=Math.floor(prevArcKeys.length/60); prevArcKeys=prevArcKeys.filter((_,i)=>i%step===0); }
+    arcDatasets.push({label:'Energy (prev)',data:prevArcKeys.map(k=>prevEntries[k].energy||0),borderColor:'rgba(201,168,76,.25)',backgroundColor:'transparent',tension:.35,pointRadius:0,borderDash:[4,3]});
+    arcDatasets.push({label:'Mood (prev)',data:prevArcKeys.map(k=>prevEntries[k].mood||0),borderColor:'rgba(200,130,100,.25)',backgroundColor:'transparent',tension:.35,pointRadius:0,borderDash:[4,3]});
+  }
+
+  mk('arcChart',{type:'line',data:{labels:arcLabels,datasets:arcDatasets},options:{...chartOpts,scales:{...chartOpts.scales,x:{...chartOpts.scales.x,ticks:{...chartOpts.scales.x.ticks,maxTicksLimit:8}}}}});
+
+  // ── CLARITY & CREATIVITY ARC ─────────────────────────────────────────────
+  const clarArcEn = arcKeys.map(k => entries[k].clarity||5);
+  const clarArcCr = arcKeys.map(k => entries[k].creativity||5);
+  mk('clarityArcChart',{type:'line',data:{labels:arcLabels,datasets:[
+    {label:'Clarity',data:clarArcEn,borderColor:'rgba(120,160,210,.7)',backgroundColor:'rgba(120,160,210,.05)',tension:.35,pointRadius:0,fill:true},
+    {label:'Creativity',data:clarArcCr,borderColor:'rgba(160,120,200,.7)',backgroundColor:'rgba(160,120,200,.05)',tension:.35,pointRadius:0,fill:true},
+  ]},options:{...chartOpts,scales:{...chartOpts.scales,x:{...chartOpts.scales.x,ticks:{...chartOpts.scales.x.ticks,maxTicksLimit:8}}}}});
+
+  // ── PHASE FINGERPRINT ────────────────────────────────────────────────────
+  const fpContainer = document.getElementById('phaseFingerprint');
+  if(fpContainer){
+    const maxVal = 10;
+    fpContainer.innerHTML = PHASES.map((p,i) => {
+      const enArr = phaseData[p].energy, moArr = phaseData[p].mood;
+      if(!enArr.length) return '';
+      const enAvg = avg(enArr), moAvg = avg(moArr);
+      const enW = (enAvg/maxVal)*100, moW = (moAvg/maxVal)*100;
+      return `<div class="phase-fingerprint-row">
+        <div class="phase-fingerprint-label">${PHASE_EMOJIS[i]} ${p.replace(' Moon','').replace('ing ','')}</div>
+        <div style="flex:1;">
+          <div class="phase-fingerprint-bar-wrap" style="margin-bottom:3px;">
+            <div class="phase-fingerprint-bar energy" style="width:${enW}%"></div>
+          </div>
+          <div class="phase-fingerprint-bar-wrap">
+            <div class="phase-fingerprint-bar mood" style="width:${moW}%"></div>
+          </div>
+        </div>
+        <div class="phase-fingerprint-val">${enAvg}/${moAvg}</div>
+        <div style="font-size:10px;color:rgba(245,240,232,.2);min-width:28px;">${enArr.length}d</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── STATS SUMMARY ────────────────────────────────────────────────────────
+  const allEn = keys.map(k=>entries[k].energy||0);
+  const allMo = keys.map(k=>entries[k].mood||0);
+  const allCl = keys.map(k=>entries[k].clarity||5);
+  const allCr = keys.map(k=>entries[k].creativity||5);
+  const prevAllEn = prevKeys.map(k=>prevEntries[k]?.energy||0);
+  const prevAllMo = prevKeys.map(k=>prevEntries[k]?.mood||0);
+
+  function deltaHTML(curr, prev){
+    if(!prev || !prev.length) return '';
+    const d = (curr - avg(prev)).toFixed(1);
+    const cls = d>0?'up':d<0?'down':'same';
+    return `<div class="stat-card-delta ${cls}">${d>0?'↑':'↓'} ${Math.abs(d)} vs prev</div>`;
+  }
+
+  const bestPhase = phaseLabels.reduce((best,p) => avg(phaseData[p].energy) > avg(phaseData[best]?.energy||[0]) ? p : best, phaseLabels[0]);
+  const hardPhase = phaseLabels.reduce((hard,p) => avg(phaseData[p].energy) < avg(phaseData[hard]?.energy||[10]) ? p : hard, phaseLabels[0]);
+  const streak = calcStreak(keys);
+
+  const statsEl = document.getElementById('patternStats');
+  if(statsEl) statsEl.innerHTML = [
+    {val:keys.length, label:'Entries', delta:''},
+    {val:avg(allEn).toFixed(1), label:'Avg Energy', delta:deltaHTML(avg(allEn),prevAllEn)},
+    {val:avg(allMo).toFixed(1), label:'Avg Mood', delta:deltaHTML(avg(allMo),prevAllMo)},
+    {val:avg(allCl).toFixed(1), label:'Avg Clarity', delta:''},
+    {val:streak+'d', label:'Current Streak', delta:''},
+    {val:PHASE_EMOJIS[PHASES.indexOf(bestPhase)]||'🌕', label:'Peak Phase', delta:''},
+  ].map(s => `<div class="stat-card"><span class="stat-card-val">${s.val}</span><div class="stat-card-label">${s.label}</div>${s.delta}</div>`).join('');
+
+  // ── PATTERN OBSERVATIONS ─────────────────────────────────────────────────
+  renderPatternObservations(entries, keys, phaseData, PHASES, PHASE_EMOJIS);
+
+  // ── AI PATTERN INSIGHT ───────────────────────────────────────────────────
+  generatePatternInsight();
+}
+
+function calcStreak(sortedKeys){
+  if(!sortedKeys.length) return 0;
+  const today = entryKey(new Date());
+  let streak = 0, check = new Date();
+  for(let i=0;i<sortedKeys.length+1;i++){
+    const k = entryKey(check);
+    if(sortedKeys.includes(k)){ streak++; check.setDate(check.getDate()-1); }
+    else if(k === today){ check.setDate(check.getDate()-1); } // allow today being missing
+    else break;
+  }
+  return streak;
+}
+
+function renderPatternObservations(entries, keys, phaseData, PHASES, PHASE_EMOJIS){
+  const obs = [];
+  const avgFn = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+
+  // Check for consistent low phases
+  PHASES.forEach((p,i) => {
+    const en = phaseData[p].energy;
+    if(en.length >= 2 && avgFn(en) < 4){
+      obs.push({type:'warning', icon:PHASE_EMOJIS[i],
+        title:`Low energy pattern — ${p}`,
+        text:`Across ${en.length} ${p} days in this period, your energy averaged ${avgFn(en).toFixed(1)}/10. This phase consistently challenges you. Consider protecting rest during ${p}.`});
+    }
+  });
+
+  // Check for peak phases
+  PHASES.forEach((p,i) => {
+    const en = phaseData[p].energy;
+    if(en.length >= 2 && avgFn(en) > 7.5){
+      obs.push({type:'positive', icon:PHASE_EMOJIS[i],
+        title:`Peak phase — ${p}`,
+        text:`Your energy averages ${avgFn(en).toFixed(1)}/10 during ${p}. This is when you're most alive. Plan important work, creative sessions, and social commitments here.`});
+    }
+  });
+
+  // Mood vs energy gap
+  const allEn = keys.map(k=>entries[k].energy||0);
+  const allMo = keys.map(k=>entries[k].mood||0);
+  const enAvg = avgFn(allEn), moAvg = avgFn(allMo);
+  if(Math.abs(enAvg - moAvg) > 1.5){
+    if(enAvg > moAvg){
+      obs.push({type:'insight', icon:'⚡',
+        title:'Energy runs ahead of mood',
+        text:`Your energy (${enAvg.toFixed(1)}) consistently outpaces your mood (${moAvg.toFixed(1)}). You have physical vitality but emotional weight. The body wants to move while something in the heart needs tending.`});
+    } else {
+      obs.push({type:'insight', icon:'🌙',
+        title:'Mood runs ahead of energy',
+        text:`Your emotional state (${moAvg.toFixed(1)}) consistently outpaces your physical energy (${enAvg.toFixed(1)}). You feel more than your body can hold. Rest and embodiment practices would serve you.`});
+    }
+  }
+
+  // Creativity trend
+  const crKeys = keys.slice(-14);
+  const crRecent = avgFn(crKeys.map(k=>entries[k].creativity||5));
+  const crEarly = avgFn(keys.slice(0,14).map(k=>entries[k].creativity||5));
+  if(crKeys.length >= 7 && crRecent - crEarly > 1){
+    obs.push({type:'positive', icon:'🔥',
+      title:'Creativity is rising',
+      text:`Your creativity scores have increased by ${(crRecent-crEarly).toFixed(1)} points over this period. Something is opening.`});
+  } else if(crKeys.length >= 7 && crEarly - crRecent > 1){
+    obs.push({type:'warning', icon:'🔥',
+      title:'Creativity has dipped',
+      text:`Your creativity scores have dropped by ${(crEarly-crRecent).toFixed(1)} points recently. Your creative well may need refilling — input before output.`});
+  }
+
+  // Full moon check
+  const fullMoonEntries = keys.filter(k => entries[k].phase === 'Full Moon');
+  if(fullMoonEntries.length >= 2){
+    const fmEn = avgFn(fullMoonEntries.map(k=>entries[k].energy||0));
+    const fmMo = avgFn(fullMoonEntries.map(k=>entries[k].mood||0));
+    if(fmMo < 5){
+      obs.push({type:'insight', icon:'🌕',
+        title:'Full moons run emotionally intense for you',
+        text:`Across ${fullMoonEntries.length} full moon days, your mood averaged ${fmMo.toFixed(1)}/10. The full moon amplifies everything — both the light and the unresolved. This is not a warning, it is information.`});
+    }
+  }
+
+  const container = document.getElementById('patternObservations');
+  if(!container) return;
+  if(!obs.length){ container.innerHTML=''; return; }
+  container.innerHTML = `<div style="margin-bottom:16px;"><div class="sky-section-title">Observations</div></div>` +
+    obs.map(o => `<div class="pattern-obs ${o.type}">
+      <div class="pattern-obs-icon">${o.icon}</div>
+      <div>
+        <div class="pattern-obs-title">${o.title}</div>
+        <div class="pattern-obs-text">${o.text}</div>
+      </div>
+    </div>`).join('');
+}
+
+const PKI = 'lunations_pattern_insight_v1';
+async function generatePatternInsight(force=false){
+  const card = document.getElementById('patternInsightCard');
+  const textEl = document.getElementById('patternInsightText');
+  if(!card || !textEl) return;
+
+  const weekKey = new Date().toISOString().slice(0,7); // monthly cache
+  if(!force){
+    try{
+      const c = JSON.parse(localStorage.getItem(PKI)||'null');
+      if(c && c.key === weekKey && c.months === patternMonths){
+        textEl.textContent = c.text; card.style.display='block'; return;
+      }
+    } catch(e){}
+  }
+
+  const entries = getFilteredEntries(patternMonths);
+  const keys = Object.keys(entries).sort();
+  if(keys.length < 7){ card.style.display='none'; return; }
+
+  card.style.display='block';
+  textEl.innerHTML='<span class="reading-loading">Reading your patterns…</span>';
+
+  const PHASES = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+  const phaseAvgs = PHASES.map(p => {
+    const en = keys.filter(k=>entries[k].phase===p).map(k=>entries[k].energy||0);
+    return en.length ? {phase:p, avg:(en.reduce((a,b)=>a+b,0)/en.length).toFixed(1), n:en.length} : null;
+  }).filter(Boolean);
+
+  const allEn = keys.map(k=>entries[k].energy||0);
+  const allMo = keys.map(k=>entries[k].mood||0);
+  const rangeLabel = patternMonths ? `last ${patternMonths} month${patternMonths>1?'s':''}` : 'all recorded time';
+  const profile = loadProfile();
+
+  const prompt = `You are reading someone's emotional and energetic patterns from their lunar journal. ${keys.length} entries over ${rangeLabel}. Write a direct, specific 3-4 sentence pattern reading. Reference actual numbers. Notice one key tension or pattern. End with one practical observation about their relationship to the lunar cycle. No filler. Speak in second person.
+
+${profile?.name ? 'Their name is '+profile.name+'.' : ''}
+Average energy: ${(allEn.reduce((a,b)=>a+b,0)/allEn.length).toFixed(1)}/10
+Average mood: ${(allMo.reduce((a,b)=>a+b,0)/allMo.length).toFixed(1)}/10
+Phase averages (energy): ${phaseAvgs.map(p=>p.phase+': '+p.avg).join(', ')}
+Entry count: ${keys.length}
+
+Write the pattern reading now.`;
+
+  try{
+    const res = await fetch('/api/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const text = data.text||'';
+    if(text){
+      textEl.textContent = text;
+      localStorage.setItem(PKI, JSON.stringify({key:weekKey, months:patternMonths, text}));
+    } else { card.style.display='none'; }
+  } catch(e){ card.style.display='none'; }
+}
+
 
 // ─── FULL SKY ─────────────────────────────────────────────────────────────────
 function renderSky(){
@@ -2989,6 +3407,85 @@ function renderVedicPanel(){
   }
 
   container.innerHTML = cardHTML;
+}
+
+
+// ─── DAILY PATTERN MESSAGE ────────────────────────────────────────────────────
+function renderDailyPatternMessage(){
+  const entries = loadEntries();
+  const keys = Object.keys(entries).sort();
+  if(keys.length < 7) return; // need at least a week
+
+  const today = new Date();
+  const todayPhase = moonPhaseInfo(today);
+  const PHASES = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+
+  // Find past entries on same phase
+  const samePhaseKeys = keys.filter(k => {
+    const e = entries[k];
+    return e.phase === todayPhase.name && k !== entryKey(today);
+  });
+
+  if(!samePhaseKeys.length) return;
+
+  const avgFn = arr => arr.length ? +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1) : null;
+  const phaseEnergy = avgFn(samePhaseKeys.map(k => entries[k].energy||0));
+  const phaseMood = avgFn(samePhaseKeys.map(k => entries[k].mood||0));
+  const phaseQualities = {};
+  samePhaseKeys.forEach(k => {
+    (entries[k].qualities||[]).forEach(q => { phaseQualities[q] = (phaseQualities[q]||0)+1; });
+  });
+  const topQualities = Object.entries(phaseQualities).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([q])=>q);
+
+  // Build the message
+  let msg = '', type = 'insight';
+  if(phaseEnergy !== null){
+    if(phaseEnergy < 4){
+      msg = `Historically your energy dips to ${phaseEnergy}/10 during ${todayPhase.name}. This is a pattern, not a problem — your system knows to conserve here.`;
+      type = 'warning';
+    } else if(phaseEnergy > 7){
+      msg = `${todayPhase.name} tends to be a peak period for you — energy averages ${phaseEnergy}/10 across ${samePhaseKeys.length} past entries. Lean in.`;
+      type = 'positive';
+    } else {
+      msg = `During past ${todayPhase.name} days you've averaged ${phaseEnergy}/10 energy, ${phaseMood}/10 mood across ${samePhaseKeys.length} entries.`;
+    }
+    if(topQualities.length){
+      msg += ` You tend to feel ${topQualities.join(', ')} now.`;
+    }
+  }
+
+  if(!msg) return;
+
+  // Find or create the pattern message div
+  let pmDiv = document.getElementById('dailyPatternMsg');
+  if(!pmDiv){
+    pmDiv = document.createElement('div');
+    pmDiv.id = 'dailyPatternMsg';
+    // Insert after the reading card
+    const readingCard = document.querySelector('.reading-card');
+    if(readingCard) readingCard.after(pmDiv);
+    else return;
+  }
+
+  const colors = {
+    warning: 'rgba(139,58,42,.1)',
+    positive: 'rgba(60,120,60,.08)',
+    insight: 'rgba(201,168,76,.05)',
+  };
+  const borders = {
+    warning: 'rgba(200,100,70,.3)',
+    positive: 'rgba(100,180,100,.3)',
+    insight: 'rgba(201,168,76,.2)',
+  };
+  const icons = { warning:'⚡', positive:'✦', insight:'🌙' };
+
+  pmDiv.innerHTML = `<div style="background:${colors[type]};border:1px solid ${borders[type]};border-radius:8px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;">
+    <div style="font-size:16px;flex-shrink:0;margin-top:1px;">${icons[type]}</div>
+    <div>
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(245,240,232,.3);text-transform:uppercase;margin-bottom:5px;">Your Pattern Today</div>
+      <div style="font-size:14px;color:rgba(245,240,232,.65);line-height:1.7;">${msg}</div>
+    </div>
+  </div>`;
 }
 
 // ─── LANDING ──────────────────────────────────────────────────────────────────
