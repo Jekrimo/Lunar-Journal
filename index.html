@@ -1359,9 +1359,25 @@ function moonPhaseInfo(date){
   return{name:row[1],emoji:row[2],quarter:row[3],pct,age};
 }
 function prevNewMoon(date){
-  let d=new Date(date),age=moonAge(d);
-  d.setDate(d.getDate()-Math.round(age));
-  for(let i=0;i<5;i++){age=moonAge(d);if(age<2)break;d.setDate(d.getDate()+(age>15?Math.round(29.53-age):-Math.round(age)));}
+  // More accurate: iterate backwards by synodic period until age < 1 day
+  const SYN = 29.53058867;
+  let d = new Date(date);
+  let age = moonAge(d);
+  // Jump back to approximate new moon
+  d = new Date(d.getTime() - age * 86400000);
+  // Refine with small steps
+  for(let i = 0; i < 10; i++){
+    age = moonAge(d);
+    if(age < 0.5) break;
+    if(age > SYN/2){
+      // We're in the second half — we overshot, go forward
+      d = new Date(d.getTime() + (SYN - age) * 86400000);
+    } else {
+      d = new Date(d.getTime() - age * 86400000);
+    }
+  }
+  // Final snap: set to start of that day
+  d.setHours(0,0,0,0);
   return d;
 }
 
@@ -1471,7 +1487,11 @@ Write the reading. Include: one specific tension or opportunity in today's sky, 
     const text=data.text||buildFallbackReading(phase,mSign,sSign,profile);
     document.getElementById('readingText').textContent=text;
     localStorage.setItem(RK,JSON.stringify({date:todayKey,text,ts:Date.now()}));
-  }catch(e){document.getElementById('readingText').textContent=buildFallbackReading(phase,mSign,sSign,profile);}
+  }catch(e){
+    console.warn('Reading API error:', e.message);
+    const el = document.getElementById('readingText');
+    if(el) el.textContent = buildFallbackReading(phase,mSign,sSign,profile);
+  }
 }
 function buildFallbackReading(phase,mSign,sSign,profile){
   const n=profile?.name?profile.name+', the':'The';
@@ -1508,6 +1528,7 @@ function renderToday(){
   const todayEntry = loadEntries()[entryKey(new Date())];
   if(todayEntry){
     showSubmittedCard(todayEntry);
+  setTimeout(renderEveningCheckin, 100);
   } else {
     showEntryForm();
     setTimeout(initHeartbeats, 50);
@@ -3022,7 +3043,8 @@ async function signOut(){
   closeSideMenu();
   closeAuthModal();
   showToast('Signed out');
-  renderToday();
+  // Full page reload ensures clean state - all cached DOM is gone
+  setTimeout(() => window.location.reload(), 800);
 }
 
 function confirmSignOut(){
@@ -3942,7 +3964,11 @@ function renderEveningCheckin(){
   if(eveEntry){
     showEveningSubmitted(eveEntry, morningEntry);
   } else {
-    showEveningForm(morningEntry);
+    // Don't reset form if already visible and has user input
+    const form = document.getElementById('eveFormWrap');
+    const hasInput = document.getElementById('eveText')?.value?.length > 0;
+    if(!hasInput) showEveningForm(morningEntry);
+    else form.style.display = 'block';
   }
 }
 
