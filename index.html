@@ -1128,6 +1128,10 @@
       </select>
     </div>
     <div class="ob-field">
+      <label class="ob-label">Birth City <span style="color:rgba(245,240,232,.3);font-size:11px;">(for rising sign · optional)</span></label>
+      <input class="ob-input" type="text" id="obBirthCity" placeholder="e.g. Denver, Colorado" autocomplete="off">
+    </div>
+    <div class="ob-field">
       <label class="ob-label">Chart Notes (optional — anything you want the journal to factor in)</label>
       <textarea class="ob-input" id="obNotes" rows="3" placeholder="e.g. Scorpio moon, Venus in Pisces, stellium in 12th house, Kundalini active…" style="resize:vertical;min-height:80px;"></textarea>
     </div>
@@ -2198,6 +2202,7 @@ async function saveProfile(){
     dob:document.getElementById('obDOB').value,
     time:document.getElementById('obTime').value,
     rising:document.getElementById('obRising').value,
+    birthCity:document.getElementById('obBirthCity')?.value.trim()||'',
     notes:document.getElementById('obNotes').value.trim()
   };
   saveProfileData(p);
@@ -2359,7 +2364,7 @@ const VEDIC_QUALITY_COLORS = {
   neutral:    { bg: 'rgba(100,100,100,.08)', border: 'rgba(160,160,160,.15)', text: 'rgba(245,240,232,.4)' },
 };
 
-function renderVedicPanel() {
+function renderVedicPanelOrig() {
   const now = new Date();
   const tithi = getTithi(now);
   const nakshatra = getNakshatra(now);
@@ -2498,8 +2503,22 @@ function importEntries(evt){
       const merged = {...existing, ...entries};
       saveEntries(merged);
       const count = Object.keys(entries).length;
-      alert(`Imported ${count} entries successfully. Your existing entries were preserved.`);
+      showToast('✦ ' + count + ' entries imported');
       renderSettings();
+      // Push to cloud if signed in
+      if(currentUser && sbClient){
+        showToast('Syncing ' + count + ' entries to cloud…');
+        sbClient.auth.getSession().then(({data:{session}}) => {
+          if(!session?.access_token) return;
+          fetch('/api/sync',{
+            method:'POST',
+            headers:{'Content-Type':'application/json', Authorization:'Bearer '+session.access_token},
+            body: JSON.stringify({entries: merged})
+          }).then(r=>r.json()).then(d=>{
+            if(d.synced) showToast('✦ ' + d.synced + ' entries saved to your account');
+          }).catch(e=>console.warn('Import sync failed:',e));
+        });
+      }
     } catch(err){
       alert('Could not read file. Make sure it is a valid Lunations JSON export.');
     }
@@ -2580,9 +2599,13 @@ async function pullCloudProfile(){
         dob: profile.dob||'',
         time: profile.birth_time||'',
         rising: profile.rising||'',
+        birthCity: profile.birth_city||'',
+        birthLat: profile.birth_lat||null,
+        birthLng: profile.birth_lng||null,
         notes: profile.notes||'',
       };
       saveProfileData(localProfile);
+      localStorage.setItem('lunations_profile_loaded_v1', '1'); // flag for popup suppression
       console.log('Profile loaded from cloud:', localProfile.name);
       return true;
     }
@@ -3416,88 +3439,73 @@ function renderModeGrid(){
   `).join('');
 }
 
-// Override renderVedicPanel to be mode-aware
-const _origRenderVedicPanel = renderVedicPanel;
+// Mode-aware Vedic panel dispatcher
 function renderVedicPanel(){
   const mode = getModeData();
-  const now = new Date();
-  const phase = moonPhaseInfo(now);
-  const container = document.getElementById('vedicPanelWrap') ||
-    (() => { const d=document.createElement('div'); d.id='vedicPanelWrap';
-      const ct = document.getElementById('cycleTone')?.closest('.astro-card');
-      if(ct) ct.after(d); return d; })();
+  if(!mode || mode.name === 'Vedic'){
+    renderVedicPanelOrig();
+    return;
+  }
 
+  // Find or create container
+  let container = document.getElementById('vedicPanelWrap');
+  if(!container){
+    container = document.createElement('div');
+    container.id = 'vedicPanelWrap';
+    const ct = document.getElementById('cycleTone');
+    if(ct) ct.closest('.astro-card')?.after(container);
+  }
+  if(!container) return;
   if(!getSetting('showVedic',true)){ container.innerHTML=''; return; }
 
+  const now = new Date();
+  const phase = moonPhaseInfo(now);
+  const mSign = moonSignApprox(now);
   let cardHTML = '';
 
-  if(mode.name === 'Vedic'){
-    _origRenderVedicPanel();
-    return;
-  } else if(mode.name === 'Goddess'){
-    const g = mode.phaseGoddesses[phase.quarter] || {name:'Selene',desc:'The eternal moon.'};
-    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
-      <div class="card-label">${mode.dailyCardLabel}</div>
-      <div style="margin-top:12px;display:flex;align-items:flex-start;gap:16px;">
-        <div style="font-size:36px;">${mode.icon}</div>
-        <div>
-          <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold-pale);margin-bottom:6px;">${g.name}</div>
-          <div style="font-size:15px;color:rgba(245,240,232,.6);line-height:1.7;font-style:italic;">${g.desc}</div>
-        </div>
-      </div>
-    </div>`;
+  if(mode.name === 'Goddess'){
+    const g = mode.phaseGoddesses?.[phase.quarter] || {name:'Selene',desc:'The eternal moon.'};
+    cardHTML = '<div class="astro-card" style="margin-bottom:20px;"><div class="card-label">' + mode.dailyCardLabel + '</div>' +
+      '<div style="margin-top:12px;display:flex;align-items:flex-start;gap:16px;">' +
+      '<div style="font-size:36px;">' + mode.icon + '</div>' +
+      '<div><div style="font-family:Cinzel,serif;font-size:18px;color:var(--gold-pale);margin-bottom:6px;">' + g.name + '</div>' +
+      '<div style="font-size:15px;color:rgba(245,240,232,.6);line-height:1.7;font-style:italic;">' + g.desc + '</div></div></div></div>';
   } else if(mode.name === 'Crystal'){
-    const c = mode.phaseStones[phase.quarter] || {stone:'Clear Quartz',chakra:'Crown',ritual:'Set your intention.'};
-    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
-      <div class="card-label">${mode.dailyCardLabel}</div>
-      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div style="background:rgba(245,240,232,.03);border-radius:6px;padding:12px;">
-          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.3);margin-bottom:6px;">STONE</div>
-          <div style="font-size:15px;color:rgba(245,240,232,.8);">${mode.icon} ${c.stone}</div>
-        </div>
-        <div style="background:rgba(245,240,232,.03);border-radius:6px;padding:12px;">
-          <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.3);margin-bottom:6px;">CHAKRA</div>
-          <div style="font-size:15px;color:rgba(245,240,232,.8);">${c.chakra}</div>
-        </div>
-      </div>
-      <div style="margin-top:12px;padding:12px;background:rgba(201,168,76,.05);border-radius:6px;font-size:14px;color:rgba(245,240,232,.55);font-style:italic;line-height:1.7;">${c.ritual}</div>
-    </div>`;
+    const c = mode.phaseStones?.[phase.quarter] || {stone:'Clear Quartz',chakra:'Crown',ritual:'Set your intention.'};
+    cardHTML = '<div class="astro-card" style="margin-bottom:20px;"><div class="card-label">' + mode.dailyCardLabel + '</div>' +
+      '<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+      '<div style="background:rgba(245,240,232,.03);border-radius:6px;padding:12px;">' +
+      '<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.3);margin-bottom:6px;">STONE</div>' +
+      '<div style="font-size:15px;color:rgba(245,240,232,.8);">' + mode.icon + ' ' + c.stone + '</div></div>' +
+      '<div style="background:rgba(245,240,232,.03);border-radius:6px;padding:12px;">' +
+      '<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;color:rgba(245,240,232,.3);margin-bottom:6px;">CHAKRA</div>' +
+      '<div style="font-size:15px;color:rgba(245,240,232,.8);">' + c.chakra + '</div></div></div>' +
+      '<div style="margin-top:12px;padding:12px;background:rgba(201,168,76,.05);border-radius:6px;font-size:14px;color:rgba(245,240,232,.55);font-style:italic;line-height:1.7;">' + c.ritual + '</div></div>';
   } else if(mode.name === 'Elemental'){
-    const mSign = moonSignApprox(now);
-    const el = mode.signElements[mSign.element] || {direction:'Centre',season:'The Turning',quality:'all forces present'};
-    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
-      <div class="card-label">${mode.dailyCardLabel}</div>
-      <div style="margin-top:12px;text-align:center;padding:8px 0;">
-        <div style="font-size:42px;margin-bottom:8px;">${mode.icon}</div>
-        <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-pale);margin-bottom:4px;">${mSign.element} · ${el.direction}</div>
-        <div style="font-size:13px;color:rgba(245,240,232,.4);font-style:italic;">${el.season} · ${el.quality}</div>
-      </div>
-    </div>`;
+    const el = mode.signElements?.[mSign.element] || {direction:'Centre',season:'The Turning',quality:'all forces present'};
+    cardHTML = '<div class="astro-card" style="margin-bottom:20px;"><div class="card-label">' + mode.dailyCardLabel + '</div>' +
+      '<div style="margin-top:12px;text-align:center;padding:8px 0;">' +
+      '<div style="font-size:42px;margin-bottom:8px;">' + mode.icon + '</div>' +
+      '<div style="font-family:Cinzel,serif;font-size:16px;color:var(--gold-pale);margin-bottom:4px;">' + mSign.element + ' · ' + el.direction + '</div>' +
+      '<div style="font-size:13px;color:rgba(245,240,232,.4);font-style:italic;">' + el.season + ' · ' + el.quality + '</div></div></div>';
   } else if(mode.name === 'Nature'){
-    const a = mode.phaseAnimals[phase.quarter] || {animal:'Crow',medicine:'Watch. Listen. Adapt.'};
-    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
-      <div class="card-label">${mode.dailyCardLabel}</div>
-      <div style="margin-top:12px;display:flex;align-items:flex-start;gap:16px;">
-        <div style="font-size:36px;">${mode.icon}</div>
-        <div>
-          <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold-pale);margin-bottom:6px;">${a.animal} Medicine</div>
-          <div style="font-size:15px;color:rgba(245,240,232,.6);line-height:1.75;font-style:italic;">${a.medicine}</div>
-        </div>
-      </div>
-    </div>`;
+    const a = mode.phaseAnimals?.[phase.quarter] || {animal:'Crow',medicine:'Watch. Listen. Adapt.'};
+    cardHTML = '<div class="astro-card" style="margin-bottom:20px;"><div class="card-label">' + mode.dailyCardLabel + '</div>' +
+      '<div style="margin-top:12px;display:flex;align-items:flex-start;gap:16px;">' +
+      '<div style="font-size:36px;">' + mode.icon + '</div>' +
+      '<div><div style="font-family:Cinzel,serif;font-size:16px;color:var(--gold-pale);margin-bottom:6px;">' + a.animal + ' Medicine</div>' +
+      '<div style="font-size:15px;color:rgba(245,240,232,.6);line-height:1.75;font-style:italic;">' + a.medicine + '</div></div></div></div>';
   } else if(mode.name === 'Source'){
-    const sourceMessages = [
+    const msgs = [
       'The field is coherent today. Your signal is clear. What frequency are you broadcasting?',
       'Interference patterns dissolve at the node points. You are at a node point.',
       'Resonance precedes manifestation. The quantum field collapses toward your attention.',
       'You are not in the universe. The universe is in you. Act accordingly.',
       'The observer and the observed are one. What you witness, you participate in.',
     ];
-    const msg = sourceMessages[new Date().getDate() % sourceMessages.length];
-    cardHTML = `<div class="astro-card" style="margin-bottom:20px;">
-      <div class="card-label">${mode.dailyCardLabel}</div>
-      <div style="margin-top:10px;font-size:16px;color:rgba(245,240,232,.7);line-height:1.85;font-style:italic;">${msg}</div>
-    </div>`;
+    const msg = msgs[new Date().getDate() % msgs.length];
+    cardHTML = '<div class="astro-card" style="margin-bottom:20px;"><div class="card-label">' + mode.dailyCardLabel + '</div>' +
+      '<div style="margin-top:10px;font-size:16px;color:rgba(245,240,232,.7);line-height:1.85;font-style:italic;">' + msg + '</div></div>';
   }
 
   container.innerHTML = cardHTML;
@@ -3822,7 +3830,7 @@ restoreFromIDB().then(restored => {
 function enterApp(){
   localStorage.setItem('lj_entered','1');
   document.getElementById('landingScreen').classList.add('hidden');
-  if(!loadProfile()) setTimeout(openOnboarding, 800);
+  if(!loadProfile() && !currentUser) setTimeout(openOnboarding, 800);
 }
 
 (function(){
@@ -3830,7 +3838,7 @@ function enterApp(){
   if(!ls) return;
   if(localStorage.getItem('lj_entered')){
     ls.classList.add('hidden');
-    if(!loadProfile()) setTimeout(openOnboarding, 1800);
+    if(!loadProfile() && !currentUser) setTimeout(openOnboarding, 1800);
   }
 })();
 </script>
