@@ -6,6 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
+<meta name="build" content="2026.03.21.1050">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -1221,8 +1222,12 @@ async function restoreFromIDB(){
   if(Object.keys(lsEntries).length === 0){
     const idbData = await idbGet('entries');
     if(idbData && Object.keys(idbData).length > 0){
-      localStorage.setItem(EK, JSON.stringify(idbData));
-      console.log('Restored', Object.keys(idbData).length, 'entries from IndexedDB backup');
+      // Strip mock data on restore
+      const real={};
+      Object.entries(idbData).forEach(([k,v])=>{ if(!v.isMockData) real[k]=v; });
+      localStorage.setItem(EK, JSON.stringify(real));
+      await idbSet('entries', real);
+      console.log('Restored', Object.keys(real).length, 'entries from IndexedDB (mock stripped)');
       return true;
     }
   }
@@ -1231,7 +1236,15 @@ async function restoreFromIDB(){
 
 // Mirror entries to IDB every save
 const _origSaveEntries = e => localStorage.setItem(EK, JSON.stringify(e));
-const loadEntries=()=>{try{return JSON.parse(localStorage.getItem(EK)||'{}')}catch(e){return{}}};
+const loadEntries=()=>{
+  try{
+    const all=JSON.parse(localStorage.getItem(EK)||'{}');
+    // Strip mock data silently
+    const real={};
+    Object.entries(all).forEach(([k,v])=>{ if(!v.isMockData) real[k]=v; });
+    return real;
+  }catch(e){return{};}
+};
 const saveEntries=e=>{localStorage.setItem(EK,JSON.stringify(e));idbSet('entries',e);};
 const loadProfile=()=>{try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}};
 async function loadProfileWithIDBFallback(){
@@ -1346,7 +1359,7 @@ function drawMoon(el,age,size){
 // ─── DAILY READING (AI) ───────────────────────────────────────────────────────
 async function generateReading(force=false){
   const todayKey=entryKey(new Date()),cached=localStorage.getItem(RK);
-  if(!force&&cached){try{const c=JSON.parse(cached);if(c.date===todayKey){document.getElementById('readingText').textContent=c.text;return;}}catch(e){}}
+  if(!force&&cached){try{const c=JSON.parse(cached);const age=Date.now()-(c.ts||0);if(c.date===todayKey&&age<4*3600000){document.getElementById('readingText').textContent=c.text;return;}}catch(e){}}
   document.getElementById('readingText').innerHTML='<span class="reading-loading">Reading the sky for you…</span>';
   const now=new Date(),phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now),planets=allPlanets(now),profile=loadProfile();
   let profileCtx='';
@@ -1370,7 +1383,7 @@ Write the reading. Include: one specific tension or opportunity in today's sky, 
     const data=await res.json();
     const text=data.text||buildFallbackReading(phase,mSign,sSign,profile);
     document.getElementById('readingText').textContent=text;
-    localStorage.setItem(RK,JSON.stringify({date:todayKey,text}));
+    localStorage.setItem(RK,JSON.stringify({date:todayKey,text,ts:Date.now()}));
   }catch(e){document.getElementById('readingText').textContent=buildFallbackReading(phase,mSign,sSign,profile);}
 }
 function buildFallbackReading(phase,mSign,sSign,profile){
@@ -2903,30 +2916,28 @@ async function signIn(){
   }
 }
 
-async function signOut(clearData=false){
+async function signOut(){
   if(!sbClient) return;
   await sbClient.auth.signOut();
   currentUser = null;
-  if(clearData){
-    // Full clear — remove all local data
-    const keysToRemove = [EK, PK, RK, 'lunations_intention_v1','lunations_settings_v1',
-      'lunations_reading_v1','lunations_collective_v1','lunations_pattern_insight_v1',
-      'lunations_last_sync','lunations_profile_loaded_v1',SWK];
-    keysToRemove.forEach(k => localStorage.removeItem(k));
-    showToast('Signed out — local data cleared');
-  } else {
-    showToast('Signed out');
-  }
+  // Always clear all local data on signout
+  [EK, PK, RK,
+   'lunations_intention_v1','lunations_reading_v1',
+   'lunations_collective_v1','lunations_pattern_insight_v1',
+   'lunations_last_sync','lunations_profile_loaded_v1',SWK,
+   'lunations_mode_v1'
+  ].forEach(k => localStorage.removeItem(k));
+  // Clear IndexedDB too
+  try{ idbSet('entries', {}); idbSet('profile', null); } catch(e){}
   renderAuthBadge();
-  closeAuthModal();
   closeSideMenu();
+  closeAuthModal();
+  showToast('Signed out');
   renderToday();
 }
 
 function confirmSignOut(){
-  if(!confirm('Sign out of Lunations?')) return;
-  const clearLocal = confirm('Also clear local data from this device?\n\nTap OK to clear everything, or Cancel to keep your data cached locally.');
-  signOut(clearLocal);
+  if(confirm('Sign out of Lunations? Your entries are safely saved in the cloud.')) signOut();
 }
 
 async function syncNow(){
