@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260321130520">
+<meta name="build" content="20260321134929">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -236,6 +236,41 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* SHARE CARD */
+  .share-preview{background:linear-gradient(135deg,#0f0c09 0%,#1a1230 50%,#0f0c09 100%);
+    border-radius:12px;padding:28px 24px;margin-bottom:20px;position:relative;overflow:hidden;
+    aspect-ratio:1;max-width:400px;margin:0 auto 20px;}
+  .share-preview::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%,rgba(201,168,76,.08),transparent 60%);}
+  .share-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:20px;}
+  .share-moon-big{font-size:56px;display:block;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(201,168,76,.4));}
+  .share-phase{font-family:'Cinzel',serif;font-size:18px;color:#e8d49a;margin-bottom:4px;}
+  .share-sign{font-size:14px;color:rgba(245,240,232,.5);font-style:italic;margin-bottom:20px;}
+  .share-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;}
+  .share-metric{text-align:center;background:rgba(245,240,232,.04);border-radius:6px;padding:8px 4px;}
+  .share-metric-val{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);display:block;}
+  .share-metric-label{font-size:9px;color:rgba(245,240,232,.3);text-transform:uppercase;letter-spacing:.08em;}
+  .share-tagline{font-size:11px;color:rgba(245,240,232,.25);text-align:center;font-style:italic;letter-spacing:.05em;}
+  .share-stars{position:absolute;top:16px;right:16px;font-size:10px;color:rgba(245,240,232,.2);}
+  /* PWA INSTALL */
+  .pwa-banner{display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+    background:#1a160e;border:1px solid rgba(201,168,76,.3);border-radius:12px;
+    padding:14px 18px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:200;
+    max-width:340px;width:calc(100%-32px);animation:slideUp .3s ease;}
+  .pwa-banner.show{display:flex;align-items:center;gap:12px;}
+  .pwa-banner-icon{font-size:28px;flex-shrink:0;}
+  .pwa-banner-text{flex:1;}
+  .pwa-banner-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;margin-bottom:3px;}
+  .pwa-banner-sub{font-size:12px;color:rgba(245,240,232,.4);}
+  .pwa-banner-btns{display:flex;gap:8px;margin-top:8px;}
+  .pwa-install-btn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:20px;color:var(--gold);cursor:pointer;}
+  .pwa-dismiss-btn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;background:none;border:none;color:rgba(245,240,232,.25);cursor:pointer;}
+  @keyframes slideUp{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+  /* STREAK */
+  .streak-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .streak-badge{display:flex;align-items:center;gap:6px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);border-radius:20px;padding:5px 14px;}
+  .streak-num{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);line-height:1;}
+  .streak-label{font-size:12px;color:rgba(245,240,232,.4);font-style:italic;}
+  .streak-flame{font-size:14px;}
   /* EVENING CHECK-IN */
   .eve-card{background:rgba(20,15,30,.4);border:1px solid rgba(120,90,160,.2);border-radius:8px;padding:20px 22px;margin-top:24px;position:relative;overflow:hidden;}
   .eve-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(140,100,200,.4),transparent);}
@@ -584,9 +619,21 @@
 
   <div class="side-menu-divider"></div>
 
+  <!-- Install -->
+  <div class="side-menu-section" id="pwaInstallSection">
+    <div class="side-menu-section-label">App</div>
+    <button class="side-menu-item" onclick="pwsInstall();closeSideMenu()">
+      <span class="side-menu-item-icon">📲</span>
+      <div><div class="side-menu-item-label">Install App</div><div class="side-menu-item-sub">Add to home screen</div></div>
+    </button>
+  </div>
+
+  <div class="side-menu-divider"></div>
+
   <!-- Data -->
   <div class="side-menu-section">
     <div class="side-menu-section-label">Data</div>
+    <button class="side-menu-item" onclick="openShareCard();closeSideMenu()"><span class="side-menu-item-icon">✦</span><div><div class="side-menu-item-label">Share Cycle</div><div class="side-menu-item-sub">Cycle summary card</div></div></button>
     <button class="side-menu-item" onclick="exportEntries();closeSideMenu()"><span class="side-menu-item-icon">↓</span><div><div class="side-menu-item-label">Export Journal</div><div class="side-menu-item-sub">Download JSON backup</div></div></button>
     <button class="side-menu-item" onclick="document.getElementById('importFile').click();closeSideMenu()"><span class="side-menu-item-icon">↑</span><div><div class="side-menu-item-label">Import Journal</div><div class="side-menu-item-sub">Restore from backup</div></div></button>
   </div>
@@ -599,6 +646,14 @@
 <!-- TODAY -->
 <div id="view-today" class="view active">
   <div id="natalBadgeWrap"></div>
+  <div class="streak-bar" id="streakBar" style="display:none;">
+    <div class="streak-badge">
+      <span class="streak-flame">🔥</span>
+      <span class="streak-num" id="streakNum">0</span>
+      <span class="streak-label">day streak</span>
+    </div>
+    <div id="streakMsg" style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;"></div>
+  </div>
 
 
   <!-- CYCLE INTENTION BANNER -->
@@ -1533,6 +1588,7 @@ function renderToday(){
   renderDailyPatternMessage();
   fetchSpaceWeather();
   renderEveningCheckin();
+  renderStreak();
   // If today already has an entry, show submitted card not blank form
   const todayEntry = loadEntries()[entryKey(new Date())];
   if(todayEntry){
@@ -4142,6 +4198,181 @@ function showEveningSubmitted(eveEntry, morningEntry){
   }
 }
 
+
+// ─── STREAK ──────────────────────────────────────────────────────────────────
+function renderStreak(){
+  const entries = loadEntries();
+  const keys = Object.keys(entries).sort().reverse();
+  if(keys.length < 2){ document.getElementById('streakBar').style.display='none'; return; }
+
+  const todayKey = entryKey(new Date());
+  let streak = 0;
+  const check = new Date();
+
+  for(let i=0; i<60; i++){
+    const k = entryKey(check);
+    if(entries[k]){ streak++; }
+    else if(k === todayKey){ /* today not logged yet, don't break */ }
+    else break;
+    check.setDate(check.getDate()-1);
+  }
+
+  if(streak < 2){ document.getElementById('streakBar').style.display='none'; return; }
+
+  const bar = document.getElementById('streakBar');
+  const numEl = document.getElementById('streakNum');
+  const msgEl = document.getElementById('streakMsg');
+  if(!bar||!numEl||!msgEl) return;
+
+  bar.style.display = 'flex';
+  numEl.textContent = streak;
+
+  const msgs = {
+    2: 'two days in a row',
+    3: 'three days — momentum building',
+    7: 'a full week of tracking',
+    14: 'two weeks of inner weather',
+    21: 'twenty-one days — this is practice now',
+    29: 'one full cycle',
+    30: 'one full cycle',
+  };
+  const milestones = [29,21,14,7,3,2];
+  const milestone = milestones.find(m => streak >= m);
+  msgEl.textContent = streak === 1 ? '' :
+    streak >= 29 ? '✦ one complete cycle' :
+    streak >= 21 ? '✦ twenty-one days — this is a practice' :
+    streak >= 14 ? '✦ two weeks of presence' :
+    streak >= 7  ? '✦ one full week' :
+    streak >= 3  ? streak + ' days in a row' :
+    'two days in a row';
+}
+
+
+// ─── PWA INSTALL ─────────────────────────────────────────────────────────────
+let _pwaPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _pwaPrompt = e;
+  // Show banner after 30 seconds if not dismissed
+  const dismissed = localStorage.getItem('lunations_pwa_dismissed');
+  if(!dismissed){
+    setTimeout(() => {
+      const banner = document.getElementById('pwaBanner');
+      if(banner) banner.classList.add('show');
+    }, 30000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem('lunations_pwa_installed', '1');
+  const banner = document.getElementById('pwaBanner');
+  if(banner) banner.classList.remove('show');
+});
+
+function pwsInstall(){
+  if(_pwaPrompt){
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(r => {
+      if(r.outcome === 'accepted') localStorage.setItem('lunations_pwa_installed','1');
+      _pwaPrompt = null;
+    });
+  } else {
+    // iOS Safari - show manual instructions
+    showToast('Tap the Share button → "Add to Home Screen"');
+  }
+  const banner = document.getElementById('pwaBanner');
+  if(banner) banner.classList.remove('show');
+}
+
+function pwaDismiss(){
+  localStorage.setItem('lunations_pwa_dismissed', '1');
+  const banner = document.getElementById('pwaBanner');
+  if(banner) banner.classList.remove('show');
+}
+
+// Show install hint in hamburger menu
+function getPWAStatus(){
+  if(localStorage.getItem('lunations_pwa_installed')) return 'installed';
+  if(window.matchMedia('(display-mode: standalone)').matches) return 'installed';
+  return 'not-installed';
+}
+
+
+// ─── SHAREABLE CYCLE CARD ─────────────────────────────────────────────────────
+function openShareCard(){
+  const modal = document.getElementById('shareModal');
+  if(!modal) return;
+  renderSharePreview();
+  modal.classList.add('open');
+}
+
+function renderSharePreview(){
+  const entries = loadEntries();
+  const now = new Date();
+  const phase = moonPhaseInfo(now);
+  const mSign = moonSignApprox(now);
+  const profile = loadProfile();
+
+  // Get current cycle stats
+  const nm = getCycleStart(0);
+  const cycleKeys = Object.keys(entries).filter(k => {
+    const d = new Date(k+'T12:00:00');
+    return d >= nm && d <= now;
+  });
+
+  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length*10)/10 : '—';
+  const avgEnergy = avg(cycleKeys.map(k=>entries[k].energy||0));
+  const avgMood = avg(cycleKeys.map(k=>entries[k].mood||0));
+  const avgClarity = avg(cycleKeys.map(k=>entries[k].clarity||0));
+  const avgCreativity = avg(cycleKeys.map(k=>entries[k].creativity||0));
+
+  // Get most common quality this cycle
+  const qualCounts = {};
+  cycleKeys.forEach(k => (entries[k].qualities||[]).forEach(q => qualCounts[q]=(qualCounts[q]||0)+1));
+  const topQual = Object.entries(qualCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '';
+
+  const preview = document.getElementById('sharePreviewContent');
+  if(!preview) return;
+
+  preview.innerHTML = `
+    <div class="share-preview">
+      <div class="share-stars">✦ ✦ ✦</div>
+      <div class="share-title">Lunations · Cycle ${Math.max(1,getCycleNum(nm))}</div>
+      <span class="share-moon-big">${phase.emoji}</span>
+      <div class="share-phase">${phase.name}</div>
+      <div class="share-sign">Moon in ${mSign.name} · ${cycleKeys.length} days logged</div>
+      <div class="share-metrics">
+        <div class="share-metric"><span class="share-metric-val">${avgEnergy}</span><span class="share-metric-label">Energy</span></div>
+        <div class="share-metric"><span class="share-metric-val">${avgMood}</span><span class="share-metric-label">Mood</span></div>
+        <div class="share-metric"><span class="share-metric-val">${avgClarity}</span><span class="share-metric-label">Clarity</span></div>
+        <div class="share-metric"><span class="share-metric-val">${avgCreativity}</span><span class="share-metric-label">Create</span></div>
+      </div>
+      ${topQual ? `<div style="font-size:13px;color:rgba(245,240,232,.4);text-align:center;font-style:italic;margin-bottom:16px;">Most felt: ${topQual}</div>` : ''}
+      <div class="share-tagline">the sky remembers who you are · lunations.app</div>
+    </div>`;
+}
+
+async function shareCard(){
+  const preview = document.getElementById('sharePreviewContent');
+  if(!preview) return;
+
+  // Try native share first
+  if(navigator.share){
+    try{
+      await navigator.share({
+        title: 'My Lunations Cycle',
+        text: 'Tracking myself across lunar cycles with Lunations',
+        url: 'https://lunations.app'
+      });
+      return;
+    } catch(e){}
+  }
+
+  // Fallback: copy link
+  navigator.clipboard?.writeText('https://lunations.app').then(()=>showToast('Link copied — share with lunations.app'));
+}
+
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
@@ -4252,6 +4483,35 @@ function enterApp(){
   }
 })();
 </script>
+
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal-box" style="max-width:460px;">
+    <button class="modal-close" onclick="document.getElementById('shareModal').classList.remove('open')">×</button>
+    <div class="modal-title">Share Your Cycle</div>
+    <div id="sharePreviewContent"></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="save-btn" style="margin-top:0;flex:1;" onclick="shareCard()">Share</button>
+      <button class="save-btn" style="margin-top:0;flex:1;opacity:.5;" onclick="showToast('Screenshot to save your card')">Screenshot</button>
+    </div>
+    <p style="font-size:12px;color:rgba(245,240,232,.2);text-align:center;margin-top:12px;font-style:italic;">Tip: screenshot the card above to share as an image</p>
+  </div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div class="pwa-banner" id="pwaBanner">
+  <div class="pwa-banner-icon">🌙</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Install Lunations</div>
+    <div class="pwa-banner-sub">Add to home screen for the full experience</div>
+    <div class="pwa-banner-btns">
+      <button class="pwa-install-btn" onclick="pwsInstall()">Install</button>
+      <button class="pwa-dismiss-btn" onclick="pwaDismiss()">Not now</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 </body>
 </html>

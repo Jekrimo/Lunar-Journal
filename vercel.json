@@ -10,6 +10,14 @@
     {
       "src": "/api/(.*)",
       "dest": "/api/$1.js"
+    },
+    {
+      "src": "/app",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/",
+      "dest": "/landing.html"
     }
   ]
 }
