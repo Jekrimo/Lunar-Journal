@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260321125325">
+<meta name="build" content="20260321130520">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -599,14 +599,35 @@
 <!-- TODAY -->
 <div id="view-today" class="view active">
   <div id="natalBadgeWrap"></div>
-  <!-- SPACE WEATHER CARD -->
-  <div class="sw-card" id="swCard">
-    <div class="sw-header">
-      <div class="sw-title">Space Weather · Electromagnetic Field</div>
-      <button class="sw-refresh" onclick="fetchSpaceWeather(true)">↺ refresh</button>
+
+
+  <!-- CYCLE INTENTION BANNER -->
+  <div class="intention-banner" id="intentionBanner" style="display:none;">
+    <span class="intention-moon-icon">🌑</span>
+    <div class="intention-content">
+      <div class="intention-label">Cycle Intention</div>
+      <div class="intention-text" id="intentionBannerText">—</div>
+      <button class="intention-edit" onclick="openIntentionModal()">Edit intention ✎</button>
     </div>
-    <div id="swContent"><span class="sw-loading">Reading the field…</span></div>
   </div>
+  <!-- TRANSIT ALERTS -->
+  <div id="transitAlertsWrap"></div>
+  <!-- SUBMITTED ENTRY CARD -->
+  <div class="entry-submitted-card" id="entrySubmittedCard">
+    <div class="entry-submitted-header">
+      <div class="entry-submitted-title">✦ Today's Entry</div>
+      <button class="entry-submitted-edit" onclick="(function(){const k=Object.keys(loadEntries()).find(k=>k===entryKey(new Date()));if(k)editEntry(k);}())">✎ Edit</button>
+    </div>
+    <div class="entry-submitted-metrics" id="submittedMetrics"></div>
+    <div class="entry-submitted-qualities" id="submittedQualities"></div>
+    <div class="entry-submitted-text" id="submittedText"></div>
+    <div class="entry-reflection" id="entryReflection" style="display:none;">
+      <div class="entry-reflection-label">Reflection from the sky</div>
+      <div class="entry-reflection-text" id="reflectionText"><span class="entry-reflection-loading">Reflecting on your entry…</span></div>
+    </div>
+  </div>
+
+
 
   <!-- EVENING CHECK-IN -->
   <div id="eveningCheckin" style="display:none;">
@@ -679,21 +700,19 @@
     </div>
   </div>
 
-  <!-- CYCLE INTENTION BANNER -->
-  <div class="intention-banner" id="intentionBanner" style="display:none;">
-    <span class="intention-moon-icon">🌑</span>
-    <div class="intention-content">
-      <div class="intention-label">Cycle Intention</div>
-      <div class="intention-text" id="intentionBannerText">—</div>
-      <button class="intention-edit" onclick="openIntentionModal()">Edit intention ✎</button>
-    </div>
-  </div>
-  <!-- TRANSIT ALERTS -->
-  <div id="transitAlertsWrap"></div>
   <div class="reading-card">
     <div class="card-label">Today's Reading</div>
     <div class="reading-text" id="readingText"><span class="reading-loading">Consulting the sky…</span></div>
     <button class="reading-refresh" onclick="generateReading(true)">↺ Refresh reading</button>
+  </div>
+
+  <!-- SPACE WEATHER CARD -->
+  <div class="sw-card" id="swCard">
+    <div class="sw-header">
+      <div class="sw-title">Space Weather · Electromagnetic Field</div>
+      <button class="sw-refresh" onclick="fetchSpaceWeather(true)">↺ refresh</button>
+    </div>
+    <div id="swContent"><span class="sw-loading">Reading the field…</span></div>
   </div>
   <div class="today-grid">
     <div class="astro-card">
@@ -714,20 +733,6 @@
   <div class="astro-card" style="margin-bottom:28px;">
     <div class="card-label">Cycle Tone</div>
     <div id="cycleTone" style="font-size:17px;color:rgba(245,240,232,.75);line-height:1.7;margin-top:6px;font-style:italic;"></div>
-  </div>
-  <!-- SUBMITTED ENTRY CARD -->
-  <div class="entry-submitted-card" id="entrySubmittedCard">
-    <div class="entry-submitted-header">
-      <div class="entry-submitted-title">✦ Today's Entry</div>
-      <button class="entry-submitted-edit" onclick="(function(){const k=Object.keys(loadEntries()).find(k=>k===entryKey(new Date()));if(k)editEntry(k);}())">✎ Edit</button>
-    </div>
-    <div class="entry-submitted-metrics" id="submittedMetrics"></div>
-    <div class="entry-submitted-qualities" id="submittedQualities"></div>
-    <div class="entry-submitted-text" id="submittedText"></div>
-    <div class="entry-reflection" id="entryReflection" style="display:none;">
-      <div class="entry-reflection-label">Reflection from the sky</div>
-      <div class="entry-reflection-text" id="reflectionText"><span class="entry-reflection-loading">Reflecting on your entry…</span></div>
-    </div>
   </div>
 
 
@@ -3975,24 +3980,39 @@ function renderEveningCheckin(){
   const wrap = document.getElementById('eveningCheckin');
   if(!wrap) return;
 
-  // Only show after morning entry is saved
   const todayKey = entryKey(new Date());
   const morningEntry = loadEntries()[todayKey];
   if(!morningEntry){ wrap.style.display = 'none'; return; }
 
   wrap.style.display = 'block';
 
+  // Check EVE_KEY first, then fall back to eve* fields in main entry
   const eveEntries = loadEveningEntries();
-  const eveEntry = eveEntries[todayKey];
+  let eveEntry = eveEntries[todayKey];
+
+  // Reconstruct from main entry if EVE_KEY was cleared
+  if(!eveEntry && morningEntry?.eveTimestamp){
+    eveEntry = {
+      energy:    morningEntry.eveEnergy,
+      mood:      morningEntry.eveMood,
+      clarity:   morningEntry.eveClarity,
+      creativity:morningEntry.eveCreativity,
+      text:      morningEntry.eveText || '',
+      timestamp: morningEntry.eveTimestamp,
+      morningEnergy: morningEntry.energy,
+      morningMood:   morningEntry.mood,
+    };
+    // Re-save to EVE_KEY so it persists
+    eveEntries[todayKey] = eveEntry;
+    saveEveningEntries(eveEntries);
+  }
 
   if(eveEntry){
     showEveningSubmitted(eveEntry, morningEntry);
   } else {
-    // Don't reset form if already visible and has user input
-    const form = document.getElementById('eveFormWrap');
     const hasInput = document.getElementById('eveText')?.value?.length > 0;
     if(!hasInput) showEveningForm(morningEntry);
-    else form.style.display = 'block';
+    else document.getElementById('eveFormWrap').style.display = 'block';
   }
 }
 
