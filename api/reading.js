@@ -1,34 +1,27 @@
-// Reading proxy — uses https module for Node compatibility
 const https = require('https');
 
 const rateLimitMap = new Map();
 function isRateLimited(ip) {
   const now = Date.now();
-  const windowMs = 60 * 60 * 1000;
-  const maxRequests = 15;
-  const record = rateLimitMap.get(ip) || { count: 0, resetAt: now + windowMs };
-  if (now > record.resetAt) { record.count = 0; record.resetAt = now + windowMs; }
+  const record = rateLimitMap.get(ip) || { count: 0, resetAt: now + 3600000 };
+  if (now > record.resetAt) { record.count = 0; record.resetAt = now + 3600000; }
   record.count++;
   rateLimitMap.set(ip, record);
   if (rateLimitMap.size > 5000) {
     for (const [k, v] of rateLimitMap) { if (now > v.resetAt) rateLimitMap.delete(k); }
   }
-  return record.count > maxRequests;
+  return record.count > 15;
 }
 
-function httpsPost(url, headers, body) {
+function httpsPost(hostname, path, headers, body) {
   return new Promise((resolve, reject) => {
     const bodyStr = JSON.stringify(body);
-    const urlObj = new URL(url);
-    const options = {
-      hostname: urlObj.hostname,
-      path: urlObj.pathname,
-      method: 'POST',
+    const req = https.request({
+      hostname, path, method: 'POST',
       headers: { ...headers, 'Content-Length': Buffer.byteLength(bodyStr) },
-    };
-    const req = https.request(options, (res) => {
+    }, (res) => {
       let data = '';
-      res.on('data', chunk => data += chunk);
+      res.on('data', c => data += c);
       res.on('end', () => resolve({ status: res.statusCode, body: data }));
     });
     req.on('error', reject);
@@ -45,7 +38,7 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const ip = req.headers['x-forwarded-for']?.split(',')[0] || 'unknown';
-  if (isRateLimited(ip)) return res.status(429).json({ error: 'Rate limit reached. Try again later.' });
+  if (isRateLimited(ip)) return res.status(429).json({ error: 'Rate limit reached' });
 
   const { prompt } = req.body || {};
   if (!prompt || typeof prompt !== 'string' || prompt.length > 3000) {
@@ -57,7 +50,8 @@ module.exports = async function handler(req, res) {
 
   try {
     const response = await httpsPost(
-      'https://api.anthropic.com/v1/messages',
+      'api.anthropic.com',
+      '/v1/messages',
       {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
@@ -71,8 +65,15 @@ module.exports = async function handler(req, res) {
     );
 
     if (response.status !== 200) {
-      console.error('Anthropic error:', response.status, response.body.slice(0, 200));
-      return res.status(502).json({ error: 'Reading unavailable' });
+      let errMsg = 'Reading unavailable';
+      let errDetail = '';
+      try {
+        const b = JSON.parse(response.body);
+        errMsg = b.error?.message || b.type || errMsg;
+        errDetail = JSON.stringify(b).slice(0, 200);
+      } catch(e) { errDetail = response.body.slice(0, 200); }
+      console.error(`Anthropic ${response.status}:`, errDetail);
+      return res.status(502).json({ error: errMsg, detail: errDetail, anthropic_status: response.status });
     }
 
     const data = JSON.parse(response.body);
@@ -80,7 +81,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ text });
 
   } catch (err) {
-    console.error('Reading error:', err.message);
-    return res.status(500).json({ error: 'Internal error' });
+    console.error('Reading handler error:', err.message);
+    return res.status(500).json({ error: err.message });
   }
 };

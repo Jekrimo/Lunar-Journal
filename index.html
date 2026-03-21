@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260321123734">
+<meta name="build" content="20260321125325">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -1482,7 +1482,11 @@ ${profileCtx}
 Write the reading. Include: one specific tension or opportunity in today's sky, one practical or internal suggestion. No filler phrases. Do not begin with "Today" as the first word.`;
   try{
     const res=await fetch('/api/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
-    if(!res.ok) throw new Error('API '+res.status);
+    if(!res.ok){
+      const errData = await res.json().catch(()=>({}));
+      console.warn('Reading API error:', res.status, errData);
+      throw new Error('API '+res.status+': '+(errData.error||errData.detail||''));
+    }
     const data=await res.json();
     const text=data.text||buildFallbackReading(phase,mSign,sSign,profile);
     document.getElementById('readingText').textContent=text;
