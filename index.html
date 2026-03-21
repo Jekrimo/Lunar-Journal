@@ -236,6 +236,22 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* EVENING CHECK-IN */
+  .eve-card{background:rgba(20,15,30,.4);border:1px solid rgba(120,90,160,.2);border-radius:8px;padding:20px 22px;margin-top:24px;position:relative;overflow:hidden;}
+  .eve-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(140,100,200,.4),transparent);}
+  .eve-card-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;color:rgba(160,120,220,.7);text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+  .eve-card-title::before{content:'🌙';font-size:14px;}
+  .eve-card-sub{font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:18px;}
+  .eve-delta{display:inline-flex;align-items:center;gap:4px;font-family:'Cinzel',serif;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:6px;}
+  .eve-delta.up{background:rgba(60,140,80,.15);color:#7acc8a;border:1px solid rgba(60,140,80,.2);}
+  .eve-delta.down{background:rgba(160,60,60,.15);color:#cc8a7a;border:1px solid rgba(160,60,60,.2);}
+  .eve-delta.same{background:rgba(245,240,232,.05);color:rgba(245,240,232,.3);border:1px solid rgba(245,240,232,.08);}
+  .eve-submitted{background:rgba(20,15,30,.3);border:1px solid rgba(120,90,160,.15);border-radius:8px;padding:16px 18px;margin-top:24px;}
+  .eve-submitted-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;color:rgba(160,120,220,.6);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+  .eve-metrics{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;}
+  .eve-metric{text-align:center;}
+  .eve-metric-val{font-family:'Cinzel',serif;font-size:16px;color:rgba(160,120,220,.8);display:block;line-height:1;}
+  .eve-metric-label{font-size:9px;color:rgba(245,240,232,.3);margin-top:2px;font-style:italic;}
   /* SPACE WEATHER */
   .sw-card{background:rgba(245,240,232,.02);border:1px solid rgba(245,240,232,.07);border-radius:8px;padding:18px 20px;margin-bottom:20px;position:relative;overflow:hidden;}
   .sw-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--sw-color,rgba(201,168,76,.4)),transparent);}
@@ -590,6 +606,77 @@
       <button class="sw-refresh" onclick="fetchSpaceWeather(true)">↺ refresh</button>
     </div>
     <div id="swContent"><span class="sw-loading">Reading the field…</span></div>
+  </div>
+
+  <!-- EVENING CHECK-IN -->
+  <div id="eveningCheckin" style="display:none;">
+
+    <!-- Evening submitted card (shown after saving) -->
+    <div class="eve-submitted" id="eveSubmittedCard" style="display:none;">
+      <div class="eve-submitted-title">
+        <span>🌙 Evening Check-In</span>
+        <button onclick="showEveningForm()" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(160,120,220,.4);background:none;border:none;cursor:pointer;">✎ Edit</button>
+      </div>
+      <div class="eve-metrics" id="eveSubmittedMetrics"></div>
+      <div id="eveSubmittedText" style="font-size:15px;color:rgba(245,240,232,.5);line-height:1.75;font-style:italic;"></div>
+    </div>
+
+    <!-- Evening form -->
+    <div class="eve-card" id="eveFormWrap">
+      <div class="eve-card-title">Evening Check-In</div>
+      <div class="eve-card-sub" id="eveCardSub">How did the day land?</div>
+
+      <!-- Delta display vs morning -->
+      <div id="eveDeltaRow" style="display:none;margin-bottom:16px;font-size:13px;color:rgba(245,240,232,.4);">
+        Since this morning:
+        <span id="eveDeltaEnergy" class="eve-delta"></span>
+        <span id="eveDeltaMood" class="eve-delta"></span>
+        <span id="eveDeltaClarity" class="eve-delta"></span>
+      </div>
+
+      <!-- Evening sliders -->
+      <div class="glow-bars-wrap" id="eveSliders">
+        <div class="glow-bar-row">
+          <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Energy ⚡</span>
+          <div class="glow-bar-track">
+            <div class="glow-bar-fill" id="eveFilEnergy" style="width:50%;background:rgba(140,100,200,.65);box-shadow:0 0 10px rgba(140,100,200,.3);"></div>
+            <input type="range" min="1" max="10" value="5" id="eveSliderEnergy" class="glow-bar-input" oninput="updateGlowBar('eveFilEnergy',this.value,'rgba(140,100,200,.65)','rgba(140,100,200,.3)');document.getElementById('eveValEnergy').textContent=this.value;updateEveDelta()">
+          </div>
+          <span class="glow-bar-val" id="eveValEnergy" style="border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.8);">5</span>
+        </div>
+        <div class="glow-bar-row">
+          <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Mood 🌙</span>
+          <div class="glow-bar-track">
+            <div class="glow-bar-fill" id="eveFilMood" style="width:50%;background:rgba(120,90,180,.6);box-shadow:0 0 10px rgba(120,90,180,.3);"></div>
+            <input type="range" min="1" max="10" value="5" id="eveSliderMood" class="glow-bar-input" oninput="updateGlowBar('eveFilMood',this.value,'rgba(120,90,180,.6)','rgba(120,90,180,.3)');document.getElementById('eveValMood').textContent=this.value;updateEveDelta()">
+          </div>
+          <span class="glow-bar-val" id="eveValMood" style="border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.8);">5</span>
+        </div>
+        <div class="glow-bar-row">
+          <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Clarity ✦</span>
+          <div class="glow-bar-track">
+            <div class="glow-bar-fill" id="eveFilClarity" style="width:50%;background:rgba(100,120,200,.6);box-shadow:0 0 10px rgba(100,120,200,.3);"></div>
+            <input type="range" min="1" max="10" value="5" id="eveSliderClarity" class="glow-bar-input" oninput="updateGlowBar('eveFilClarity',this.value,'rgba(100,120,200,.6)','rgba(100,120,200,.3)');document.getElementById('eveValClarity').textContent=this.value">
+          </div>
+          <span class="glow-bar-val" id="eveValClarity" style="border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.8);">5</span>
+        </div>
+        <div class="glow-bar-row">
+          <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Creativity 🔥</span>
+          <div class="glow-bar-track">
+            <div class="glow-bar-fill" id="eveFilCreativity" style="width:50%;background:rgba(160,90,200,.6);box-shadow:0 0 10px rgba(160,90,200,.3);"></div>
+            <input type="range" min="1" max="10" value="5" id="eveSliderCreativity" class="glow-bar-input" oninput="updateGlowBar('eveFilCreativity',this.value,'rgba(160,90,200,.6)','rgba(160,90,200,.3)');document.getElementById('eveValCreativity').textContent=this.value">
+          </div>
+          <span class="glow-bar-val" id="eveValCreativity" style="border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.8);">5</span>
+        </div>
+      </div>
+
+      <div class="section-heading" style="margin-top:16px;color:rgba(160,120,220,.5);">Closing Thoughts</div>
+      <textarea class="journal-text" id="eveText" rows="4"
+        style="border-color:rgba(120,90,160,.2);"
+        placeholder="How did the day actually unfold? What arose, what resolved, what stayed?"></textarea>
+
+      <button class="save-btn" style="margin-top:16px;border-color:rgba(140,100,200,.3);color:rgba(160,120,220,.8);background:rgba(120,90,160,.06);" onclick="saveEveningEntry()">Save Evening Entry</button>
+    </div>
   </div>
 
   <!-- CYCLE INTENTION BANNER -->
@@ -1416,6 +1503,7 @@ function renderToday(){
   renderIntentionBanner();
   renderDailyPatternMessage();
   fetchSpaceWeather();
+  renderEveningCheckin();
   // If today already has an entry, show submitted card not blank form
   const todayEntry = loadEntries()[entryKey(new Date())];
   if(todayEntry){
@@ -1654,6 +1742,7 @@ function saveEntry(){
   saveEntries(entries);
   pushEntryToCloud(key, entries[key]); // async, non-blocking
   showSubmittedCard(entries[key]); // collapse form into summary card
+  renderEveningCheckin();
   // Auto-backup to localStorage secondary key
   localStorage.setItem('lunations_backup_'+key, JSON.stringify(entries[key]));
 }
@@ -2921,7 +3010,7 @@ async function signOut(){
   await sbClient.auth.signOut();
   currentUser = null;
   // Always clear all local data on signout
-  [EK, PK, RK,
+  [EK, PK, RK, EVE_KEY,
    'lunations_intention_v1','lunations_reading_v1',
    'lunations_collective_v1','lunations_pattern_insight_v1',
    'lunations_last_sync','lunations_profile_loaded_v1',SWK,
@@ -3206,11 +3295,23 @@ const GLOW_COLORS = {
   Creativity: ['rgba(150,100,200,.65)','rgba(150,100,200,.3)'],
 };
 
-function updateGlowBar(label, value){
-  const fill = document.getElementById('fill'+label);
+function updateGlowBar(idOrLabel, value, bgColor, glowColor){
+  // Support both old-style label ('Energy') and new-style direct id ('eveFilEnergy')
+  let fillId, bg, glow;
+  if(bgColor){
+    // Direct call with id and colors
+    fillId = idOrLabel;
+    bg = bgColor;
+    glow = glowColor || bgColor;
+  } else {
+    // Legacy call with label name
+    fillId = 'fill' + idOrLabel;
+    const colors = GLOW_COLORS[idOrLabel] || GLOW_COLORS.Energy;
+    bg = colors[0]; glow = colors[1];
+  }
+  const fill = document.getElementById(fillId);
   if(!fill) return;
   const pct = ((+value - 1) / 9) * 100;
-  const [bg, glow] = GLOW_COLORS[label] || GLOW_COLORS.Energy;
   fill.style.width = pct + '%';
   fill.style.background = bg;
   fill.style.boxShadow = pct > 10 ? `0 0 12px ${glow}, 0 0 4px ${glow}` : 'none';
@@ -3808,6 +3909,166 @@ async function forceSyncAll(){
   } catch(e){
     showToast('Sync error — check connection');
     console.error('forceSyncAll error:', e);
+  }
+}
+
+
+// ─── EVENING CHECK-IN ────────────────────────────────────────────────────────
+const EVE_KEY = 'lunations_eve_v1';
+
+function loadEveningEntries(){
+  try{ return JSON.parse(localStorage.getItem(EVE_KEY)||'{}'); }
+  catch(e){ return {}; }
+}
+
+function saveEveningEntries(data){
+  localStorage.setItem(EVE_KEY, JSON.stringify(data));
+}
+
+function renderEveningCheckin(){
+  const wrap = document.getElementById('eveningCheckin');
+  if(!wrap) return;
+
+  // Only show after morning entry is saved
+  const todayKey = entryKey(new Date());
+  const morningEntry = loadEntries()[todayKey];
+  if(!morningEntry){ wrap.style.display = 'none'; return; }
+
+  wrap.style.display = 'block';
+
+  const eveEntries = loadEveningEntries();
+  const eveEntry = eveEntries[todayKey];
+
+  if(eveEntry){
+    showEveningSubmitted(eveEntry, morningEntry);
+  } else {
+    showEveningForm(morningEntry);
+  }
+}
+
+function showEveningForm(morningEntry){
+  const form = document.getElementById('eveFormWrap');
+  const submitted = document.getElementById('eveSubmittedCard');
+  if(form) form.style.display = 'block';
+  if(submitted) submitted.style.display = 'none';
+
+  // Update sub text based on time of day
+  const hour = new Date().getHours();
+  const sub = document.getElementById('eveCardSub');
+  if(sub){
+    if(hour < 17) sub.textContent = 'Whenever the day feels complete.';
+    else if(hour < 21) sub.textContent = 'The day is settling. How did it land?';
+    else sub.textContent = 'Before you rest — how was the day?';
+  }
+
+  // Reset sliders to 5
+  ['eveSliderEnergy','eveSliderMood','eveSliderClarity','eveSliderCreativity'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el){ el.value = 5; el.dispatchEvent(new Event('input')); }
+  });
+  const eveText = document.getElementById('eveText');
+  if(eveText) eveText.value = '';
+
+  // Show delta row if morning entry exists
+  if(morningEntry) updateEveDelta();
+}
+
+function updateEveDelta(){
+  const todayKey = entryKey(new Date());
+  const morning = loadEntries()[todayKey];
+  if(!morning) return;
+
+  const deltaRow = document.getElementById('eveDeltaRow');
+  if(deltaRow) deltaRow.style.display = 'block';
+
+  function deltaEl(id, eveVal, mornVal){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const diff = +eveVal - +mornVal;
+    const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
+    const sign = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+    el.textContent = sign + Math.abs(diff);
+    el.className = 'eve-delta ' + cls;
+  }
+
+  deltaEl('eveDeltaEnergy',
+    document.getElementById('eveSliderEnergy')?.value||5, morning.energy);
+  deltaEl('eveDeltaMood',
+    document.getElementById('eveSliderMood')?.value||5, morning.mood);
+  deltaEl('eveDeltaClarity',
+    document.getElementById('eveSliderClarity')?.value||5, morning.clarity);
+}
+
+function saveEveningEntry(){
+  const todayKey = entryKey(new Date());
+  const morning = loadEntries()[todayKey];
+
+  const eveData = {
+    energy:    +document.getElementById('eveSliderEnergy').value,
+    mood:      +document.getElementById('eveSliderMood').value,
+    clarity:   +document.getElementById('eveSliderClarity').value,
+    creativity:+document.getElementById('eveSliderCreativity').value,
+    text:      document.getElementById('eveText').value.trim(),
+    timestamp: new Date().toISOString(),
+    morningEnergy:  morning?.energy || null,
+    morningMood:    morning?.mood || null,
+  };
+
+  const eves = loadEveningEntries();
+  eves[todayKey] = eveData;
+  saveEveningEntries(eves);
+
+  // Also push to DB by merging into the day's entry
+  if(morning){
+    const entries = loadEntries();
+    entries[todayKey] = {
+      ...entries[todayKey],
+      eveEnergy:    eveData.energy,
+      eveMood:      eveData.mood,
+      eveClarity:   eveData.clarity,
+      eveCreativity:eveData.creativity,
+      eveText:      eveData.text,
+      eveTimestamp: eveData.timestamp,
+    };
+    saveEntries(entries);
+    pushEntryToCloud(todayKey, entries[todayKey]);
+  }
+
+  showEveningSubmitted(eveData, morning);
+  showToast('✦ Evening check-in saved');
+}
+
+function showEveningSubmitted(eveEntry, morningEntry){
+  const form = document.getElementById('eveFormWrap');
+  const submitted = document.getElementById('eveSubmittedCard');
+  if(form) form.style.display = 'none';
+  if(!submitted) return;
+  submitted.style.display = 'block';
+
+  const metrics = [
+    {val: eveEntry.energy, label: 'Energy', morn: morningEntry?.energy},
+    {val: eveEntry.mood, label: 'Mood', morn: morningEntry?.mood},
+    {val: eveEntry.clarity, label: 'Clarity', morn: morningEntry?.clarity},
+    {val: eveEntry.creativity, label: 'Creativity', morn: morningEntry?.creativity},
+  ];
+
+  const metricsEl = document.getElementById('eveSubmittedMetrics');
+  if(metricsEl){
+    metricsEl.innerHTML = metrics.map(m => {
+      const diff = m.morn !== undefined ? m.val - m.morn : null;
+      const delta = diff === null ? '' :
+        `<span class="eve-delta ${diff>0?'up':diff<0?'down':'same'}">${diff>0?'↑':'↓'}${Math.abs(diff)}</span>`;
+      return `<div class="eve-metric">
+        <span class="eve-metric-val">${m.val}${delta}</span>
+        <div class="eve-metric-label">${m.label}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const textEl = document.getElementById('eveSubmittedText');
+  if(textEl){
+    textEl.textContent = eveEntry.text || '';
+    textEl.style.display = eveEntry.text ? 'block' : 'none';
   }
 }
 
