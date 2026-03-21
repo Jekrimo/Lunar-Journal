@@ -806,6 +806,7 @@
       <option value="year">By Year</option>
     </select>
     <button class="export-btn" onclick="exportEntries()" style="white-space:nowrap;">↓ Export</button>
+    <button class="export-btn" onclick="forceSyncAll()" style="white-space:nowrap;border-color:rgba(201,168,76,.3);color:var(--gold);">↑ Sync All</button>
   </div>
 
   <div id="entriesList"></div>
@@ -2192,7 +2193,15 @@ function renderSky(){
 // ─── PROFILE ──────────────────────────────────────────────────────────────────
 function openOnboarding(){
   const p=loadProfile();
-  if(p){if(p.name)document.getElementById('obName').value=p.name;if(p.dob)document.getElementById('obDOB').value=p.dob;if(p.time)document.getElementById('obTime').value=p.time;if(p.rising)document.getElementById('obRising').value=p.rising;if(p.notes)document.getElementById('obNotes').value=p.notes;}
+  if(p){
+    if(p.name)  document.getElementById('obName').value=p.name;
+    if(p.dob)   document.getElementById('obDOB').value=p.dob;
+    if(p.time)  document.getElementById('obTime').value=p.time;
+    if(p.rising)document.getElementById('obRising').value=p.rising;
+    if(p.notes) document.getElementById('obNotes').value=p.notes;
+    const cityEl=document.getElementById('obBirthCity');
+    if(cityEl)  cityEl.value=p.birthCity||'';
+  }
   document.getElementById('obOverlay').classList.add('open');
 }
 function closeOnboarding(){document.getElementById('obOverlay').classList.remove('open');}
@@ -2472,12 +2481,15 @@ function renderSettings(){
   const pp = document.getElementById('settingsProfilePreview');
   if(profile?.dob){
     const bd=new Date(profile.dob+'T12:00:00'),ns=sunSignForDate(bd),nm=moonSignApprox(bd);
-    pp.innerHTML=
-      '<strong style="color:rgba(245,240,232,.75);font-size:17px;">'+(profile.name||'Anonymous')+'</strong><br>'+
-      'Born: '+bd.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'<br>'+
-      ns.symbol+' '+ns.name+' Sun · '+nm.symbol+' '+nm.name+' Moon'+
-      (profile.rising?' · '+profile.rising+' Rising':'')+'<br>'+
-      (profile.notes?'<span style="font-style:italic;color:rgba(245,240,232,.35);">'+profile.notes+'</span>':'');
+    let html = '<strong style="color:rgba(245,240,232,.75);font-size:17px;">'+(profile.name||'Anonymous')+'</strong><br>';
+    html += 'Born: '+bd.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+    if(profile.birthCity) html += ' · '+profile.birthCity;
+    html += '<br>';
+    html += ns.symbol+' '+ns.name+' Sun · '+nm.symbol+' '+nm.name+' Moon';
+    if(profile.rising) html += ' · '+profile.rising+' Rising';
+    html += '<br>';
+    if(profile.notes) html += '<span style="font-style:italic;color:rgba(245,240,232,.35);">'+profile.notes+'</span>';
+    pp.innerHTML = html;
   } else {
     pp.innerHTML='No profile set yet. Add your birth details to unlock personalized readings and transit alerts.';
   }
@@ -2665,8 +2677,19 @@ async function onSignedIn(user, isNew){
 }
 
 function onSignedOut(){
+  // Clear all user data from localStorage on sign out
+  const keysToKeep = ['lj_entered', 'lunations_mode_v1']; // keep app state
+  const allKeys = Object.keys(localStorage);
+  allKeys.forEach(k => {
+    if(!keysToKeep.includes(k) && k.startsWith('lunations')){
+      localStorage.removeItem(k);
+    }
+  });
+  currentUser = null;
   renderAuthBadge();
+  updateSideMenuAccount();
   renderToday();
+  showToast('Signed out — local data cleared');
 }
 
 async function pullCloudEntries(){
@@ -2880,17 +2903,30 @@ async function signIn(){
   }
 }
 
-async function signOut(){
+async function signOut(clearData=false){
   if(!sbClient) return;
   await sbClient.auth.signOut();
   currentUser = null;
+  if(clearData){
+    // Full clear — remove all local data
+    const keysToRemove = [EK, PK, RK, 'lunations_intention_v1','lunations_settings_v1',
+      'lunations_reading_v1','lunations_collective_v1','lunations_pattern_insight_v1',
+      'lunations_last_sync','lunations_profile_loaded_v1',SWK];
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+    showToast('Signed out — local data cleared');
+  } else {
+    showToast('Signed out');
+  }
   renderAuthBadge();
   closeAuthModal();
-  showToast('Signed out');
+  closeSideMenu();
+  renderToday();
 }
 
 function confirmSignOut(){
-  if(confirm('Sign out of Lunations? Your local entries will remain on this device.')) signOut();
+  if(!confirm('Sign out of Lunations?')) return;
+  const clearLocal = confirm('Also clear local data from this device?\n\nTap OK to clear everything, or Cancel to keep your data cached locally.');
+  signOut(clearLocal);
 }
 
 async function syncNow(){
@@ -3730,6 +3766,38 @@ function buildSwHTML(data){
   if(ago !== null) html += '<div style="font-size:10px;color:rgba(245,240,232,.18);margin-top:8px;text-align:right;">Updated ' + ago + 'm ago</div>';
 
   return html;
+}
+
+
+// ─── FORCE SYNC ALL LOCAL TO CLOUD ───────────────────────────────────────────
+async function forceSyncAll(){
+  if(!currentUser || !sbClient){
+    showToast('Sign in to sync to cloud');
+    return;
+  }
+  const entries = loadEntries();
+  const count = Object.keys(entries).length;
+  if(!count){ showToast('No entries to sync'); return; }
+  showToast('Syncing ' + count + ' entries…');
+  try{
+    const token = (await sbClient.auth.getSession())?.data?.session?.access_token;
+    if(!token){ showToast('Session expired — please sign in again'); return; }
+    const res = await fetch('/api/sync', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', Authorization:'Bearer '+token},
+      body: JSON.stringify({entries})
+    });
+    const data = await res.json();
+    if(data.synced !== undefined){
+      localStorage.setItem('lunations_last_sync', new Date().toLocaleDateString());
+      showToast('✦ ' + data.synced + ' entries synced to cloud');
+    } else {
+      showToast('Sync failed: ' + (data.error||'unknown error'));
+    }
+  } catch(e){
+    showToast('Sync error — check connection');
+    console.error('forceSyncAll error:', e);
+  }
 }
 
 // ─── LANDING ──────────────────────────────────────────────────────────────────
