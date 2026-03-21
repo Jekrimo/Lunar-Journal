@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="2026.03.21.1050">
+<meta name="build" content="20260321123002">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -719,7 +719,7 @@
   <div class="entry-submitted-card" id="entrySubmittedCard">
     <div class="entry-submitted-header">
       <div class="entry-submitted-title">✦ Today's Entry</div>
-      <button class="entry-submitted-edit" onclick="showEntryForm()">✎ Edit</button>
+      <button class="entry-submitted-edit" onclick="(function(){const k=Object.keys(loadEntries()).find(k=>k===entryKey(new Date()));if(k)editEntry(k);}())">✎ Edit</button>
     </div>
     <div class="entry-submitted-metrics" id="submittedMetrics"></div>
     <div class="entry-submitted-qualities" id="submittedQualities"></div>
@@ -3170,6 +3170,7 @@ function saveEditEntry(){
   // If editing today's entry, refresh submitted card + reflection
   if(dateKey === entryKey(new Date())){
     showSubmittedCard(entries[dateKey]);
+    setTimeout(renderEveningCheckin, 150);
   }
   if(document.getElementById('view-entries').classList.contains('active')) renderEntries();
   if(document.getElementById('view-cycle').classList.contains('active')) renderCycle();
@@ -3610,12 +3611,16 @@ function renderModeGrid(){
 }
 
 // Mode-aware Vedic panel dispatcher
+let _vedicRendering = false;
 function renderVedicPanel(){
-  const mode = getModeData();
-  if(!mode || mode.name === 'Vedic'){
-    renderVedicPanelOrig();
-    return;
-  }
+  if(_vedicRendering) return; // recursion guard
+  _vedicRendering = true;
+  try {
+    const mode = getModeData();
+    if(!mode || mode.name === 'Vedic'){
+      renderVedicPanelOrig();
+      return;
+    }
 
   // Find or create container
   let container = document.getElementById('vedicPanelWrap');
@@ -3679,6 +3684,9 @@ function renderVedicPanel(){
   }
 
   container.innerHTML = cardHTML;
+  } finally {
+    _vedicRendering = false;
+  }
 }
 
 
@@ -3761,6 +3769,7 @@ function renderDailyPatternMessage(){
 }
 
 
+// BUILD 20260321121006
 // --- SPACE WEATHER ---
 const SWK = 'lunations_sw_v1';
 
