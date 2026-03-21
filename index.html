@@ -235,6 +235,26 @@
   .ob-skip{font-size:13px;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;display:block;margin-top:14px;text-align:center;font-style:italic;width:100%;}
   .ob-skip:hover{color:rgba(245,240,232,.4);}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  /* SPACE WEATHER */
+  .sw-card{background:rgba(245,240,232,.02);border:1px solid rgba(245,240,232,.07);border-radius:8px;padding:18px 20px;margin-bottom:20px;position:relative;overflow:hidden;}
+  .sw-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--sw-color,rgba(201,168,76,.4)),transparent);}
+  .sw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .sw-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(245,240,232,.3);}
+  .sw-kp-badge{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;padding:4px 12px;border-radius:20px;border:1px solid;text-transform:uppercase;}
+  .sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:12px;}
+  .sw-metric{background:rgba(245,240,232,.03);border-radius:6px;padding:10px 12px;}
+  .sw-metric-val{font-family:'Cinzel',serif;font-size:18px;color:rgba(245,240,232,.8);display:block;line-height:1;}
+  .sw-metric-unit{font-size:10px;color:rgba(245,240,232,.3);margin-left:2px;}
+  .sw-metric-label{font-size:10px;color:rgba(245,240,232,.3);margin-top:3px;font-style:italic;}
+  .sw-desc{font-size:14px;color:rgba(245,240,232,.55);line-height:1.7;font-style:italic;margin-bottom:10px;}
+  .sw-kp-bar-wrap{height:6px;background:rgba(245,240,232,.06);border-radius:3px;margin-bottom:8px;overflow:hidden;}
+  .sw-kp-bar{height:100%;border-radius:3px;transition:width .4s ease;}
+  .sw-alert{font-size:12px;color:rgba(245,240,232,.35);padding:8px 10px;background:rgba(139,58,42,.08);border-radius:4px;margin-bottom:6px;border-left:2px solid rgba(200,100,70,.3);}
+  .sw-refresh{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,240,232,.2);background:none;border:none;cursor:pointer;padding:0;margin-top:6px;}
+  .sw-refresh:hover{color:rgba(245,240,232,.5);}
+  .sw-loading{font-size:14px;color:rgba(245,240,232,.25);font-style:italic;}
+  /* Kp history sparkline */
+  .sw-sparkline{width:100%;height:32px;margin-top:8px;}
   /* PATTERNS */
   .pattern-range-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;padding:7px 14px;background:none;border:none;border-right:1px solid rgba(245,240,232,.1);color:rgba(245,240,232,.35);cursor:pointer;transition:all .15s;text-transform:uppercase;}
   .pattern-range-btn:last-child{border-right:none;}
@@ -562,6 +582,15 @@
 <!-- TODAY -->
 <div id="view-today" class="view active">
   <div id="natalBadgeWrap"></div>
+  <!-- SPACE WEATHER CARD -->
+  <div class="sw-card" id="swCard">
+    <div class="sw-header">
+      <div class="sw-title">Space Weather · Electromagnetic Field</div>
+      <button class="sw-refresh" onclick="fetchSpaceWeather(true)">↺ refresh</button>
+    </div>
+    <div id="swContent"><span class="sw-loading">Reading the field…</span></div>
+  </div>
+
   <!-- CYCLE INTENTION BANNER -->
   <div class="intention-banner" id="intentionBanner" style="display:none;">
     <span class="intention-moon-icon">🌑</span>
@@ -851,6 +880,15 @@
     <span class="sky-hero-moon" id="skyHeroMoon">🌙</span>
     <div class="sky-hero-phase" id="skyHeroPhase">—</div>
     <div class="sky-hero-sub" id="skyHeroSub">—</div>
+  </div>
+
+  <!-- SPACE WEATHER ON SKY VIEW -->
+  <div class="sw-card" id="swCardSky" style="margin-bottom:20px;">
+    <div class="sw-header">
+      <div class="sw-title">Live Space Weather</div>
+      <button class="sw-refresh" onclick="fetchSpaceWeather(true)">↺</button>
+    </div>
+    <div id="swContentSky"><span class="sw-loading">Reading the field…</span></div>
   </div>
 
   <!-- COLLECTIVE HOROSCOPE -->
@@ -1359,6 +1397,7 @@ function renderToday(){
   generateReading();
   renderIntentionBanner();
   renderDailyPatternMessage();
+  fetchSpaceWeather();
   // If today already has an entry, show submitted card not blank form
   const todayEntry = loadEntries()[entryKey(new Date())];
   if(todayEntry){
@@ -1867,6 +1906,31 @@ function renderPatterns(){
     arcDatasets.push({label:'Mood (prev)',data:prevArcKeys.map(k=>prevEntries[k].mood||0),borderColor:'rgba(200,130,100,.25)',backgroundColor:'transparent',tension:.35,pointRadius:0,borderDash:[4,3]});
   }
 
+  // Add Kp index overlay if we have cached space weather history
+  try{
+    const swCache = JSON.parse(localStorage.getItem(SWK)||'null');
+    if(swCache && swCache.kp && swCache.kp.history && swCache.kp.history.length > 1){
+      // Kp history is last 24h — only overlay if range is 1M
+      if(patternMonths === 1 && arcKeys.length > 0){
+        const kpHist = swCache.kp.history;
+        // Scale Kp 0-9 to match our 1-10 scale visually
+        const kpScaled = kpHist.map(h => (h.kp/9)*10);
+        // Align to end of arcKeys
+        const kpLabels = kpHist.map((_,i) => 'Kp-' + i);
+        arcDatasets.push({
+          label:'Kp Index (24h)',
+          data: new Array(Math.max(0, arcKeys.length - kpScaled.length)).fill(null).concat(kpScaled),
+          borderColor:'rgba(100,180,220,.5)',
+          backgroundColor:'transparent',
+          tension:.3,
+          pointRadius:0,
+          borderWidth:1,
+          borderDash:[2,4],
+        });
+      }
+    }
+  } catch(e){}
+
   mk('arcChart',{type:'line',data:{labels:arcLabels,datasets:arcDatasets},options:{...chartOpts,scales:{...chartOpts.scales,x:{...chartOpts.scales.x,ticks:{...chartOpts.scales.x.ticks,maxTicksLimit:8}}}}});
 
   // ── CLARITY & CREATIVITY ARC ─────────────────────────────────────────────
@@ -2113,6 +2177,7 @@ function renderSky(){
 
   // Generate collective reading
   generateCollectiveReading();
+  fetchSpaceWeather();
   // Profile now in Settings tab
   // Year overview
   const ys=new Date(now.getFullYear(),0,1),firstNm=prevNewMoon(ys);let d=new Date(firstNm),cycles=[];
@@ -3515,6 +3580,148 @@ function renderDailyPatternMessage(){
       <div style="font-size:14px;color:rgba(245,240,232,.65);line-height:1.7;">${msg}</div>
     </div>
   </div>`;
+}
+
+
+// --- SPACE WEATHER ---
+const SWK = 'lunations_sw_v1';
+
+async function fetchSpaceWeather(force=false){
+  // Cache for 10 minutes
+  if(!force){
+    try{
+      const c = JSON.parse(localStorage.getItem(SWK)||'null');
+      if(c && (Date.now()-new Date(c.timestamp).getTime()) < 600000){
+        renderSpaceWeather(c);
+        return;
+      }
+    } catch(e){}
+  }
+
+  try{
+    const res = await fetch('/api/spaceweather');
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    localStorage.setItem(SWK, JSON.stringify(data));
+    renderSpaceWeather(data);
+  } catch(e){
+    const fallback = {error: true};
+    ['swContent','swContentSky'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.innerHTML = '<span class="sw-loading">Field data unavailable — check back shortly</span>';
+    });
+  }
+}
+
+function renderSpaceWeather(data){
+  const html = buildSwHTML(data);
+  const compact = buildSwCompact(data);
+  const full = document.getElementById('swContent');
+  const sky = document.getElementById('swContentSky');
+  if(full) full.innerHTML = compact;
+  if(sky) sky.innerHTML = html;
+  // Update card border color
+  const kpColor = data.kp?.classification?.color || 'rgba(201,168,76,.3)';
+  document.querySelectorAll('.sw-card').forEach(c => {
+    c.style.setProperty('--sw-color', kpColor);
+    c.style.borderColor = kpColor.replace(')', ',.25)').replace('rgb','rgba');
+  });
+}
+
+function buildSwCompact(data){
+  if(data.error) return '<span class="sw-loading">Unavailable</span>';
+  const kp = data.kp || {};
+  const cls = kp.classification || {};
+  const wind = data.solarWind || {};
+
+  const kpVal = kp.current !== null && kp.current !== undefined ? kp.current.toFixed(1) : '—';
+  const kpPct = kp.current !== null ? Math.min(100,(kp.current/9)*100) : 0;
+
+  let html = '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px;">';
+  html += '<div style="display:flex;align-items:center;gap:10px;">';
+  html += '<div style="font-family:Cinzel,serif;font-size:28px;color:' + (cls.color||'#c9a84c') + ';line-height:1;">' + kpVal + '</div>';
+  html += '<div><div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:.1em;color:' + (cls.color||'#c9a84c') + ';text-transform:uppercase;">' + (cls.label||'—') + '</div>';
+  html += '<div style="font-size:11px;color:rgba(245,240,232,.3);margin-top:1px;">Kp Index</div></div></div>';
+
+  if(wind.speed){
+    html += '<div><div style="font-size:15px;color:rgba(245,240,232,.6);">' + wind.speed + '<span style="font-size:10px;color:rgba(245,240,232,.3);"> km/s</span></div>';
+    html += '<div style="font-size:10px;color:rgba(245,240,232,.3);">Solar wind</div></div>';
+  }
+  if(wind.bz){
+    const bzNum = parseFloat(wind.bz);
+    const bzColor = bzNum < -5 ? '#c07050' : bzNum > 0 ? '#4a9a6a' : 'rgba(245,240,232,.5)';
+    html += '<div><div style="font-size:15px;color:' + bzColor + ';">' + wind.bz + '<span style="font-size:10px;color:rgba(245,240,232,.3);"> nT Bz</span></div>';
+    html += '<div style="font-size:10px;color:rgba(245,240,232,.3);">Interplanetary field</div></div>';
+  }
+  html += '</div>';
+
+  // Kp bar
+  html += '<div class="sw-kp-bar-wrap"><div class="sw-kp-bar" style="width:' + kpPct + '%;background:' + (cls.color||'#c9a84c') + ';"></div></div>';
+
+  // Description
+  if(cls.desc) html += '<div class="sw-desc">' + cls.desc + '</div>';
+
+  return html;
+}
+
+function buildSwHTML(data){
+  if(data.error) return '<span class="sw-loading">Field data unavailable</span>';
+  const kp = data.kp || {};
+  const cls = kp.classification || {};
+  const wind = data.solarWind || {};
+
+  let html = buildSwCompact(data);
+
+  // Full metrics grid
+  html += '<div class="sw-grid">';
+  if(kp.max24h !== undefined){
+    html += '<div class="sw-metric"><span class="sw-metric-val">' + kp.max24h.toFixed(1) + '</span><div class="sw-metric-label">Peak Kp (24h)</div></div>';
+  }
+  if(wind.speed){
+    html += '<div class="sw-metric"><span class="sw-metric-val">' + wind.speed + '<span class="sw-metric-unit">km/s</span></span><div class="sw-metric-label">Solar wind speed</div><div style="font-size:10px;color:rgba(245,240,232,.25);margin-top:2px;">' + (wind.speedDesc||'') + '</div></div>';
+  }
+  if(wind.density){
+    html += '<div class="sw-metric"><span class="sw-metric-val">' + wind.density + '<span class="sw-metric-unit">p/cm³</span></span><div class="sw-metric-label">Proton density</div></div>';
+  }
+  if(wind.bz){
+    const bzNum = parseFloat(wind.bz);
+    const bzColor = bzNum < -5 ? '#c07050' : bzNum > 0 ? '#4a9a6a' : 'rgba(245,240,232,.6)';
+    html += '<div class="sw-metric"><span class="sw-metric-val" style="color:' + bzColor + ';">' + wind.bz + '<span class="sw-metric-unit">nT</span></span><div class="sw-metric-label">Bz component</div><div style="font-size:10px;color:rgba(245,240,232,.25);margin-top:2px;">' + (wind.bzDesc||'') + '</div></div>';
+  }
+  html += '</div>';
+
+  // Kp sparkline
+  if(kp.history && kp.history.length > 1){
+    const vals = kp.history.map(h => h.kp);
+    const max = Math.max(9, ...vals);
+    const W = 300, H = 32;
+    const pts = vals.map((v,i) => {
+      const x = (i/(vals.length-1)) * W;
+      const y = H - (v/max)*H;
+      return x + ',' + y;
+    }).join(' ');
+    const fillPts = '0,' + H + ' ' + pts + ' ' + W + ',' + H;
+    html += '<svg class="sw-sparkline" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">';
+    html += '<polygon points="' + fillPts + '" fill="' + (cls.color||'#c9a84c') + '" opacity="0.12"/>';
+    html += '<polyline points="' + pts + '" fill="none" stroke="' + (cls.color||'#c9a84c') + '" stroke-width="1.5" opacity="0.7"/>';
+    html += '</svg>';
+    html += '<div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(245,240,232,.2);font-style:italic;"><span>24h ago</span><span>now</span></div>';
+  }
+
+  // Alerts
+  if(data.alerts && data.alerts.length){
+    html += '<div style="margin-top:12px;">';
+    data.alerts.forEach(a => {
+      html += '<div class="sw-alert">' + a.message + '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Updated time
+  const ago = data.timestamp ? Math.floor((Date.now()-new Date(data.timestamp).getTime())/60000) : null;
+  if(ago !== null) html += '<div style="font-size:10px;color:rgba(245,240,232,.18);margin-top:8px;text-align:right;">Updated ' + ago + 'm ago</div>';
+
+  return html;
 }
 
 // ─── LANDING ──────────────────────────────────────────────────────────────────
