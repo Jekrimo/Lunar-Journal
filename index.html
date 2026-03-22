@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260321134929">
+<meta name="build" content="20260321180000">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -1615,6 +1615,7 @@ function renderToday(){
   }
   if(getSetting('showTransits',true))renderTransitAlerts(); else {var tw=document.getElementById('transitAlertsWrap');if(tw)tw.innerHTML='';}
   if(getSetting('showVedic',true))renderVedicPanel(); else {var vw=document.getElementById('vedicPanelWrap');if(vw)vw.innerHTML='';}
+  renderTzolkinPanel();
 
   } catch(err){ console.error("renderToday error:", err); }
 }
@@ -2620,6 +2621,211 @@ function renderVedicPanelOrig() {
 }
 
 
+
+// ─── TZOLKIN ENGINE ──────────────────────────────────────────────────────────
+const TZOLKIN_ANCHOR = new Date(2012, 11, 21); // Dec 21 2012 = 4 Ahau (verified)
+const TZOLKIN_ANCHOR_SIGN = 19; // Ahau index
+const TZOLKIN_ANCHOR_NUM  = 4;
+
+const TZOLKIN_SIGNS = [
+  { name:'Imix',    glyph:'🌊', keywords:'Primal source, nurturing, origins, the void-womb' },
+  { name:'Ik',      glyph:'💨', keywords:'Wind, spirit, breath, invisible forces, communication' },
+  { name:'Akbal',   glyph:'🌑', keywords:'Night, dreaming, inner knowing, the dark house' },
+  { name:'Kan',     glyph:'🌱', keywords:'Seed, fertility, abundance, the creative spark' },
+  { name:'Chicchan',glyph:'🐍', keywords:'Serpent, Kundalini, life force, primal energy, body wisdom' },
+  { name:'Cimi',    glyph:'💀', keywords:'Death, transformation, release, surrender, the great transition' },
+  { name:'Manik',   glyph:'🦌', keywords:'Deer, healing hands, grace, the sacred journey' },
+  { name:'Lamat',   glyph:'⭐', keywords:'Star, Venus, harmony, beauty, the light-bearer, abundance' },
+  { name:'Muluc',   glyph:'💧', keywords:'Water, moon, offerings, emotional depth, purification' },
+  { name:'Oc',      glyph:'🐕', keywords:'Dog, loyalty, heart, companionship, love as path' },
+  { name:'Chuen',   glyph:'🐒', keywords:'Monkey, artisan, play, weaving time, the sacred trickster' },
+  { name:'Eb',      glyph:'🌿', keywords:'Road, path, the pilgrim, human journey, grass' },
+  { name:'Ben',     glyph:'🎋', keywords:'Reed, staff, pillars of heaven, the sky-walker, personal power' },
+  { name:'Ix',      glyph:'🐆', keywords:'Jaguar, earth magic, shamanic power, feminine force, night vision' },
+  { name:'Men',     glyph:'🦅', keywords:'Eagle, vision, global perspective, high mind, clarity from altitude' },
+  { name:'Cib',     glyph:'🦅', keywords:'Vulture, owl, ancestral wisdom, forgiveness, karma, threshold keeper' },
+  { name:'Caban',   glyph:'🌍', keywords:'Earth, synchronicity, navigation, the resonant field, quake' },
+  { name:'Etznab',  glyph:'🔪', keywords:'Mirror, flint, clarity, truth, reflection, cutting through illusion' },
+  { name:'Cauac',   glyph:'⛈',  keywords:'Storm, transformation, catalysis, purification, lightning' },
+  { name:'Ahau',    glyph:'☀️', keywords:'Sun lord, flowering, enlightenment, ascension, unconditional love' },
+];
+
+const TZOLKIN_TONES = [
+  { num:1,  name:'Magnetic',    desc:'Unify, attract, begin. Pure initiation.' },
+  { num:2,  name:'Lunar',       desc:'Polarize, stabilize, challenge.' },
+  { num:3,  name:'Electric',    desc:'Activate, bond, service.' },
+  { num:4,  name:'Self-Existing',desc:'Define, measure, form.' },
+  { num:5,  name:'Overtone',    desc:'Empower, command, radiance.' },
+  { num:6,  name:'Rhythmic',    desc:'Organize, balance, equalize. (Your birth tone)' },
+  { num:7,  name:'Resonant',    desc:'Channel, inspire, attune.' },
+  { num:8,  name:'Galactic',    desc:'Harmonize, integrity, model.' },
+  { num:9,  name:'Solar',       desc:'Pulse, realize, intention.' },
+  { num:10, name:'Planetary',   desc:'Perfect, produce, manifest.' },
+  { num:11, name:'Spectral',    desc:'Dissolve, liberate, release.' },
+  { num:12, name:'Crystal',     desc:'Cooperate, dedicate, universalize.' },
+  { num:13, name:'Cosmic',      desc:'Endure, transcend, presence. Portal tone.' },
+];
+
+// Personal Tzolkin data — Jeff born Feb 19 1988 = 6 Lamat
+const BIRTH_TZOLKIN = { num: 6, signIdx: 7 }; // 6 Lamat
+const BIRTH_WAVESPELL = 'Akbal'; // Dark House wavespell
+
+function tzolkinForDate(d) {
+  const msPerDay = 86400000;
+  const delta = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) -
+    new Date(TZOLKIN_ANCHOR.getFullYear(), TZOLKIN_ANCHOR.getMonth(), TZOLKIN_ANCHOR.getDate())) / msPerDay);
+  const signIdx = ((TZOLKIN_ANCHOR_SIGN + delta) % 20 + 20) % 20;
+  const num = (((TZOLKIN_ANCHOR_NUM - 1 + delta) % 13) + 13) % 13 + 1;
+  return { num, signIdx, sign: TZOLKIN_SIGNS[signIdx], tone: TZOLKIN_TONES[num - 1] };
+}
+
+function getTzolkinAlert(tz) {
+  const alerts = [];
+  // Galactic birthday
+  if (tz.num === BIRTH_TZOLKIN.num && tz.signIdx === BIRTH_TZOLKIN.signIdx) {
+    alerts.push({ type: 'sacred', msg: '✦ Galactic Birthday — 6 Lamat. Your birth frequency is at peak. Channel is wide open.' });
+  }
+  // Red Serpent (Chicchan) — your birth wavespell sign
+  if (tz.signIdx === 4) {
+    alerts.push({ type: 'kundalini', msg: '🐍 Chicchan day — Serpent / Kundalini energy active. Strong for practice and somatic work.' });
+  }
+  // Tone 13 — portal
+  if (tz.num === 13) {
+    alerts.push({ type: 'portal', msg: '⊛ Tone 13 — Cosmic portal day. Transcendence frequency. The veil is thin.' });
+  }
+  // Lamat (Star/Venus) days
+  if (tz.signIdx === 7) {
+    alerts.push({ type: 'venus', msg: '⭐ Lamat day — Star / Venus frequency. Your sign archetype. Abundance and harmony available.' });
+  }
+  // Cib — threshold keeper (strong ancestral days)
+  if (tz.signIdx === 15) {
+    alerts.push({ type: 'ancestral', msg: '🦅 Cib day — Ancestral wisdom. The grandfathers are especially close today.' });
+  }
+  // Ix — earth magic, feminine shamanic
+  if (tz.signIdx === 13) {
+    alerts.push({ type: 'magic', msg: '🐆 Ix day — Earth magic and jaguar medicine. Strong for Kurukulla practice and feminine current work.' });
+  }
+  // Muluc — water/moon, lunar resonance
+  if (tz.signIdx === 8) {
+    alerts.push({ type: 'lunar', msg: '💧 Muluc day — Water and moon sign. Deep lunar resonance. Emotional and psychic field is open.' });
+  }
+  // Wavespell starts (tone 1 days)
+  if (tz.num === 1) {
+    alerts.push({ type: 'wave', msg: `✦ ${tz.sign.name} Wavespell opens today — 13 days of ${tz.sign.name} energy beginning. ${tz.signIdx === 4 ? 'Kundalini wavespell — significant.' : 'New current initiated.'}` });
+  }
+  return alerts;
+}
+
+function daysUntilNextTzolkin(targetNum, targetSignIdx, fromDate) {
+  for (let i = 1; i <= 260; i++) {
+    const d = new Date(fromDate);
+    d.setDate(d.getDate() + i);
+    const tz = tzolkinForDate(d);
+    if (tz.num === targetNum && tz.signIdx === targetSignIdx) return { days: i, date: d };
+  }
+  return null;
+}
+
+function renderTzolkinPanel() {
+  const now = new Date();
+  const tz = tzolkinForDate(now);
+  const alerts = getTzolkinAlert(tz);
+  const nextBirthday = daysUntilNextTzolkin(BIRTH_TZOLKIN.num, BIRTH_TZOLKIN.signIdx, now);
+  const nextSerpent = daysUntilNextTzolkin(1, 4, now); // next Red Serpent wavespell
+
+  // Quality color based on special days
+  const isSpecial = tz.num === 13 || tz.signIdx === 7 || tz.signIdx === 4;
+  const isBirthday = tz.num === BIRTH_TZOLKIN.num && tz.signIdx === BIRTH_TZOLKIN.signIdx;
+  const bg   = isBirthday ? 'rgba(201,168,76,.12)' : isSpecial ? 'rgba(100,80,180,.1)' : 'rgba(245,240,232,.025)';
+  const bord = isBirthday ? 'rgba(201,168,76,.4)'  : isSpecial ? 'rgba(140,100,220,.3)' : 'rgba(245,240,232,.07)';
+  const col  = isBirthday ? '#e8d49a' : isSpecial ? 'rgba(180,150,255,.85)' : 'rgba(245,240,232,.75)';
+
+  const alertHTML = alerts.length ? alerts.map(a => {
+    const alertBg = a.type === 'sacred' ? 'rgba(201,168,76,.07)' :
+                    a.type === 'kundalini' ? 'rgba(120,60,60,.1)' :
+                    a.type === 'portal' ? 'rgba(80,60,140,.12)' : 'rgba(60,80,120,.1)';
+    const alertCol = a.type === 'sacred' ? 'rgba(232,212,154,.7)' :
+                     a.type === 'kundalini' ? 'rgba(220,120,100,.7)' :
+                     a.type === 'portal' ? 'rgba(180,150,255,.7)' : 'rgba(140,180,220,.6)';
+    return `<div style="margin-top:10px;padding:10px 14px;background:${alertBg};border-radius:4px;font-size:13px;color:${alertCol};font-style:italic;">${a.msg}</div>`;
+  }).join('') : '';
+
+  const countdownRows = [];
+  if (nextBirthday) {
+    const bd = nextBirthday.date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    countdownRows.push(`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(245,240,232,.05);">
+      <span style="font-size:13px;color:rgba(245,240,232,.4);">Next galactic birthday (6 Lamat)</span>
+      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${bd} · ${nextBirthday.days}d</span>
+    </div>`);
+  }
+  if (nextSerpent) {
+    const sd = nextSerpent.date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    countdownRows.push(`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;">
+      <span style="font-size:13px;color:rgba(245,240,232,.4);">Next Red Serpent wavespell</span>
+      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${sd} · ${nextSerpent.days}d</span>
+    </div>`);
+  }
+
+  // Moab + Kundalini anniversary countdowns
+  const thisYear = now.getFullYear();
+  function anniversaryCountdown(month, day, label) {
+    let ann = new Date(thisYear, month - 1, day);
+    if (ann <= now) ann = new Date(thisYear + 1, month - 1, day);
+    const days = Math.ceil((ann - now) / 86400000);
+    const tz = tzolkinForDate(ann);
+    const dateStr = ann.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(245,240,232,.05);">
+      <span style="font-size:13px;color:rgba(245,240,232,.4);">${label}</span>
+      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${dateStr} · ${tz.num} ${tz.sign.name} · ${days}d</span>
+    </div>`;
+  }
+
+  const html = `<div class="astro-card" style="margin-bottom:20px;" id="tzolkinPanel">
+    <div class="card-label">Tzolkin · Sacred Calendar</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px;">
+
+      <div style="background:${bg};border:1px solid ${bord};border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:${col};opacity:.8;margin-bottom:6px;text-transform:uppercase;">Day Sign</div>
+        <div style="font-size:24px;margin-bottom:4px;">${tz.sign.glyph}</div>
+        <div style="font-size:17px;color:rgba(245,240,232,.9);margin-bottom:4px;">${tz.num} ${tz.sign.name}</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">${tz.sign.keywords}</div>
+      </div>
+
+      <div style="background:rgba(245,240,232,.025);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(245,240,232,.4);opacity:.8;margin-bottom:6px;text-transform:uppercase;">Tone ${tz.num}</div>
+        <div style="font-size:17px;color:rgba(245,240,232,.85);margin-bottom:4px;">${tz.tone.name}</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">${tz.tone.desc}</div>
+      </div>
+
+      <div style="background:rgba(245,240,232,.025);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(201,168,76,.6);margin-bottom:6px;text-transform:uppercase;">Your Sign · 6 Lamat</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.5);line-height:1.6;font-style:italic;">Born ${BIRTH_TZOLKIN.num} ${TZOLKIN_SIGNS[BIRTH_TZOLKIN.signIdx].name} · ${BIRTH_WAVESPELL} wavespell · Rhythmic Star / Venus</div>
+        ${countdownRows.join('')}
+      </div>
+
+    </div>
+
+    <div style="margin-top:12px;padding:12px 14px;background:rgba(245,240,232,.02);border-radius:4px;">
+      ${anniversaryCountdown(6, 20, 'Moab anniversary')}
+      ${anniversaryCountdown(6, 27, 'Kundalini anniversary')}
+    </div>
+
+    ${alertHTML}
+  </div>`;
+
+  let wrap = document.getElementById('tzolkinPanelWrap');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'tzolkinPanelWrap';
+    const vedicWrap = document.getElementById('vedicPanelWrap');
+    if (vedicWrap) vedicWrap.after(wrap);
+    else {
+      const cycleTone = document.getElementById('cycleTone')?.closest('.astro-card');
+      if (cycleTone) cycleTone.after(wrap);
+    }
+  }
+  wrap.innerHTML = html;
+}
 
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 const SK = 'lunations_settings_v1';
@@ -3665,7 +3871,7 @@ const MODES = {
 
 const MK = 'lunations_mode_v1';
 function getCurrentMode(){ return localStorage.getItem(MK) || 'vedic'; }
-function setMode(mode){ localStorage.setItem(MK, mode); localStorage.removeItem(RK); renderToday(); renderVedicPanel(); }
+function setMode(mode){ localStorage.setItem(MK, mode); localStorage.removeItem(RK); renderToday(); renderVedicPanel(); renderTzolkinPanel(); }
 function getModeData(){ return MODES[getCurrentMode()] || MODES.vedic; }
 
 
