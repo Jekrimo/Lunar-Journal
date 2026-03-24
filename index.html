@@ -2256,48 +2256,42 @@ function renderQualityTags(){document.getElementById('qualityTags').innerHTML=QU
 function selectedQualities(){return[...document.querySelectorAll('#qualityTags .tag-btn.selected')].map(b=>b.textContent);}
 
 // ─── SAVE ENTRY ───────────────────────────────────────────────────────────────
-function saveEntry() {
-  const key = entryKey(new Date());
-  const entries = loadEntries();
-  const existing = entries[key] || {};
-
-  const energy    = parseInt(document.getElementById('sliderEnergy').value);
-  const mood      = parseInt(document.getElementById('sliderMood').value);
-  const clarity   = parseInt(document.getElementById('sliderClarity').value);
-  const creativity= parseInt(document.getElementById('sliderCreativity').value);
-  const text      = document.getElementById('entryText').value.trim();
-  const dreams    = document.getElementById('dreamText').value.trim();
-  const sadhana   = document.getElementById('sadhanaText').value.trim();
-  const intention = document.getElementById('intentionText').value.trim();
-  const qualities = [...document.querySelectorAll('#qualityTags .tag-btn.selected')].map(b => b.textContent);
-  const moon      = currentMoonData();
-
-  const entry = {
-    ...existing,
-    date: key,
-    energy, mood, clarity, creativity,
-    text, dreams, sadhana, intention, qualities,
-    moonPhase: moon?.phase || '',
-    moonSign:  moon?.sign  || '',
-    timestamp: Date.now()
+function saveEntry(){
+  const now=new Date(),key=entryKey(now),entries=loadEntries();
+  const phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now);
+  const tithi=getTithi(now),nakshatra=getNakshatra(now),vara=getVara(now);
+  const transits=getTransitAlerts().map(a=>a.title);
+  const planets=allPlanets(now).filter(p=>p&&p.sign).slice(0,6).map(p=>p.name+' in '+(p.sign?.name||''));
+  entries[key]={
+    energy:+document.getElementById('sliderEnergy').value,
+    mood:+document.getElementById('sliderMood').value,
+    clarity:+document.getElementById('sliderClarity').value,
+    creativity:+document.getElementById('sliderCreativity').value,
+    qualities:selectedQualities(),
+    text:document.getElementById('entryText').value.trim(),
+    dream:document.getElementById('dreamText').value.trim(),
+    intention:document.getElementById('intentionText').value.trim(),
+    phase:phase.name,
+    phaseAge:Math.floor(phase.age),
+    phasePct:phase.pct,
+    moonSign:mSign.name,
+    sunSign:sSign.name,
+    tithi:tithi.num+' '+tithi.name,
+    tithiQuality:tithi.quality,
+    nakshatra:nakshatra.name,
+    nakshatraPada:nakshatra.pada,
+    vara:vara.name,
+    planets:planets,
+    activeTransits:transits,
+    timestamp:now.toISOString(),
+    sadhana:(document.getElementById('sadhanaText')?.value||'').trim(),
   };
-
-  // Always write to localStorage first
-  entries[key] = entry;
-  try {
-    localStorage.setItem('lunations_entries', JSON.stringify(entries));
-  } catch(e) {
-    console.error('localStorage save failed:', e);
-  }
-
-  // Cloud sync fire-and-forget — never blocks the save
-  if (currentUser) {
-    syncEntryToCloud(key, entry).catch(e => console.warn('Cloud sync failed (entry still saved locally):', e));
-  }
-
-  showSaveConfirm();
-  renderTodayEntry();
-  renderStreakBar();
+  saveEntries(entries);
+  pushEntryToCloud(key, entries[key]); // async, non-blocking
+  showSubmittedCard(entries[key]); // collapse form into summary card
+  renderEveningCheckin();
+  // Auto-backup to localStorage secondary key
+  localStorage.setItem('lunations_backup_'+key, JSON.stringify(entries[key]));
 }
 
 // ── FIX 1b: saveEveningEntry — same pattern ───────────────────────────────
