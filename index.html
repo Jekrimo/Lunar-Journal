@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260324131224">
+<meta name="build" content="20260321180000">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -239,127 +239,6 @@
   .save-btn-ready{animation:pulse-gold 2s ease-in-out infinite;}
   @keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,0)}50%{box-shadow:0 0 0 4px rgba(201,168,76,.1)}}
   @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
-  /* SETTINGS MODAL */
-  .sm-section{ margin-bottom:4px; }
-  .sm-section-label{ font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(201,168,76,.5);margin-bottom:12px; }
-  .sm-divider{ border:none;border-top:1px solid rgba(245,240,232,.06);margin:16px 0; }
-  /* STAR BACKGROUND */
-  body::before{
-    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-    background-image:
-      radial-gradient(1px 1px at 10% 15%, rgba(245,240,232,.35) 0%, transparent 100%),
-      radial-gradient(1px 1px at 25% 8%, rgba(245,240,232,.25) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 40% 22%, rgba(245,240,232,.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 55% 5%, rgba(245,240,232,.2) 0%, transparent 100%),
-      radial-gradient(1px 1px at 70% 18%, rgba(245,240,232,.3) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 85% 10%, rgba(245,240,232,.25) 0%, transparent 100%),
-      radial-gradient(1px 1px at 92% 30%, rgba(245,240,232,.2) 0%, transparent 100%),
-      radial-gradient(1px 1px at 15% 45%, rgba(245,240,232,.15) 0%, transparent 100%),
-      radial-gradient(1px 1px at 33% 60%, rgba(245,240,232,.2) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 60% 50%, rgba(245,240,232,.18) 0%, transparent 100%),
-      radial-gradient(1px 1px at 78% 42%, rgba(245,240,232,.22) 0%, transparent 100%),
-      radial-gradient(1px 1px at 5% 75%, rgba(245,240,232,.15) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 20% 85%, rgba(245,240,232,.2) 0%, transparent 100%),
-      radial-gradient(1px 1px at 45% 78%, rgba(245,240,232,.18) 0%, transparent 100%),
-      radial-gradient(1px 1px at 65% 88%, rgba(245,240,232,.15) 0%, transparent 100%),
-      radial-gradient(1px 1px at 88% 70%, rgba(245,240,232,.2) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 50% 95%, rgba(245,240,232,.12) 0%, transparent 100%),
-      radial-gradient(1px 1px at 30% 35%, rgba(201,168,76,.12) 0%, transparent 100%),
-      radial-gradient(1px 1px at 75% 62%, rgba(201,168,76,.1) 0%, transparent 100%);
-  }
-  .app-shell{position:relative;z-index:1;}
-  /* FIRST-TIME WALKTHROUGH */
-  .wt-overlay{position:fixed;inset:0;z-index:500;pointer-events:none;}
-  .wt-spotlight{position:absolute;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.75);transition:all .35s ease;pointer-events:none;}
-  .wt-card{position:fixed;left:50%;transform:translateX(-50%);background:#1a160e;border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:22px 24px;width:calc(100%-32px);max-width:360px;z-index:501;box-shadow:0 8px 40px rgba(0,0,0,.6);pointer-events:all;transition:all .35s ease;}
-  .wt-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-  .wt-step-dots{display:flex;gap:6px;}
-  .wt-dot{width:6px;height:6px;border-radius:50%;background:rgba(245,240,232,.15);}
-  .wt-dot.active{background:var(--gold);}
-  .wt-skip{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,240,232,.25);background:none;border:none;cursor:pointer;padding:0;}
-  .wt-icon{font-size:32px;margin-bottom:10px;display:block;}
-  .wt-title{font-family:'Cinzel',serif;font-size:15px;color:rgba(245,240,232,.85);margin-bottom:8px;}
-  .wt-body{font-size:14px;color:rgba(245,240,232,.5);line-height:1.75;}
-  .wt-btns{display:flex;gap:10px;margin-top:18px;}
-  .wt-btn-next{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:10px 24px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);border-radius:4px;color:var(--gold);cursor:pointer;flex:1;}
-  .wt-btn-back{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;background:none;border:1px solid rgba(245,240,232,.1);border-radius:4px;color:rgba(245,240,232,.3);cursor:pointer;}
-  .forecast-wrap{margin-bottom:32px;}
-  .forecast-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-  .forecast-title{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;opacity:.85;}
-  .forecast-nav{display:flex;gap:6px;}
-  .forecast-nav button{background:none;border:1px solid rgba(201,168,76,.2);color:var(--gold);font-size:16px;width:30px;height:30px;border-radius:50%;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;line-height:1;}
-  .forecast-nav button:hover{background:rgba(201,168,76,.1);}
-  .forecast-range-label{font-family:'Cinzel',serif;font-size:12px;color:rgba(245,240,232,.4);letter-spacing:.04em;}
-  .fday{background:rgba(245,240,232,.02);border:1px solid rgba(245,240,232,.07);border-radius:8px;padding:18px 20px;margin-bottom:12px;position:relative;overflow:hidden;transition:border-color .15s;}
-  .fday::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--fd-color,rgba(245,240,232,.1)),transparent);}
-  .fday.major{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.04);}
-  .fday.major::before{background:linear-gradient(90deg,transparent,rgba(201,168,76,.5),transparent);}
-  .fday.portal{border-color:rgba(120,80,200,.3);background:rgba(100,60,180,.05);}
-  .fday.portal::before{background:linear-gradient(90deg,transparent,rgba(140,100,220,.5),transparent);}
-  .fday.kundalini{border-color:rgba(180,60,60,.3);background:rgba(160,40,40,.05);}
-  .fday.kundalini::before{background:linear-gradient(90deg,transparent,rgba(200,80,80,.5),transparent);}
-  .fday.newmoon{border-color:rgba(80,120,180,.25);background:rgba(60,100,160,.04);}
-  .fday.fullmoon{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.06);}
-  .fday-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:12px;}
-  .fday-date{font-family:'Cinzel',serif;font-size:14px;color:rgba(245,240,232,.85);letter-spacing:.04em;}
-  .fday-date-sub{font-size:12px;color:rgba(245,240,232,.3);margin-top:2px;font-style:italic;}
-  .fday-badges{display:flex;flex-wrap:wrap;gap:5px;flex-shrink:0;}
-  .fday-badge{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:20px;border:1px solid;white-space:nowrap;}
-  .fb-moon{border-color:rgba(201,168,76,.4);color:#e8d49a;background:rgba(201,168,76,.07);}
-  .fb-nm{border-color:rgba(100,140,220,.35);color:rgba(160,190,255,.8);background:rgba(80,110,180,.07);}
-  .fb-portal{border-color:rgba(140,100,220,.4);color:rgba(180,150,255,.8);background:rgba(120,80,200,.07);}
-  .fb-serpent{border-color:rgba(180,60,60,.35);color:rgba(220,120,100,.8);background:rgba(160,40,40,.07);}
-  .fday-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
-  .fpill{font-size:11px;padding:2px 9px;border-radius:20px;border:1px solid rgba(245,240,232,.1);color:rgba(245,240,232,.4);}
-  .fpill.tz{border-color:rgba(140,100,220,.25);color:rgba(180,150,255,.7);}
-  .fpill.vd{border-color:rgba(80,160,100,.25);color:rgba(120,200,140,.7);}
-  .fpill.lm{border-color:rgba(201,168,76,.25);color:rgba(232,212,154,.7);}
-  .fday-insight{font-size:14px;color:rgba(245,240,232,.65);line-height:1.8;font-style:italic;}
-  .fday-journal{font-size:12px;color:rgba(245,240,232,.35);line-height:1.6;margin-top:8px;padding:8px 12px;border-left:2px solid rgba(201,168,76,.2);background:rgba(201,168,76,.03);border-radius:0 4px 4px 0;}
-  .fday-journal::before{content:'✦ ';color:rgba(201,168,76,.4);font-size:10px;}
-  .forecast-empty{text-align:center;padding:32px 24px;color:rgba(245,240,232,.25);font-style:italic;font-size:15px;}
-  .forecast-legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;padding:12px 16px;background:rgba(245,240,232,.02);border-radius:6px;border:1px solid rgba(245,240,232,.05);}
-  .fleg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(245,240,232,.3);}
-  .fleg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-  /* TODAY SECTIONS */
-  .today-section{border:1px solid rgba(245,240,232,.07);border-radius:10px;margin-bottom:12px;overflow:hidden;transition:border-color .2s;}
-  .today-section:hover{border-color:rgba(245,240,232,.1);}
-  .today-section-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;background:rgba(245,240,232,.02);}
-  .today-section-header:hover{background:rgba(245,240,232,.04);}
-  .today-section-label{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:rgba(245,240,232,.6);text-transform:uppercase;}
-  .today-section-chevron{font-size:14px;color:rgba(245,240,232,.3);transition:transform .2s;}
-  .today-section-collapsed .today-section-chevron{transform:rotate(-90deg);}
-  .today-section-body{padding:16px 18px 18px;}
-  /* Moon hero */
-  .moon-hero{display:flex;align-items:center;gap:16px;margin-bottom:8px;}
-  .moon-hero-left{flex-shrink:0;}
-  .moon-hero-right{flex:1;}
-  /* Quick log */
-  .log-mode-toggle{display:flex;gap:0;border:1px solid rgba(245,240,232,.1);border-radius:6px;overflow:hidden;margin-bottom:16px;align-self:flex-start;}
-  .log-mode-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;padding:7px 18px;background:none;border:none;color:rgba(245,240,232,.35);cursor:pointer;transition:all .15s;text-transform:uppercase;}
-  .log-mode-btn.active{background:rgba(201,168,76,.1);color:var(--gold);}
-  .quick-log-card{background:rgba(245,240,232,.02);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:20px;}
-  .quick-log-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;color:rgba(201,168,76,.6);text-transform:uppercase;margin-bottom:16px;}
-  /* Mobile */
-  @media(max-width:600px){
-    .today-section-body{padding:14px 14px 16px;}
-    .moon-hero{gap:12px;}
-    .today-section-header{padding:13px 14px;}
-    .moon-hero-right .card-value{font-size:14px!important;}
-  }
-  /* TOOLTIPS */
-  .tip{position:relative;cursor:help;border-bottom:1px dotted rgba(201,168,76,.3);display:inline;}
-  .tip:hover .tip-box,.tip:focus .tip-box{opacity:1;pointer-events:auto;transform:translateY(0);}
-  .tip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);
-    background:#1a160e;border:1px solid rgba(201,168,76,.25);border-radius:6px;
-    padding:10px 14px;font-size:13px;color:rgba(245,240,232,.75);line-height:1.6;
-    width:220px;z-index:100;opacity:0;pointer-events:none;transition:all .15s;
-    font-style:normal;font-family:'EB Garamond',serif;letter-spacing:0;
-    box-shadow:0 4px 20px rgba(0,0,0,.5);}
-  .tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
-    border:5px solid transparent;border-top-color:#1a160e;}
-  .tip-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:var(--gold);
-    text-transform:uppercase;margin-bottom:4px;display:block;}
   /* SHARE CARD */
   .share-preview{background:linear-gradient(135deg,#0f0c09 0%,#1a1230 50%,#0f0c09 100%);
     border-radius:12px;padding:28px 24px;margin-bottom:20px;position:relative;overflow:hidden;
@@ -697,8 +576,8 @@
   <!-- Settings -->
   <div class="side-menu-section">
     <div class="side-menu-section-label">Settings</div>
-
-    <button class="side-menu-item" onclick="openSettingsModal()"><span class="side-menu-item-icon">⚙</span><div><div class="side-menu-item-label">App Settings</div><div class="side-menu-item-sub">Icons, display, backup</div></div></button>
+    <button class="side-menu-item" onclick="openOnboarding();closeSideMenu()"><span class="side-menu-item-icon">♄</span><div><div class="side-menu-item-label">Birth Profile</div><div class="side-menu-item-sub">Personalize your readings</div></div></button>
+    <button class="side-menu-item" onclick="navTo('settings')"><span class="side-menu-item-icon">⚙</span><div><div class="side-menu-item-label">App Settings</div><div class="side-menu-item-sub">Icons, display, backup</div></div></button>
   </div>
 
   <div class="side-menu-divider"></div>
@@ -732,7 +611,6 @@
 
   <!-- STREAK + NATAL BADGE -->
   <div id="natalBadgeWrap"></div>
-  <div id="profileNudge"></div>
   <div class="streak-bar" id="streakBar" style="display:none;">
     <div class="streak-badge">
       <span class="streak-flame">🔥</span>
@@ -742,100 +620,140 @@
     <div id="streakMsg" style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;"></div>
   </div>
 
-  <!-- ══ SECTION 1: NOW ══ -->
-  <div class="today-section" id="sectionNow">
-    <div class="today-section-header" onclick="toggleTodaySection('sectionNow')">
-      <span class="today-section-label">🌙 Now</span>
-      <span class="today-section-chevron">▾</span>
-    </div>
-    <div class="today-section-body">
-      <!-- Moon hero -->
-      <div class="moon-hero">
-        <div class="moon-hero-left">
-          <svg id="moonSVG" width="52" height="52" viewBox="0 0 56 56"></svg>
-        </div>
-        <div class="moon-hero-right">
-          <div class="card-value" id="moonPhaseName" style="font-size:20px;">—</div>
-          <div class="card-sub" id="moonPhasePercent">—</div>
-          <div class="card-value" style="font-size:15px;margin-top:4px;" id="moonSign">—</div>
-          <div class="card-sub" id="moonSignKeywords">—</div>
-        </div>
-        <div class="moon-hero-right" style="text-align:right;">
-          <div class="card-value" style="font-size:15px;" id="cycleDayNum">—</div>
-          <div class="card-sub" id="cycleContext">—</div>
-          <div class="card-value" style="font-size:15px;margin-top:4px;" id="sunSign">—</div>
-          <div class="card-sub" id="sunSignSub">—</div>
-        </div>
-      </div>
-      <!-- Compact space weather strip -->
-      <div id="swStrip" style="display:none;margin-top:10px;margin-bottom:2px;"></div>
 
-      <!-- Cycle intention -->
-      <div class="intention-banner" id="intentionBanner" style="display:none;margin-top:12px;">
-        <span class="intention-moon-icon">🌑</span>
-        <div class="intention-content">
-          <div class="intention-label">Cycle Intention</div>
-          <div class="intention-text" id="intentionBannerText">—</div>
-          <button class="intention-edit" onclick="openIntentionModal()">Edit ✎</button>
-        </div>
-      </div>
-      <!-- Transit alerts -->
-      <div id="transitAlertsWrap"></div>
-      <!-- Today's forecast card (injected by renderTodayForecastCard) -->
-      <div id="todayForecastCard" style="display:none;margin-top:12px;"></div>
-      <!-- Vedic + Tzolkin panels anchor (injected dynamically) -->
-      <div id="vedicAnchor" style="margin-top:12px;"></div>
+  <!-- CYCLE INTENTION BANNER -->
+  <div class="intention-banner" id="intentionBanner" style="display:none;">
+    <span class="intention-moon-icon">🌑</span>
+    <div class="intention-content">
+      <div class="intention-label">Cycle Intention</div>
+      <div class="intention-text" id="intentionBannerText">—</div>
+      <button class="intention-edit" onclick="openIntentionModal()">Edit intention ✎</button>
+    </div>
+  </div>
+  <!-- TRANSIT ALERTS -->
+  <div id="transitAlertsWrap"></div>
+  <!-- SUBMITTED ENTRY CARD -->
+  <div class="entry-submitted-card" id="entrySubmittedCard">
+    <div class="entry-submitted-header">
+      <div class="entry-submitted-title">✦ Today's Entry</div>
+      <button class="entry-submitted-edit" onclick="(function(){const k=Object.keys(loadEntries()).find(k=>k===entryKey(new Date()));if(k)editEntry(k);}())">✎ Edit</button>
+    </div>
+    <div class="entry-submitted-metrics" id="submittedMetrics"></div>
+    <div class="entry-submitted-qualities" id="submittedQualities"></div>
+    <div class="entry-submitted-text" id="submittedText"></div>
+    <div class="entry-reflection" id="entryReflection" style="display:none;">
+      <div class="entry-reflection-label">Reflection from the sky</div>
+      <div class="entry-reflection-text" id="reflectionText"><span class="entry-reflection-loading">Reflecting on your entry…</span></div>
     </div>
   </div>
 
-  <!-- ══ SECTION 2: READING ══ -->
-  <div class="today-section" id="sectionReading">
-    <div class="today-section-header" onclick="toggleTodaySection('sectionReading')">
-      <span class="today-section-label">✦ Reading</span>
-      <span class="today-section-chevron">▾</span>
+
+
+  <!-- EVENING CHECK-IN -->
+  <div id="eveningCheckin" style="display:none;">
+
+    <!-- Evening submitted card (shown after saving) -->
+    <div class="eve-submitted" id="eveSubmittedCard" style="display:none;">
+      <div class="eve-submitted-title">
+        <span>🌙 Evening Check-In</span>
+        <button onclick="showEveningForm()" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(160,120,220,.4);background:none;border:none;cursor:pointer;">✎ Edit</button>
+      </div>
+      <div class="eve-metrics" id="eveSubmittedMetrics"></div>
+      <div id="eveSubmittedText" style="font-size:15px;color:rgba(245,240,232,.5);line-height:1.75;font-style:italic;"></div>
     </div>
-    <div class="today-section-body">
-      <div id="dailyPatternMsg"></div>
-      <div class="reading-card" style="border:none;background:none;padding:0;margin-bottom:0;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div class="card-label" style="font-size:9px;">Daily Reading</div>
-      <div id="readingToneLabel" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;color:rgba(201,168,76,.4);cursor:pointer;" onclick="navTabTap('settings',document.querySelector('[onclick*=\'settings\']'))">✦ <span id="readingToneName">Mystic</span></div>
+
+    <!-- Evening form -->
+    <div class="eve-card" id="eveFormWrap">
+      <div class="eve-card-title">Evening Check-In</div>
+      <div class="eve-card-sub" id="eveCardSub">How did the day land?</div>
+
+      <!-- Delta display vs morning -->
+      <div id="eveDeltaRow" style="display:none;margin-bottom:16px;font-size:13px;color:rgba(245,240,232,.4);">
+        Since this morning:
+        <span id="eveDeltaEnergy" class="eve-delta"></span>
+        <span id="eveDeltaMood" class="eve-delta"></span>
+        <span id="eveDeltaClarity" class="eve-delta"></span>
+      </div>
+
+      <!-- Evening sliders -->
+      <div class="glow-bars-wrap" id="eveSliders">
+        <div class="glow-bar-row">
+          <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Energy ⚡</span>
+          <div class="glow-bar-track">
+            <div class="glow-bar-fill" id="eveFilEnergy" style="width:50%;background:rgba(140,100,200,.65);box-shadow:0 0 10px rgba(140,100,200,.3);"></div>
+            <input type="range" min="1" max="10" value="5" id="eveSliderEnergy" class="glow-bar-input" oninput="updateGlowBar('eveFilEnergy',this.value,'rgba(140,100,200,.65)','rgba(140,100,200,.3)');document.getElementById('eveValEnergy').textContent=this.value;updateEveDelta()">
+          </div>
+          <span class="glow-bar-val" id="eveValEnergy" style="border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.8);">5</span>
+        </div>
+        <div class="glow-bar-row">
+          <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Mood 🌙</span>
+          <div class="glow-bar-track">
+            <div class="glow-bar-fill" id="eveFilMood" style="width:50%;background:rgba(120,90,180,.6);box-shadow:0 0 10px rgba(120,90,180,.3);"></div>
+            <input type="range" min="1" max="10" value="5" id="eveSliderMood" class="glow-bar-input" oninput="updateGlowBar('eveFilMood',this.value,'rgba(120,90,180,.6)','rgba(120,90,180,.3)');document.getElementById('eveValMood').textContent=this.value;updateEveDelta()">
+          </div>
+          <span class="glow-bar-val" id="eveValMood" style="border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.8);">5</span>
+        </div>
+        <div class="glow-bar-row">
+          <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Clarity ✦</span>
+          <div class="glow-bar-track">
+            <div class="glow-bar-fill" id="eveFilClarity" style="width:50%;background:rgba(100,120,200,.6);box-shadow:0 0 10px rgba(100,120,200,.3);"></div>
+            <input type="range" min="1" max="10" value="5" id="eveSliderClarity" class="glow-bar-input" oninput="updateGlowBar('eveFilClarity',this.value,'rgba(100,120,200,.6)','rgba(100,120,200,.3)');document.getElementById('eveValClarity').textContent=this.value">
+          </div>
+          <span class="glow-bar-val" id="eveValClarity" style="border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.8);">5</span>
+        </div>
+        <div class="glow-bar-row">
+          <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Creativity 🔥</span>
+          <div class="glow-bar-track">
+            <div class="glow-bar-fill" id="eveFilCreativity" style="width:50%;background:rgba(160,90,200,.6);box-shadow:0 0 10px rgba(160,90,200,.3);"></div>
+            <input type="range" min="1" max="10" value="5" id="eveSliderCreativity" class="glow-bar-input" oninput="updateGlowBar('eveFilCreativity',this.value,'rgba(160,90,200,.6)','rgba(160,90,200,.3)');document.getElementById('eveValCreativity').textContent=this.value">
+          </div>
+          <span class="glow-bar-val" id="eveValCreativity" style="border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.8);">5</span>
+        </div>
+      </div>
+
+      <div class="section-heading" style="margin-top:16px;color:rgba(160,120,220,.5);">Closing Thoughts</div>
+      <textarea class="journal-text" id="eveText" rows="4"
+        style="border-color:rgba(120,90,160,.2);"
+        placeholder="How did the day actually unfold? What arose, what resolved, what stayed?"></textarea>
+
+      <button class="save-btn" style="margin-top:16px;border-color:rgba(140,100,200,.3);color:rgba(160,120,220,.8);background:rgba(120,90,160,.06);" onclick="saveEveningEntry()">Save Evening Entry</button>
     </div>
+  </div>
+
+  <div class="reading-card">
+    <div class="card-label">Today's Reading</div>
     <div class="reading-text" id="readingText"><span class="reading-loading">Consulting the sky…</span></div>
-        <div id="readingSigninNote" style="display:none;margin-top:10px;font-size:12px;color:rgba(245,240,232,.25);font-style:italic;">Sign in for personalized AI readings tailored to your natal chart. <button onclick="openAuthModal()" style="background:none;border:none;color:rgba(201,168,76,.5);font-size:12px;cursor:pointer;font-style:italic;text-decoration:underline;">Sign in →</button></div>
-        <button class="reading-refresh" onclick="generateReading(true)">↺ Refresh</button>
-      </div>
-    </div>
+    <button class="reading-refresh" onclick="generateReading(true)">↺ Refresh reading</button>
   </div>
 
-  <!-- ══ SECTION 3: MY DAY ══ -->
-  <div class="today-section" id="sectionMyDay">
-    <div class="today-section-header" onclick="toggleTodaySection('sectionMyDay')">
-      <span class="today-section-label">📝 My Day</span>
-      <span class="today-section-chevron">▾</span>
+  <!-- SPACE WEATHER CARD -->
+  <div class="sw-card" id="swCard">
+    <div class="sw-header">
+      <div class="sw-title">Space Weather · Electromagnetic Field</div>
+      <button class="sw-refresh" onclick="fetchSpaceWeather(true)">↺ refresh</button>
     </div>
-    <div class="today-section-body">
-
-      <!-- Quick log toggle -->
-      <div class="log-mode-toggle" id="logModeToggle">
-        <button class="log-mode-btn active" id="btnFullLog" onclick="setLogMode('full')">Full Entry</button>
-        <button class="log-mode-btn" id="btnQuickLog" onclick="setLogMode('quick')">Quick Log</button>
+    <div id="swContent"><span class="sw-loading">Reading the field…</span></div>
+  </div>
+  <div class="today-grid">
+    <div class="astro-card">
+      <div class="card-label">Moon Phase</div>
+      <div class="moon-phase-display">
+        <div class="moon-svg-wrap"><svg id="moonSVG" width="56" height="56" viewBox="0 0 56 56"></svg></div>
+        <div><div class="card-value" id="moonPhaseName">—</div><div class="card-sub" id="moonPhasePercent">—</div></div>
       </div>
-
-      <!-- SUBMITTED ENTRY CARD -->
-      <div class="entry-submitted-card" id="entrySubmittedCard" style="display:none;">
-        <div class="entry-submitted-header">
-          <div class="entry-submitted-title">✦ Morning Entry</div>
-          <button class="entry-submitted-edit" onclick="(function(){const k=Object.keys(loadEntries()).find(k=>k===entryKey(new Date()));if(k)editEntry(k);}())">✎ Edit</button>
-        </div>
-        <div class="entry-submitted-metrics" id="submittedMetrics"></div>
-        <div class="entry-submitted-qualities" id="submittedQualities"></div>
-        <div class="entry-submitted-text" id="submittedText"></div>
-        <div class="entry-reflection" id="entryReflection" style="display:none;">
-          <div class="entry-reflection-label">Reflection from the sky</div>
-          <div class="entry-reflection-text" id="reflectionText"></div>
-        </div>
-      </div>
+    </div>
+    <div class="astro-card"><div class="card-label">Moon in</div><div class="card-value" id="moonSign">—</div><div class="card-sub" id="moonSignKeywords">—</div></div>
+    <div class="astro-card"><div class="card-label">Cycle Day</div><div class="card-value" id="cycleDayNum">—</div><div class="card-sub" id="cycleContext">—</div></div>
+    <div class="astro-card"><div class="card-label">Sun in</div><div class="card-value" id="sunSign">—</div><div class="card-sub" id="sunSignSub">—</div></div>
+  </div>
+  <div class="astro-card" style="margin-bottom:20px;">
+    <div class="card-label">Planetary Influences — tap any for interpretation</div>
+    <div class="planet-grid" id="planetGridToday" style="margin-top:12px;"></div>
+  </div>
+  <div class="astro-card" style="margin-bottom:28px;">
+    <div class="card-label">Cycle Tone</div>
+    <div id="cycleTone" style="font-size:17px;color:rgba(245,240,232,.75);line-height:1.7;margin-top:6px;font-style:italic;"></div>
+  </div>
 
       <!-- QUICK LOG FORM -->
       <div id="quickLogWrap" style="display:none;">
@@ -1881,15 +1799,7 @@ function drawMoon(el,age,size){
 // ─── DAILY READING (AI) ───────────────────────────────────────────────────────
 async function generateReading(force=false){
   const todayKey=entryKey(new Date()),cached=localStorage.getItem(RK);
-  if(!force&&cached){try{const c=JSON.parse(cached);const age=Date.now()-(c.ts||0);if(c.date===todayKey&&age<8*3600000){document.getElementById('readingText').textContent=c.text;return;}}catch(e){}}
-  const now2=new Date(),phase2=moonPhaseInfo(now2),mSign2=moonSignApprox(now2),sSign2=sunSignForDate(now2),profile2=loadProfile();
-  if(!canUseAI()){
-    const el=document.getElementById('readingText');
-    if(el){ el.textContent=getFallbackReading(phase2,mSign2,sSign2,profile2); }
-    const sn=document.getElementById('readingSigninNote');
-    if(sn) sn.style.display='block';
-    return;
-  }
+  if(!force&&cached){try{const c=JSON.parse(cached);const age=Date.now()-(c.ts||0);if(c.date===todayKey&&age<4*3600000){document.getElementById('readingText').textContent=c.text;return;}}catch(e){}}
   document.getElementById('readingText').innerHTML='<span class="reading-loading">Reading the sky for you…</span>';
   const now=new Date(),phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now),planets=allPlanets(now),profile=loadProfile();
   let profileCtx='';
@@ -1961,10 +1871,9 @@ function renderToday(){
   renderIntentionBanner();
   fetchSpaceWeather(); // populates compact strip in Now
   renderDailyPatternMessage();
+  fetchSpaceWeather();
   renderEveningCheckin();
   renderStreak();
-  renderProfileNudge();
-  setTimeout(renderTodayForecastCard, 200);
   // If today already has an entry, show submitted card not blank form
   const todayEntry = loadEntries()[entryKey(new Date())];
   if(todayEntry){
@@ -1990,13 +1899,8 @@ function renderToday(){
     document.querySelectorAll('#qualityTags .tag-btn.selected').forEach(b => b.classList.remove('selected'));
   }
   if(getSetting('showTransits',true))renderTransitAlerts(); else {var tw=document.getElementById('transitAlertsWrap');if(tw)tw.innerHTML='';}
-  if(getSetting('showVedic',true)){
-    renderVedicPanel();
-    renderTzolkinPanel();
-  } else {
-    var vw=document.getElementById('vedicPanelWrap');if(vw)vw.innerHTML='';
-    var tw=document.getElementById('tzolkinPanelWrap');if(tw)tw.innerHTML='';
-  }
+  if(getSetting('showVedic',true))renderVedicPanel(); else {var vw=document.getElementById('vedicPanelWrap');if(vw)vw.innerHTML='';}
+  renderTzolkinPanel();
 
   } catch(err){ console.error("renderToday error:", err); }
 }
@@ -2815,8 +2719,6 @@ function renderSky(){
   // Generate collective reading
   generateCollectiveReading();
   fetchSpaceWeather();
-  renderSkyForecast();
-  if(getSetting('showVedic',true)){renderVedicPanel();renderTzolkinPanel();}
   // Profile now in Settings tab
   // Year overview
   const ys=new Date(now.getFullYear(),0,1),firstNm=prevNewMoon(ys);let d=new Date(firstNm),cycles=[];
@@ -3063,6 +2965,211 @@ function renderVedicPanelOrig() {
 }
 
 
+
+// ─── TZOLKIN ENGINE ──────────────────────────────────────────────────────────
+const TZOLKIN_ANCHOR = new Date(2012, 11, 21); // Dec 21 2012 = 4 Ahau (verified)
+const TZOLKIN_ANCHOR_SIGN = 19; // Ahau index
+const TZOLKIN_ANCHOR_NUM  = 4;
+
+const TZOLKIN_SIGNS = [
+  { name:'Imix',    glyph:'🌊', keywords:'Primal source, nurturing, origins, the void-womb' },
+  { name:'Ik',      glyph:'💨', keywords:'Wind, spirit, breath, invisible forces, communication' },
+  { name:'Akbal',   glyph:'🌑', keywords:'Night, dreaming, inner knowing, the dark house' },
+  { name:'Kan',     glyph:'🌱', keywords:'Seed, fertility, abundance, the creative spark' },
+  { name:'Chicchan',glyph:'🐍', keywords:'Serpent, Kundalini, life force, primal energy, body wisdom' },
+  { name:'Cimi',    glyph:'💀', keywords:'Death, transformation, release, surrender, the great transition' },
+  { name:'Manik',   glyph:'🦌', keywords:'Deer, healing hands, grace, the sacred journey' },
+  { name:'Lamat',   glyph:'⭐', keywords:'Star, Venus, harmony, beauty, the light-bearer, abundance' },
+  { name:'Muluc',   glyph:'💧', keywords:'Water, moon, offerings, emotional depth, purification' },
+  { name:'Oc',      glyph:'🐕', keywords:'Dog, loyalty, heart, companionship, love as path' },
+  { name:'Chuen',   glyph:'🐒', keywords:'Monkey, artisan, play, weaving time, the sacred trickster' },
+  { name:'Eb',      glyph:'🌿', keywords:'Road, path, the pilgrim, human journey, grass' },
+  { name:'Ben',     glyph:'🎋', keywords:'Reed, staff, pillars of heaven, the sky-walker, personal power' },
+  { name:'Ix',      glyph:'🐆', keywords:'Jaguar, earth magic, shamanic power, feminine force, night vision' },
+  { name:'Men',     glyph:'🦅', keywords:'Eagle, vision, global perspective, high mind, clarity from altitude' },
+  { name:'Cib',     glyph:'🦅', keywords:'Vulture, owl, ancestral wisdom, forgiveness, karma, threshold keeper' },
+  { name:'Caban',   glyph:'🌍', keywords:'Earth, synchronicity, navigation, the resonant field, quake' },
+  { name:'Etznab',  glyph:'🔪', keywords:'Mirror, flint, clarity, truth, reflection, cutting through illusion' },
+  { name:'Cauac',   glyph:'⛈',  keywords:'Storm, transformation, catalysis, purification, lightning' },
+  { name:'Ahau',    glyph:'☀️', keywords:'Sun lord, flowering, enlightenment, ascension, unconditional love' },
+];
+
+const TZOLKIN_TONES = [
+  { num:1,  name:'Magnetic',    desc:'Unify, attract, begin. Pure initiation.' },
+  { num:2,  name:'Lunar',       desc:'Polarize, stabilize, challenge.' },
+  { num:3,  name:'Electric',    desc:'Activate, bond, service.' },
+  { num:4,  name:'Self-Existing',desc:'Define, measure, form.' },
+  { num:5,  name:'Overtone',    desc:'Empower, command, radiance.' },
+  { num:6,  name:'Rhythmic',    desc:'Organize, balance, equalize. (Your birth tone)' },
+  { num:7,  name:'Resonant',    desc:'Channel, inspire, attune.' },
+  { num:8,  name:'Galactic',    desc:'Harmonize, integrity, model.' },
+  { num:9,  name:'Solar',       desc:'Pulse, realize, intention.' },
+  { num:10, name:'Planetary',   desc:'Perfect, produce, manifest.' },
+  { num:11, name:'Spectral',    desc:'Dissolve, liberate, release.' },
+  { num:12, name:'Crystal',     desc:'Cooperate, dedicate, universalize.' },
+  { num:13, name:'Cosmic',      desc:'Endure, transcend, presence. Portal tone.' },
+];
+
+// Personal Tzolkin data — Jeff born Feb 19 1988 = 6 Lamat
+const BIRTH_TZOLKIN = { num: 6, signIdx: 7 }; // 6 Lamat
+const BIRTH_WAVESPELL = 'Akbal'; // Dark House wavespell
+
+function tzolkinForDate(d) {
+  const msPerDay = 86400000;
+  const delta = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) -
+    new Date(TZOLKIN_ANCHOR.getFullYear(), TZOLKIN_ANCHOR.getMonth(), TZOLKIN_ANCHOR.getDate())) / msPerDay);
+  const signIdx = ((TZOLKIN_ANCHOR_SIGN + delta) % 20 + 20) % 20;
+  const num = (((TZOLKIN_ANCHOR_NUM - 1 + delta) % 13) + 13) % 13 + 1;
+  return { num, signIdx, sign: TZOLKIN_SIGNS[signIdx], tone: TZOLKIN_TONES[num - 1] };
+}
+
+function getTzolkinAlert(tz) {
+  const alerts = [];
+  // Galactic birthday
+  if (tz.num === BIRTH_TZOLKIN.num && tz.signIdx === BIRTH_TZOLKIN.signIdx) {
+    alerts.push({ type: 'sacred', msg: '✦ Galactic Birthday — 6 Lamat. Your birth frequency is at peak. Channel is wide open.' });
+  }
+  // Red Serpent (Chicchan) — your birth wavespell sign
+  if (tz.signIdx === 4) {
+    alerts.push({ type: 'kundalini', msg: '🐍 Chicchan day — Serpent / Kundalini energy active. Strong for practice and somatic work.' });
+  }
+  // Tone 13 — portal
+  if (tz.num === 13) {
+    alerts.push({ type: 'portal', msg: '⊛ Tone 13 — Cosmic portal day. Transcendence frequency. The veil is thin.' });
+  }
+  // Lamat (Star/Venus) days
+  if (tz.signIdx === 7) {
+    alerts.push({ type: 'venus', msg: '⭐ Lamat day — Star / Venus frequency. Your sign archetype. Abundance and harmony available.' });
+  }
+  // Cib — threshold keeper (strong ancestral days)
+  if (tz.signIdx === 15) {
+    alerts.push({ type: 'ancestral', msg: '🦅 Cib day — Ancestral wisdom. The grandfathers are especially close today.' });
+  }
+  // Ix — earth magic, feminine shamanic
+  if (tz.signIdx === 13) {
+    alerts.push({ type: 'magic', msg: '🐆 Ix day — Earth magic and jaguar medicine. Strong for Kurukulla practice and feminine current work.' });
+  }
+  // Muluc — water/moon, lunar resonance
+  if (tz.signIdx === 8) {
+    alerts.push({ type: 'lunar', msg: '💧 Muluc day — Water and moon sign. Deep lunar resonance. Emotional and psychic field is open.' });
+  }
+  // Wavespell starts (tone 1 days)
+  if (tz.num === 1) {
+    alerts.push({ type: 'wave', msg: `✦ ${tz.sign.name} Wavespell opens today — 13 days of ${tz.sign.name} energy beginning. ${tz.signIdx === 4 ? 'Kundalini wavespell — significant.' : 'New current initiated.'}` });
+  }
+  return alerts;
+}
+
+function daysUntilNextTzolkin(targetNum, targetSignIdx, fromDate) {
+  for (let i = 1; i <= 260; i++) {
+    const d = new Date(fromDate);
+    d.setDate(d.getDate() + i);
+    const tz = tzolkinForDate(d);
+    if (tz.num === targetNum && tz.signIdx === targetSignIdx) return { days: i, date: d };
+  }
+  return null;
+}
+
+function renderTzolkinPanel() {
+  const now = new Date();
+  const tz = tzolkinForDate(now);
+  const alerts = getTzolkinAlert(tz);
+  const nextBirthday = daysUntilNextTzolkin(BIRTH_TZOLKIN.num, BIRTH_TZOLKIN.signIdx, now);
+  const nextSerpent = daysUntilNextTzolkin(1, 4, now); // next Red Serpent wavespell
+
+  // Quality color based on special days
+  const isSpecial = tz.num === 13 || tz.signIdx === 7 || tz.signIdx === 4;
+  const isBirthday = tz.num === BIRTH_TZOLKIN.num && tz.signIdx === BIRTH_TZOLKIN.signIdx;
+  const bg   = isBirthday ? 'rgba(201,168,76,.12)' : isSpecial ? 'rgba(100,80,180,.1)' : 'rgba(245,240,232,.025)';
+  const bord = isBirthday ? 'rgba(201,168,76,.4)'  : isSpecial ? 'rgba(140,100,220,.3)' : 'rgba(245,240,232,.07)';
+  const col  = isBirthday ? '#e8d49a' : isSpecial ? 'rgba(180,150,255,.85)' : 'rgba(245,240,232,.75)';
+
+  const alertHTML = alerts.length ? alerts.map(a => {
+    const alertBg = a.type === 'sacred' ? 'rgba(201,168,76,.07)' :
+                    a.type === 'kundalini' ? 'rgba(120,60,60,.1)' :
+                    a.type === 'portal' ? 'rgba(80,60,140,.12)' : 'rgba(60,80,120,.1)';
+    const alertCol = a.type === 'sacred' ? 'rgba(232,212,154,.7)' :
+                     a.type === 'kundalini' ? 'rgba(220,120,100,.7)' :
+                     a.type === 'portal' ? 'rgba(180,150,255,.7)' : 'rgba(140,180,220,.6)';
+    return `<div style="margin-top:10px;padding:10px 14px;background:${alertBg};border-radius:4px;font-size:13px;color:${alertCol};font-style:italic;">${a.msg}</div>`;
+  }).join('') : '';
+
+  const countdownRows = [];
+  if (nextBirthday) {
+    const bd = nextBirthday.date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    countdownRows.push(`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(245,240,232,.05);">
+      <span style="font-size:13px;color:rgba(245,240,232,.4);">Next galactic birthday (6 Lamat)</span>
+      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${bd} · ${nextBirthday.days}d</span>
+    </div>`);
+  }
+  if (nextSerpent) {
+    const sd = nextSerpent.date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    countdownRows.push(`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;">
+      <span style="font-size:13px;color:rgba(245,240,232,.4);">Next Red Serpent wavespell</span>
+      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${sd} · ${nextSerpent.days}d</span>
+    </div>`);
+  }
+
+  // Moab + Kundalini anniversary countdowns
+  const thisYear = now.getFullYear();
+  function anniversaryCountdown(month, day, label) {
+    let ann = new Date(thisYear, month - 1, day);
+    if (ann <= now) ann = new Date(thisYear + 1, month - 1, day);
+    const days = Math.ceil((ann - now) / 86400000);
+    const tz = tzolkinForDate(ann);
+    const dateStr = ann.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(245,240,232,.05);">
+      <span style="font-size:13px;color:rgba(245,240,232,.4);">${label}</span>
+      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${dateStr} · ${tz.num} ${tz.sign.name} · ${days}d</span>
+    </div>`;
+  }
+
+  const html = `<div class="astro-card" style="margin-bottom:20px;" id="tzolkinPanel">
+    <div class="card-label">Tzolkin · Sacred Calendar</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px;">
+
+      <div style="background:${bg};border:1px solid ${bord};border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:${col};opacity:.8;margin-bottom:6px;text-transform:uppercase;">Day Sign</div>
+        <div style="font-size:24px;margin-bottom:4px;">${tz.sign.glyph}</div>
+        <div style="font-size:17px;color:rgba(245,240,232,.9);margin-bottom:4px;">${tz.num} ${tz.sign.name}</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">${tz.sign.keywords}</div>
+      </div>
+
+      <div style="background:rgba(245,240,232,.025);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(245,240,232,.4);opacity:.8;margin-bottom:6px;text-transform:uppercase;">Tone ${tz.num}</div>
+        <div style="font-size:17px;color:rgba(245,240,232,.85);margin-bottom:4px;">${tz.tone.name}</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">${tz.tone.desc}</div>
+      </div>
+
+      <div style="background:rgba(245,240,232,.025);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:14px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(201,168,76,.6);margin-bottom:6px;text-transform:uppercase;">Your Sign · 6 Lamat</div>
+        <div style="font-size:13px;color:rgba(245,240,232,.5);line-height:1.6;font-style:italic;">Born ${BIRTH_TZOLKIN.num} ${TZOLKIN_SIGNS[BIRTH_TZOLKIN.signIdx].name} · ${BIRTH_WAVESPELL} wavespell · Rhythmic Star / Venus</div>
+        ${countdownRows.join('')}
+      </div>
+
+    </div>
+
+    <div style="margin-top:12px;padding:12px 14px;background:rgba(245,240,232,.02);border-radius:4px;">
+      ${anniversaryCountdown(6, 20, 'Moab anniversary')}
+      ${anniversaryCountdown(6, 27, 'Kundalini anniversary')}
+    </div>
+
+    ${alertHTML}
+  </div>`;
+
+  let wrap = document.getElementById('tzolkinPanelWrap');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'tzolkinPanelWrap';
+    const vedicWrap = document.getElementById('vedicPanelWrap');
+    if (vedicWrap) vedicWrap.after(wrap);
+    else {
+      const cycleTone = document.getElementById('cycleTone')?.closest('.astro-card');
+      if (cycleTone) cycleTone.after(wrap);
+    }
+  }
+  wrap.innerHTML = html;
+}
 
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 const SK = 'lunations_settings_v1';
@@ -3593,8 +3700,8 @@ async function signOut(){
   closeSideMenu();
   closeAuthModal();
   showToast('Signed out');
-  // Go to landing page - clean slate, shows login option
-  setTimeout(() => window.location.href = '/', 600);
+  // Full page reload ensures clean state - all cached DOM is gone
+  setTimeout(() => window.location.reload(), 800);
 }
 
 function confirmSignOut(){
@@ -4165,7 +4272,7 @@ const MODES = {
 
 const MK = 'lunations_mode_v1';
 function getCurrentMode(){ return localStorage.getItem(MK) || 'vedic'; }
-function setMode(mode){ localStorage.setItem(MK, mode); localStorage.removeItem(RK); renderToday(); renderVedicPanel(); }
+function setMode(mode){ localStorage.setItem(MK, mode); localStorage.removeItem(RK); renderToday(); renderVedicPanel(); renderTzolkinPanel(); }
 function getModeData(){ return MODES[getCurrentMode()] || MODES.vedic; }
 
 
@@ -4203,12 +4310,8 @@ function renderVedicPanel(){
   if(!container){
     container = document.createElement('div');
     container.id = 'vedicPanelWrap';
-    const anchor = document.getElementById('vedicAnchor');
-    if(anchor){ anchor.innerHTML=''; anchor.appendChild(container); }
-    else {
-      const ct = document.getElementById('cycleTone');
-      if(ct) ct.closest('.astro-card')?.after(container);
-    }
+    const ct = document.getElementById('cycleTone');
+    if(ct) ct.closest('.astro-card')?.after(container);
   }
   if(!container) return;
   if(!getSetting('showVedic',true)){ container.innerHTML=''; return; }
@@ -4350,67 +4453,6 @@ function renderDailyPatternMessage(){
 
 
 // BUILD 20260321121006
-
-// TODAY FORECAST CARD
-function renderTodayForecastCard(){
-  const el = document.getElementById('todayForecastCard');
-  if(!el || typeof buildForecastDays === 'undefined') return;
-  const today = new Date(); today.setHours(0,0,0,0);
-  const days = buildForecastDays(today, 1);
-  if(!days || !days.length){ el.style.display='none'; return; }
-  const day = days[0];
-  if(day.score < 2 && !day.journalNote){ el.style.display='none'; return; }
-  el.style.display = 'block';
-  const isBirthday = day.tz.num === BIRTH_TZOLKIN.num && day.tz.signIdx === BIRTH_TZOLKIN.signIdx;
-  const bg = isBirthday ? 'rgba(201,168,76,.08)' : day.score >= 4 ? 'rgba(100,80,180,.06)' : 'rgba(245,240,232,.02)';
-  const border = isBirthday ? 'rgba(201,168,76,.3)' : day.score >= 4 ? 'rgba(140,100,220,.2)' : 'rgba(245,240,232,.08)';
-  const tzStr = typeof tzolkinBadgeTip === 'function' ? tzolkinBadgeTip(day.tz) : day.tz.sign.glyph+' '+day.tz.num+' '+day.tz.sign.name;
-  const nkStr = typeof nakshatraBadgeTip === 'function' ? nakshatraBadgeTip(day.nk) : day.nk.name;
-  const moonEventPill = day.moonEvent ? '<span class="fpill lm" style="font-size:11px;border-color:rgba(201,168,76,.4);color:var(--gold);">'+day.moonEvent+'</span>' : '';
-  const noteTxt = day.journalNote ? '<div style="font-size:13px;color:rgba(245,240,232,.55);line-height:1.7;font-style:italic;margin-top:10px;">'+day.journalNote+'</div>' : '';
-  el.innerHTML = '<div style="background:'+bg+';border:1px solid '+border+';border-radius:8px;padding:14px 16px;">'
-    +'<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.15em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:10px;">Daily Signature</div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;">'
-    +'<span class="fpill tz" style="font-size:11px;">'+tzStr+'</span>'
-    +'<span class="fpill lm" style="font-size:11px;">'+day.phase.emoji+' '+day.phase.name+'</span>'
-    +'<span class="fpill vd" style="font-size:11px;">'+nkStr+'</span>'
-    +moonEventPill
-    +'</div>'
-    +noteTxt
-    +'</div>';
-}
-
-
-// ─── COMPACT SW STRIP FOR NOW SECTION ────────────────────────────────────────
-function renderSwStrip(data){
-  const el = document.getElementById('swStrip');
-  if(!el) return;
-  if(!data || data.error){ el.style.display='none'; return; }
-
-  const kp = data.kp;
-  const wind = data.solarWind;
-  if(!kp?.current && kp?.current !== 0){ el.style.display='none'; return; }
-
-  const cls = kp.classification || {};
-  const color = cls.color || 'rgba(201,168,76,.5)';
-  const kpVal = kp.current !== null ? kp.current.toFixed(1) : '—';
-  const windStr = wind?.speed ? wind.speed + ' km/s' : '';
-  const bzNum = wind?.bz ? parseFloat(wind.bz) : null;
-  const bzColor = bzNum !== null ? (bzNum < -5 ? '#c07050' : bzNum > 0 ? '#4a9a6a' : 'rgba(245,240,232,.4)') : 'rgba(245,240,232,.3)';
-
-  el.style.display = 'flex';
-  el.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:7px 12px;background:rgba(245,240,232,.02);border:1px solid rgba(245,240,232,.07);border-radius:20px;flex-wrap:wrap;">
-    <span style="font-size:10px;font-family:'Cinzel',serif;letter-spacing:.08em;color:rgba(245,240,232,.3);text-transform:uppercase;">Field</span>
-    <span style="display:inline-flex;align-items:center;gap:5px;">
-      <span style="width:7px;height:7px;border-radius:50%;background:${color};display:inline-block;box-shadow:0 0 6px ${color};"></span>
-      <span style="font-family:'Cinzel',serif;font-size:11px;color:${color};">${cls.label||'—'}</span>
-      <span style="font-size:10px;color:rgba(245,240,232,.25);">Kp ${kpVal}</span>
-    </span>
-    ${windStr ? `<span style="font-size:11px;color:rgba(245,240,232,.3);">· ${windStr}</span>` : ''}
-    ${bzNum !== null ? `<span style="font-size:11px;color:${bzColor};">Bz ${wind.bz}nT</span>` : ''}
-  </div>`;
-}
-
 // --- SPACE WEATHER ---
 const SWK = 'lunations_sw_v1';
 
@@ -4421,7 +4463,6 @@ async function fetchSpaceWeather(force=false){
       const c = JSON.parse(localStorage.getItem(SWK)||'null');
       if(c && (Date.now()-new Date(c.timestamp).getTime()) < 600000){
         renderSpaceWeather(c);
-        renderSwStrip(c);
         return;
       }
     } catch(e){}
@@ -4433,7 +4474,6 @@ async function fetchSpaceWeather(force=false){
     const data = await res.json();
     localStorage.setItem(SWK, JSON.stringify(data));
     renderSpaceWeather(data);
-    renderSwStrip(data);
   } catch(e){
     const fallback = {error: true};
     ['swContent','swContentSky'].forEach(id => {
@@ -4448,8 +4488,8 @@ function renderSpaceWeather(data){
   const compact = buildSwCompact(data);
   const full = document.getElementById('swContent');
   const sky = document.getElementById('swContentSky');
-  if(full) full.innerHTML = html;  // Full view: The Sky section on Today
-  if(sky) sky.innerHTML = html;   // Full view: Sky tab
+  if(full) full.innerHTML = compact;
+  if(sky) sky.innerHTML = html;
   // Update card border color
   const kpColor = data.kp?.classification?.color || 'rgba(201,168,76,.3)';
   document.querySelectorAll('.sw-card').forEach(c => {
@@ -4940,1356 +4980,6 @@ async function shareCard(){
   navigator.clipboard?.writeText('https://lunations.app').then(()=>showToast('Link copied — share with lunations.app'));
 }
 
-
-// ─── TOOLTIP HELPER ──────────────────────────────────────────────────────────
-function tip(label, title, body){
-  return `<span class="tip" tabindex="0">${label}<span class="tip-box"><span class="tip-title">${title}</span>${body}</span></span>`;
-}
-
-// Vedic term tooltips
-const VEDIC_TIPS = {
-  Tithi: ['Tithi', `The lunar day in the Vedic calendar. One of 30 phases in the lunar cycle, each with its own deity, quality, and guidance for action.`],
-  Nakshatra: ['Nakshatra', `Lunar mansion. The moon moves through 27 star clusters, each with a ruling planet, symbol, and energy quality that shapes the emotional tone of the day.`],
-  Vara: ['Vara', `The planetary weekday. Monday = Moon, Tuesday = Mars, Wednesday = Mercury, Thursday = Jupiter, Friday = Venus, Saturday = Saturn, Sunday = Sun.`],
-  Ekadashi: ['Ekadashi', `The 11th tithi — the most sacred day in the Vaishnava tradition. Fasting and devotional practice are especially potent. Auspicious for prayer and spiritual work.`],
-  Ashtami: ['Ashtami', `The 8th tithi — associated with Durga and Kali. Fierce energy, good for shadow work, facing difficulty, and fierce devotion.`],
-  Amavasya: ['Amavasya', `New moon tithi. The darkest night — powerful for ancestor rituals, deep meditation, new intentions, and dissolution work.`],
-  Purnima: ['Purnima', `Full moon tithi. The most luminous night — peak energy for celebration, offering, gratitude, and devotional practices.`],
-  Pushya: ['Pushya Nakshatra', `The most nourishing nakshatra, ruled by Saturn with Jupiter energy. A day of blessings and spiritual grace. Excellent for beginning new practices.`],
-  Rohini: ['Rohini Nakshatra', `The favorite nakshatra of the Moon, associated with beauty, fertility, and creative abundance. Krishna's birth star. Rich, sensual, growing energy.`],
-  Ardra: ['Ardra Nakshatra', `The storm star — ruled by Rahu, associated with Rudra (Shiva). Intense dissolving energy. Good for clearing, cutting through illusion, fierce transformation.`],
-  Mula: ['Mula Nakshatra', `The root — ruled by Ketu, associated with Nirriti. Goes to the root of things. Powerful but uprooting. Excellent for going deep, not for new beginnings.`],
-};
-
-// Tzolkin term tooltips
-const TZOLKIN_TIPS = {
-  Kin: ['Kin', `A single day in the Tzolkin calendar. Each kin combines a number (1-13) with a day sign (one of 20 glyphs) creating 260 unique combinations.`],
-  Tzolkin: ['Tzolkin', `The 260-day sacred Mayan calendar, used for divination and ceremony. One complete cycle equals 9 lunar months — the length of human gestation.`],
-  Tone: ['Galactic Tone', `The number 1-13 governing the kin. Each tone carries an intention: 1=Magnetic (purpose), 7=Resonant (channel), 13=Cosmic (transcend).`],
-  Wavespell: ['Wavespell', `A 13-day journey through one day sign's teachings. Each wavespell is a mini-cycle of intention, refinement, and completion.`],
-  Imix: ['Imix · Dragon', `Primal waters, birth, nurturing. The first seal — raw creative potential, the source, the mother. Dragon medicine: trust the primordial.`],
-  Ik: ['Ik · Wind', `Spirit, breath, communication. The wind carries messages between worlds. Wind medicine: be a clear channel.`],
-  Akbal: ['Akbal · Night', `Dreams, intuition, the abyss. The dark contains the seed. Night medicine: trust what lives in the dark.`],
-  Kan: ['Kan · Seed', `Flowering, fertility, target. The seed holds the pattern of the whole tree. Seed medicine: plant your intention precisely.`],
-  Chicchan: ['Chicchan · Serpent', `Life force, instinct, intimacy. Kundalini. The serpent knows the body's wisdom. Serpent medicine: embody the sacred.`],
-  Cimi: ['Cimi · Worldbridger', `Death, surrender, release. The bridge between worlds. Worldbridger medicine: let go of what keeps you separate.`],
-  Manik: ['Manik · Hand', `Accomplishment, healing, grasp. The hand that heals and creates. Hand medicine: completion as devotion.`],
-  Lamat: ['Lamat · Star', `Harmony, elegance, beauty. The morning star. Star medicine: radiate your natural frequency.`],
-  Muluc: ['Muluc · Moon', `Water, purification, universal flow. The moon's pull on all waters. Moon medicine: feel everything.`],
-  Oc: ['Oc · Dog', `Love, loyalty, heart. The faithful companion. Dog medicine: unconditional love as path.`],
-  Chuen: ['Chuen · Monkey', `Play, magic, illusion. The trickster weaver. Monkey medicine: creativity through spontaneity.`],
-  Eb: ['Eb · Human', `Free will, harvest, wisdom. The path of the human. Human medicine: choose consciously.`],
-  Ben: ['Ben · Skywalker', `Space, prophecy, exploration. Walks between worlds. Skywalker medicine: hold heaven and earth together.`],
-  Ix: ['Ix · Wizard', `Timelessness, jaguar, shaman. The one who knows. Wizard medicine: align with eternal intelligence.`],
-  Men: ['Men · Eagle', `Vision, mind, planet. Sees from above. Eagle medicine: expand your view to the highest perspective.`],
-  Cib: ['Cib · Warrior', `Cosmic force, intelligence, grace. The fearless one. Warrior medicine: dissolve doubt through inner knowing.`],
-  Caban: ['Caban · Earth', `Synchronicity, navigation, the mother. The living planet. Earth medicine: follow the signs.`],
-  Etznab: ['Etznab · Mirror', `Endlessness, truth, illusion. The hall of mirrors. Mirror medicine: see clearly without distortion.`],
-  Cauac: ['Cauac · Storm', `Purification, catalysis, self-generation. The thunder beings. Storm medicine: transformation through intensity.`],
-  Ahau: ['Ahau · Sun', `Universal fire, solar lord, enlightenment. The 20th seal — completion and flowering. Sun medicine: radiate unconditional love.`],
-};
-
-function applyVedicTooltips(html){
-  Object.entries(VEDIC_TIPS).forEach(([term, [title, body]]) => {
-    const re = new RegExp(`\\b(${term})\\b`, 'g');
-    html = html.replace(re, (match) => tip(match, title, body));
-  });
-  return html;
-}
-
-function applyTzolkinTooltips(html){
-  Object.entries(TZOLKIN_TIPS).forEach(([term, [title, body]]) => {
-    const re = new RegExp(`\\b(${term})\\b`, 'g');
-    html = html.replace(re, (match) => tip(match, title, body));
-  });
-  return html;
-}
-
-// ─── TZOLKIN ENGINE ──────────────────────────────────────────────────────────
-const TZOLKIN_ANCHOR = new Date(2012, 11, 21); // Dec 21 2012 = 4 Ahau (verified)
-const TZOLKIN_ANCHOR_SIGN = 19; // Ahau index
-const TZOLKIN_ANCHOR_NUM  = 4;
-
-const TZOLKIN_SIGNS = [
-  { name:'Imix',    glyph:'🌊', keywords:'Primal source, nurturing, origins, the void-womb' },
-  { name:'Ik',      glyph:'💨', keywords:'Wind, spirit, breath, invisible forces, communication' },
-  { name:'Akbal',   glyph:'🌑', keywords:'Night, dreaming, inner knowing, the dark house' },
-  { name:'Kan',     glyph:'🌱', keywords:'Seed, fertility, abundance, the creative spark' },
-  { name:'Chicchan',glyph:'🐍', keywords:'Serpent, Kundalini, life force, primal energy, body wisdom' },
-  { name:'Cimi',    glyph:'💀', keywords:'Death, transformation, release, surrender, the great transition' },
-  { name:'Manik',   glyph:'🦌', keywords:'Deer, healing hands, grace, the sacred journey' },
-  { name:'Lamat',   glyph:'⭐', keywords:'Star, Venus, harmony, beauty, the light-bearer, abundance' },
-  { name:'Muluc',   glyph:'💧', keywords:'Water, moon, offerings, emotional depth, purification' },
-  { name:'Oc',      glyph:'🐕', keywords:'Dog, loyalty, heart, companionship, love as path' },
-  { name:'Chuen',   glyph:'🐒', keywords:'Monkey, artisan, play, weaving time, the sacred trickster' },
-  { name:'Eb',      glyph:'🌿', keywords:'Road, path, the pilgrim, human journey, grass' },
-  { name:'Ben',     glyph:'🎋', keywords:'Reed, staff, pillars of heaven, the sky-walker, personal power' },
-  { name:'Ix',      glyph:'🐆', keywords:'Jaguar, earth magic, shamanic power, feminine force, night vision' },
-  { name:'Men',     glyph:'🦅', keywords:'Eagle, vision, global perspective, high mind, clarity from altitude' },
-  { name:'Cib',     glyph:'🦅', keywords:'Vulture, owl, ancestral wisdom, forgiveness, karma, threshold keeper' },
-  { name:'Caban',   glyph:'🌍', keywords:'Earth, synchronicity, navigation, the resonant field, quake' },
-  { name:'Etznab',  glyph:'🔪', keywords:'Mirror, flint, clarity, truth, reflection, cutting through illusion' },
-  { name:'Cauac',   glyph:'⛈',  keywords:'Storm, transformation, catalysis, purification, lightning' },
-  { name:'Ahau',    glyph:'☀️', keywords:'Sun lord, flowering, enlightenment, ascension, unconditional love' },
-];
-
-const TZOLKIN_TONES = [
-  { num:1,  name:'Magnetic',    desc:'Unify, attract, begin. Pure initiation.' },
-  { num:2,  name:'Lunar',       desc:'Polarize, stabilize, challenge.' },
-  { num:3,  name:'Electric',    desc:'Activate, bond, service.' },
-  { num:4,  name:'Self-Existing',desc:'Define, measure, form.' },
-  { num:5,  name:'Overtone',    desc:'Empower, command, radiance.' },
-  { num:6,  name:'Rhythmic',    desc:'Organize, balance, equalize. (Your birth tone)' },
-  { num:7,  name:'Resonant',    desc:'Channel, inspire, attune.' },
-  { num:8,  name:'Galactic',    desc:'Harmonize, integrity, model.' },
-  { num:9,  name:'Solar',       desc:'Pulse, realize, intention.' },
-  { num:10, name:'Planetary',   desc:'Perfect, produce, manifest.' },
-  { num:11, name:'Spectral',    desc:'Dissolve, liberate, release.' },
-  { num:12, name:'Crystal',     desc:'Cooperate, dedicate, universalize.' },
-  { num:13, name:'Cosmic',      desc:'Endure, transcend, presence. Portal tone.' },
-];
-
-// Personal Tzolkin data — Jeff born Feb 19 1988 = 6 Lamat
-// BIRTH_TZOLKIN loaded from profile if available, defaults to Jeff's for now
-function getBirthTzolkin(){
-  const p = loadProfile();
-  if(p?.dob){
-    const bd = new Date(p.dob + 'T12:00:00');
-    return tzolkinForDate(bd);
-  }
-  return { num: 6, signIdx: 7, sign: TZOLKIN_SIGNS?.[7] || {name:'Lamat'}, tone: TZOLKIN_TONES?.[5] || {} };
-}
-const BIRTH_TZOLKIN = { num: 6, signIdx: 7 }; // fallback - overridden at runtime
-const BIRTH_WAVESPELL = 'Akbal'; // Dark House wavespell
-
-function tzolkinForDate(d) {
-  const msPerDay = 86400000;
-  const delta = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) -
-    new Date(TZOLKIN_ANCHOR.getFullYear(), TZOLKIN_ANCHOR.getMonth(), TZOLKIN_ANCHOR.getDate())) / msPerDay);
-  const signIdx = ((TZOLKIN_ANCHOR_SIGN + delta) % 20 + 20) % 20;
-  const num = (((TZOLKIN_ANCHOR_NUM - 1 + delta) % 13) + 13) % 13 + 1;
-  return { num, signIdx, sign: TZOLKIN_SIGNS[signIdx], tone: TZOLKIN_TONES[num - 1] };
-}
-
-function getTzolkinAlert(tz) {
-  const alerts = [];
-  // Galactic birthday
-  const birthTz2 = typeof getBirthTzolkin === 'function' ? getBirthTzolkin() : BIRTH_TZOLKIN;
-  if (tz.num === birthTz2.num && tz.signIdx === birthTz2.signIdx) {
-    alerts.push({ type: 'sacred', msg: '✦ Galactic Birthday — 6 Lamat. Your birth frequency is at peak. Channel is wide open.' });
-  }
-  // Red Serpent (Chicchan) — your birth wavespell sign
-  if (tz.signIdx === 4) {
-    alerts.push({ type: 'kundalini', msg: '🐍 Chicchan day — Serpent / Kundalini energy active. Strong for practice and somatic work.' });
-  }
-  // Tone 13 — portal
-  if (tz.num === 13) {
-    alerts.push({ type: 'portal', msg: '⊛ Tone 13 — Cosmic portal day. Transcendence frequency. The veil is thin.' });
-  }
-  // Lamat (Star/Venus) days
-  if (tz.signIdx === 7) {
-    alerts.push({ type: 'venus', msg: '⭐ Lamat day — Star / Venus frequency. Your sign archetype. Abundance and harmony available.' });
-  }
-  // Cib — threshold keeper (strong ancestral days)
-  if (tz.signIdx === 15) {
-    alerts.push({ type: 'ancestral', msg: '🦅 Cib day — Ancestral wisdom. The grandfathers are especially close today.' });
-  }
-  // Ix — earth magic, feminine shamanic
-  if (tz.signIdx === 13) {
-    alerts.push({ type: 'magic', msg: '🐆 Ix day — Earth magic and jaguar medicine. Strong for Kurukulla practice and feminine current work.' });
-  }
-  // Muluc — water/moon, lunar resonance
-  if (tz.signIdx === 8) {
-    alerts.push({ type: 'lunar', msg: '💧 Muluc day — Water and moon sign. Deep lunar resonance. Emotional and psychic field is open.' });
-  }
-  // Wavespell starts (tone 1 days)
-  if (tz.num === 1) {
-    alerts.push({ type: 'wave', msg: `✦ ${tz.sign.name} Wavespell opens today — 13 days of ${tz.sign.name} energy beginning. ${tz.signIdx === 4 ? 'Kundalini wavespell — significant.' : 'New current initiated.'}` });
-  }
-  return alerts;
-}
-
-function daysUntilNextTzolkin(targetNum, targetSignIdx, fromDate) {
-  for (let i = 1; i <= 260; i++) {
-    const d = new Date(fromDate);
-    d.setDate(d.getDate() + i);
-    const tz = tzolkinForDate(d);
-    if (tz.num === targetNum && tz.signIdx === targetSignIdx) return { days: i, date: d };
-  }
-  return null;
-}
-
-function renderTzolkinPanel() {
-  const now = new Date();
-  const tz = tzolkinForDate(now);
-  const alerts = getTzolkinAlert(tz);
-  const nextBirthday = daysUntilNextTzolkin(BIRTH_TZOLKIN.num, BIRTH_TZOLKIN.signIdx, now);
-  const nextSerpent = daysUntilNextTzolkin(1, 4, now); // next Red Serpent wavespell
-
-  // Quality color based on special days
-  const isSpecial = tz.num === 13 || tz.signIdx === 7 || tz.signIdx === 4;
-  const isBirthday = tz.num === BIRTH_TZOLKIN.num && tz.signIdx === BIRTH_TZOLKIN.signIdx;
-  const bg   = isBirthday ? 'rgba(201,168,76,.12)' : isSpecial ? 'rgba(100,80,180,.1)' : 'rgba(245,240,232,.025)';
-  const bord = isBirthday ? 'rgba(201,168,76,.4)'  : isSpecial ? 'rgba(140,100,220,.3)' : 'rgba(245,240,232,.07)';
-  const col  = isBirthday ? '#e8d49a' : isSpecial ? 'rgba(180,150,255,.85)' : 'rgba(245,240,232,.75)';
-
-  const alertHTML = alerts.length ? alerts.map(a => {
-    const alertBg = a.type === 'sacred' ? 'rgba(201,168,76,.07)' :
-                    a.type === 'kundalini' ? 'rgba(120,60,60,.1)' :
-                    a.type === 'portal' ? 'rgba(80,60,140,.12)' : 'rgba(60,80,120,.1)';
-    const alertCol = a.type === 'sacred' ? 'rgba(232,212,154,.7)' :
-                     a.type === 'kundalini' ? 'rgba(220,120,100,.7)' :
-                     a.type === 'portal' ? 'rgba(180,150,255,.7)' : 'rgba(140,180,220,.6)';
-    return `<div style="margin-top:10px;padding:10px 14px;background:${alertBg};border-radius:4px;font-size:13px;color:${alertCol};font-style:italic;">${a.msg}</div>`;
-  }).join('') : '';
-
-  const countdownRows = [];
-  if (nextBirthday) {
-    const bd = nextBirthday.date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    countdownRows.push(`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(245,240,232,.05);">
-      <span style="font-size:13px;color:rgba(245,240,232,.4);">Next galactic birthday (6 Lamat)</span>
-      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${bd} · ${nextBirthday.days}d</span>
-    </div>`);
-  }
-  if (nextSerpent) {
-    const sd = nextSerpent.date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    countdownRows.push(`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;">
-      <span style="font-size:13px;color:rgba(245,240,232,.4);">Next Red Serpent wavespell</span>
-      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${sd} · ${nextSerpent.days}d</span>
-    </div>`);
-  }
-
-  // Moab + Kundalini anniversary countdowns
-  const thisYear = now.getFullYear();
-  function anniversaryCountdown(month, day, label) {
-    let ann = new Date(thisYear, month - 1, day);
-    if (ann <= now) ann = new Date(thisYear + 1, month - 1, day);
-    const days = Math.ceil((ann - now) / 86400000);
-    const tz = tzolkinForDate(ann);
-    const dateStr = ann.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(245,240,232,.05);">
-      <span style="font-size:13px;color:rgba(245,240,232,.4);">${label}</span>
-      <span style="font-family:'Cinzel',serif;font-size:13px;color:rgba(245,240,232,.7);">${dateStr} · ${tz.num} ${tz.sign.name} · ${days}d</span>
-    </div>`;
-  }
-
-  const html = `<div class="astro-card" style="margin-bottom:20px;" id="tzolkinPanel">
-    <div class="card-label">Tzolkin · Sacred Calendar</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px;">
-
-      <div style="background:${bg};border:1px solid ${bord};border-radius:6px;padding:14px;">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:${col};opacity:.8;margin-bottom:6px;text-transform:uppercase;">Day Sign</div>
-        <div style="font-size:24px;margin-bottom:4px;">${tz.sign.glyph}</div>
-        <div style="font-size:17px;color:rgba(245,240,232,.9);margin-bottom:4px;">${tz.num} ${tz.sign.name}</div>
-        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">${tz.sign.keywords}</div>
-      </div>
-
-      <div style="background:rgba(245,240,232,.025);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:14px;">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(245,240,232,.4);opacity:.8;margin-bottom:6px;text-transform:uppercase;">Tone ${tz.num}</div>
-        <div style="font-size:17px;color:rgba(245,240,232,.85);margin-bottom:4px;">${tz.tone.name}</div>
-        <div style="font-size:13px;color:rgba(245,240,232,.45);line-height:1.6;font-style:italic;">${tz.tone.desc}</div>
-      </div>
-
-      <div style="background:rgba(245,240,232,.025);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:14px;">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(201,168,76,.6);margin-bottom:6px;text-transform:uppercase;">Your Sign · 6 Lamat</div>
-        <div style="font-size:13px;color:rgba(245,240,232,.5);line-height:1.6;font-style:italic;">Born ${BIRTH_TZOLKIN.num} ${TZOLKIN_SIGNS[BIRTH_TZOLKIN.signIdx].name} · ${BIRTH_WAVESPELL} wavespell · Rhythmic Star / Venus</div>
-        ${countdownRows.join('')}
-      </div>
-
-    </div>
-
-    <div style="margin-top:12px;padding:12px 14px;background:rgba(245,240,232,.02);border-radius:4px;">
-      ${anniversaryCountdown(6, 20, 'Moab anniversary')}
-      ${anniversaryCountdown(6, 27, 'Kundalini anniversary')}
-    </div>
-
-    ${alertHTML}
-  </div>`;
-
-  let wrap = document.getElementById('tzolkinPanelWrap');
-  if (!wrap) {
-    wrap = document.createElement('div');
-    wrap.id = 'tzolkinPanelWrap';
-    const vedicWrap = document.getElementById('vedicPanelWrap');
-    if (vedicWrap) vedicWrap.after(wrap);
-    else {
-      const cycleTone = document.getElementById('cycleTone')?.closest('.astro-card');
-      if (cycleTone) cycleTone.after(wrap);
-    }
-  }
-  wrap.innerHTML = applyTzolkinTooltips(html);
-}
-
-
-// ─── TODAY SECTION TOGGLES ────────────────────────────────────────────────────
-const SECTION_PREFS_KEY = 'lunations_sections_v1';
-
-function getSectionPrefs(){
-  try{ return JSON.parse(localStorage.getItem(SECTION_PREFS_KEY)||'{}'); }
-  catch(e){ return {}; }
-}
-
-function toggleTodaySection(id){
-  const section = document.getElementById(id);
-  if(!section) return;
-  const body = section.querySelector('.today-section-body');
-  const chevron = section.querySelector('.today-section-chevron');
-  const isCollapsed = section.classList.contains('today-section-collapsed');
-
-  section.classList.toggle('today-section-collapsed');
-  chevron.style.transform = isCollapsed ? '' : 'rotate(-90deg)';
-  body.style.display = isCollapsed ? 'block' : 'none';
-
-  // Save preference
-  const prefs = getSectionPrefs();
-  prefs[id] = !isCollapsed ? 'collapsed' : 'open';
-  localStorage.setItem(SECTION_PREFS_KEY, JSON.stringify(prefs));
-}
-
-function initSectionStates(){
-  const prefs = getSectionPrefs();
-  // Default states: Now=open, Reading=open, MyDay=open, Sky=collapsed
-  const defaults = { sectionNow:'open', sectionReading:'open', sectionMyDay:'open', sectionSky:'collapsed', secLastCycle:'open', secPatternReading:'open', secForecast:'open' };
-  Object.entries(defaults).forEach(([id, defaultState]) => {
-    const state = prefs[id] || defaultState;
-    const section = document.getElementById(id);
-    if(!section) return;
-    const body = section.querySelector('.today-section-body');
-    const chevron = section.querySelector('.today-section-chevron');
-    if(state === 'collapsed'){
-      section.classList.add('today-section-collapsed');
-      if(body) body.style.display = 'none';
-      if(chevron) chevron.style.transform = 'rotate(-90deg)';
-    } else {
-      section.classList.remove('today-section-collapsed');
-      if(body) body.style.display = 'block';
-      if(chevron) chevron.style.transform = '';
-    }
-  });
-}
-
-// ─── QUICK LOG ────────────────────────────────────────────────────────────────
-const LOG_MODE_KEY = 'lunations_logmode_v1';
-
-function setLogMode(mode){
-  localStorage.setItem(LOG_MODE_KEY, mode);
-  document.getElementById('btnFullLog')?.classList.toggle('active', mode==='full');
-  document.getElementById('btnQuickLog')?.classList.toggle('active', mode==='quick');
-  document.getElementById('quickLogWrap').style.display = mode==='quick' ? 'block' : 'none';
-  document.getElementById('entryFormWrap').style.display = mode==='full' ? 'block' : 'none';
-  if(mode==='quick') setTimeout(()=>{
-    ['qFillEnergy','qFillMood','qFillClarity','qFillCreativity'].forEach((id,i) => {
-      const fill = document.getElementById(id);
-      const val = document.getElementById(['qSliderEnergy','qSliderMood','qSliderClarity','qSliderCreativity'][i])?.value || 5;
-      const colors = [['rgba(201,168,76,.7)','rgba(201,168,76,.4)'],['rgba(180,120,100,.65)','rgba(180,120,100,.35)'],['rgba(100,150,210,.6)','rgba(100,150,210,.3)'],['rgba(150,100,200,.6)','rgba(150,100,200,.3)']];
-      if(fill){ fill.style.width=((val-1)/9*100)+'%'; fill.style.background=colors[i][0]; }
-    });
-  },50);
-}
-
-function getLogMode(){ return localStorage.getItem(LOG_MODE_KEY) || 'full'; }
-
-function saveQuickLog(){
-  const now = new Date();
-  const key = entryKey(now);
-  const entries = loadEntries();
-  const phase = moonPhaseInfo(now);
-  const mSign = moonSignApprox(now);
-  const sSign = sunSignForDate(now);
-  const tithi = getTithi(now);
-  const nakshatra = getNakshatra(now);
-  const vara = getVara(now);
-  const planets = allPlanets(now).filter(p=>p&&p.sign).map(p=>p.symbol+(p.sign?.symbol||''));
-  const transits = getActiveTransits(now);
-
-  entries[key] = {
-    energy:    +document.getElementById('qSliderEnergy').value,
-    mood:      +document.getElementById('qSliderMood').value,
-    clarity:   +document.getElementById('qSliderClarity').value,
-    creativity:+document.getElementById('qSliderCreativity').value,
-    qualities: [],
-    text: '', dream: '', intention: '', sadhana: '',
-    phase: phase.name, phaseAge: Math.floor(phase.age), phasePct: phase.pct,
-    moonSign: mSign.name, sunSign: sSign.name,
-    tithi: tithi.num+' '+tithi.name, tithiQuality: tithi.quality,
-    nakshatra: nakshatra.name, nakshatraPada: nakshatra.pada,
-    vara: vara.name, planets, activeTransits: transits,
-    timestamp: now.toISOString(),
-    quickLog: true,
-  };
-
-  saveEntries(entries);
-  pushEntryToCloud(key, entries[key]);
-  showSubmittedCard(entries[key]);
-  renderEveningCheckin();
-  showToast('✦ Quick log saved');
-}
-
-const FORECAST_NAKSHATRAS = [
-  { name:'Ashwini',           ruler:'Ketu',    quality:'swift',      keywords:`Healing, swift action, new beginnings. Auspicious for starts.` },
-  { name:'Bharani',           ruler:'Venus',   quality:'intense',    keywords:`Transformation, creativity, Venus energy. Potent, not gentle.` },
-  { name:'Krittika',          ruler:'Sun',     quality:'fierce',     keywords:`The Pleiades. Purification by fire. Solar will, cutting clarity.` },
-  { name:'Rohini',            ruler:'Moon',    quality:'sacred',     keywords:`Most beloved of the Moon. Fertile, creative, sensual abundance.` },
-  { name:'Mrigashira',        ruler:'Mars',    quality:'curious',    keywords:`Gentle seeking, searching. Creative restlessness. Deer energy.` },
-  { name:'Ardra',             ruler:'Rahu',    quality:'stormy',     keywords:`Rahu's nakshatra. Storms clear the air. Breakthrough after chaos.` },
-  { name:'Punarvasu',         ruler:'Jupiter', quality:'auspicious', keywords:`Return of the good light. Renewal, restoration, Jupiter's blessing.` },
-  { name:'Pushya',            ruler:'Saturn',  quality:'sacred',     keywords:`Most auspicious of all nakshatras. Nourishment, protection, Jupiter.` },
-  { name:'Ashlesha',          ruler:'Mercury', quality:'deep',       keywords:`The coiled serpent. Kundalini wisdom, mystical penetration, insight.` },
-  { name:'Magha',             ruler:'Ketu',    quality:'ancestral',  keywords:`The throne. Ancestral power, royal dignity, Pitru connection.` },
-  { name:'Purva Phalguni',    ruler:'Venus',   quality:'creative',   keywords:`Creative pleasure, rest before fruition. Venus luxury and art.` },
-  { name:'Uttara Phalguni',   ruler:'Sun',     quality:'generous',   keywords:`Solar generosity, partnership, fruition of creative work.` },
-  { name:'Hasta',             ruler:'Moon',    quality:'skilled',    keywords:`The hand. Skilled craft, artisan energy. Strong for art and healing.` },
-  { name:'Chitra',            ruler:'Mars',    quality:'brilliant',  keywords:`The architect. Creative brilliance, jewel of the sky, Vishwakarma.` },
-  { name:'Swati',             ruler:'Rahu',    quality:'independent',keywords:`The independent one. Self-reliance, scattered wind, adaptability.` },
-  { name:'Vishakha',          ruler:'Jupiter', quality:'fierce',     keywords:`The archway. Fierce purposeful determination. Jupiter-Mars fire.` },
-  { name:'Anuradha',          ruler:'Saturn',  quality:'devoted',    keywords:`Devotion, friendship, loyalty. Strong for connection and love.` },
-  { name:'Jyeshtha',          ruler:'Mercury', quality:'protective', keywords:`The eldest, the chief. Protective power, occult knowledge.` },
-  { name:'Mula',              ruler:'Ketu',    quality:'root',       keywords:`The root star. Truth-cutting, dissolution of illusion, going to source.` },
-  { name:'Purva Ashadha',     ruler:'Venus',   quality:'invincible', keywords:`The invincible one. Venus strength, purification, creative fire.` },
-  { name:'Uttara Ashadha',    ruler:'Sun',     quality:'victorious', keywords:`The universal star. Solar victory, long-term achievement.` },
-  { name:'Shravana',          ruler:'Moon',    quality:'listening',  keywords:`The cosmic ear. Clairaudience, Vishnu as preserver. Listening practice.` },
-  { name:'Dhanishtha',        ruler:'Mars',    quality:'rhythmic',   keywords:`Wealth and rhythm. Musical energy. Mars abundance.` },
-  { name:'Shatabhisha',       ruler:'Rahu',    quality:'healing',    keywords:`The hundred healers. Solitary healing, Rahu medicine, research.` },
-  { name:'Purva Bhadrapada',  ruler:'Jupiter', quality:'fierce',     keywords:`Jupiter fire. Transformative asceticism, burning of old structures.` },
-  { name:'Uttara Bhadrapada', ruler:'Saturn',  quality:'deep',       keywords:`The cosmic serpent Ahir Budhnya. Ancestral depths, Saturn wisdom.` },
-  { name:'Revati',            ruler:'Mercury', quality:'completing', keywords:`Completion, nourishment, safe passage. Pushan protects travelers.` },
-];
-
-
-const SACRED_TITHIS = {
-  5:  { note:'Tithi 5 · Naga/Serpent current — Kundalini energy amplified.' },
-  8:  { note:'Tithi 8 · Ashtami — Durga/Kali fierce power. Deep practice.' },
-  11: { note:'Tithi 11 · Ekadashi — Vishnu tithi. Devotional discipline.' },
-  14: { note:'Tithi 14 · Chaturdashi — Shiva tithi. Potent for deep practice.' },
-  15: { note:'Tithi 15 · Purnima — Full moon energy in Vedic calendar.' },
-  29: { note:'Tithi 29 · Amavasya — Darkest night. Ancestral connection.' },
-  30: { note:'Tithi 30 · Amavasya — New moon. Pitru work. Ancestors close.' },
-};
-
-
-// ─── SKY FORECAST ───────────────────────────────────────────────────────────────
-let forecastOffset = 0; // months offset from today
-
-
-// ─── FORECAST BADGE TOOLTIPS ─────────────────────────────────────────────────
-function fcastTip(label, title, body, link){
-  const linkHtml = link ? `<a href="${link}" target="_blank" rel="noopener" style="display:block;margin-top:6px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;color:rgba(201,168,76,.6);text-decoration:none;">Learn more ↗</a>` : '';
-  return `<span class="tip" tabindex="0">${label}<span class="tip-box" style="width:240px;"><span class="tip-title">${title}</span>${body}${linkHtml}</span></span>`;
-}
-
-function tzolkinBadgeTip(tz){
-  if(!tz?.sign) return tz ? `${tz.num||'?'}` : '—';
-  const t = TZOLKIN_TIPS[tz.sign.name];
-  if(!t) return `${tz.sign.glyph||''} ${tz.num} ${tz.sign.name||''} · ${tz.tone?.name||''}`;
-  const toneDescs = {
-    1:'Magnetic — attract your purpose',2:'Lunar — identify the challenge',
-    3:'Electric — activate your service',4:'Self-Existing — define the form',
-    5:'Overtone — empower your core',6:'Rhythmic — organize your balance',
-    7:'Resonant — channel your inspiration',8:'Galactic — harmonize your integrity',
-    9:'Solar — pulse your intention',10:'Planetary — perfect your manifestation',
-    11:'Spectral — dissolve what no longer serves',12:'Crystal — cooperate and dedicate',
-    13:'Cosmic — transcend and endure'
-  };
-  const toneDesc = toneDescs[tz.num] || tz.tone.name;
-  return fcastTip(
-    `${tz.sign.glyph} ${tz.num} ${tz.sign.name} · ${tz.tone.name}`,
-    t[0],
-    `${t[1]}<br><br><span style="color:rgba(201,168,76,.6);font-style:normal;">Tone ${tz.num}: ${toneDesc}</span>`,
-    'https://www.lawoftime.org/tzolkin.html'
-  );
-}
-
-function nakshatraBadgeTip(nk){
-  if(!nk?.name) return '✦';
-  const t = VEDIC_TIPS[nk.name];
-  if(!t) return `✦ ${nk.name}`;
-  return fcastTip(
-    `✦ ${nk.name}`,
-    t[0],
-    t[1],
-    'https://www.astrosage.com/nakshatra/'
-  );
-}
-
-function moonPhaseBadgeTip(phase){
-  const phaseDescs = {
-    'New Moon': 'The seed moment. Plant intentions here — what you begin at the new moon carries the energy of the whole cycle.',
-    'Waxing Crescent': 'The sprout emerging. First efforts, early movement. Lean into what you set at the new moon.',
-    'First Quarter': 'The decision point. Tension between intention and resistance. Push through — this friction is necessary.',
-    'Waxing Gibbous': 'Refinement. Almost full — fine-tune, adjust, prepare for the peak.',
-    'Full Moon': 'Peak illumination. What was hidden becomes visible. Completion, celebration, release.',
-    'Waning Gibbous': 'Integration. The harvest. Gratitude and distribution of what you gathered.',
-    'Last Quarter': 'Release. Let go of what no longer serves the next cycle. Internal work.',
-    'Waning Crescent': 'Surrender. Rest, restore, dream. The cycle completes itself before the next new moon.',
-  };
-  const desc = phaseDescs[phase.name] || phase.name;
-  return fcastTip(`${phase.emoji} ${phase.name}`, phase.name, desc);
-}
-
-
-// ─── BIRTH CHART QUICK LOOK ───────────────────────────────────────────────────
-function renderBirthChart(){
-  const profile = loadProfile();
-  const el = document.getElementById('birthChartQuickLook');
-  if(!el) return;
-
-  if(!profile?.dob){
-    el.innerHTML = '<div style="font-size:13px;color:rgba(245,240,232,.25);font-style:italic;">Add your birth date in the profile above to see your chart overview.</div>';
-    return;
-  }
-
-  const bd = new Date(profile.dob + 'T12:00:00');
-  const birthTime = profile.time || null;
-  const natSun = sunSignForDate(bd);
-  const natMoon = moonSignApprox(bd);
-  const rising = profile.rising || null;
-
-  // Calculate dominant element
-  const elements = { Fire:0, Earth:0, Air:0, Water:0 };
-  [natSun, natMoon].forEach(s => elements[s.element]++);
-  if(rising){ const rs = SIGNS.find(s=>s.name===rising); if(rs) elements[rs.element]++; }
-  const domElement = Object.entries(elements).sort((a,b)=>b[1]-a[1])[0][0];
-  const elementEmoji = {Fire:'🔥',Earth:'🌍',Air:'💨',Water:'🌊'}[domElement];
-
-  // Key aspects text
-  const aspects = [];
-  if(natSun.name === natMoon.name) aspects.push('Sun-Moon conjunction — unified will and emotion');
-  if(natSun.element === natMoon.element) aspects.push(`Both luminaries in ${natSun.element} — elemental coherence`);
-  if(rising && SIGNS.find(s=>s.name===rising)?.element === natSun.element) aspects.push('Rising matches Sun element — strong outward expression of core nature');
-
-  // Nodes — approximate based on birth year (simplified)
-  const yr = bd.getFullYear();
-  const nodeIndex = Math.floor(((yr - 1984) / 1.5)) % 12;
-  const nodeSign = SIGNS[((nodeIndex % 12) + 12) % 12];
-  const nnSign = SIGNS[((nodeIndex + 6) % 12)];
-
-  el.innerHTML = `
-    <div style="margin-top:16px;">
-      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:14px;">Birth Chart Overview</div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:16px;">
-        <div style="background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:12px;">
-          <div style="font-size:10px;color:rgba(245,240,232,.3);margin-bottom:4px;">☀ Sun</div>
-          <div style="font-size:16px;color:rgba(245,240,232,.8);">${natSun.symbol} ${natSun.name}</div>
-          <div style="font-size:11px;color:rgba(245,240,232,.35);margin-top:2px;font-style:italic;">${natSun.keywords.split(',')[0].trim()}</div>
-        </div>
-        <div style="background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:12px;">
-          <div style="font-size:10px;color:rgba(245,240,232,.3);margin-bottom:4px;">☽ Moon</div>
-          <div style="font-size:16px;color:rgba(245,240,232,.8);">${natMoon.symbol} ${natMoon.name}</div>
-          <div style="font-size:11px;color:rgba(245,240,232,.35);margin-top:2px;font-style:italic;">${natMoon.keywords.split(',')[0].trim()}</div>
-        </div>
-        ${rising ? `<div style="background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:12px;">
-          <div style="font-size:10px;color:rgba(245,240,232,.3);margin-bottom:4px;">↑ Rising</div>
-          <div style="font-size:16px;color:rgba(245,240,232,.8);">${SIGNS.find(s=>s.name===rising)?.symbol||''} ${rising}</div>
-          <div style="font-size:11px;color:rgba(245,240,232,.35);margin-top:2px;font-style:italic;">${SIGNS.find(s=>s.name===rising)?.keywords.split(',')[0].trim()||''}</div>
-        </div>` : ''}
-        <div style="background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:12px;">
-          <div style="font-size:10px;color:rgba(245,240,232,.3);margin-bottom:4px;">${elementEmoji} Dominant</div>
-          <div style="font-size:16px;color:rgba(245,240,232,.8);">${domElement}</div>
-          <div style="font-size:11px;color:rgba(245,240,232,.35);margin-top:2px;font-style:italic;">element</div>
-        </div>
-      </div>
-
-      ${aspects.length ? `<div style="padding:12px 14px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:6px;margin-bottom:14px;">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:8px;">Key Patterns</div>
-        ${aspects.map(a => `<div style="font-size:13px;color:rgba(245,240,232,.5);margin-bottom:4px;font-style:italic;">✦ ${a}</div>`).join('')}
-      </div>` : ''}
-
-      ${!rising ? `<div style="font-size:12px;color:rgba(245,240,232,.2);font-style:italic;">Add your rising sign in Edit Profile for a more complete picture.</div>` : ''}
-      ${!profile.birthCity ? `<div style="font-size:12px;color:rgba(245,240,232,.2);font-style:italic;margin-top:4px;">Add your birth city to include it in your daily readings.</div>` : ''}
-    </div>`;
-}
-
-
-function toggleDailyReminder(on){
-  if(!on){ localStorage.removeItem('lunations_reminder'); showToast('Reminder off'); return; }
-  if(!('Notification' in window)){ showToast('Notifications not supported on this browser'); return; }
-  Notification.requestPermission().then(perm => {
-    if(perm === 'granted'){
-      localStorage.setItem('lunations_reminder', '1');
-      showToast('✦ Reminder set — re-open the app each morning to log');
-    } else {
-      document.getElementById('toggleReminder').checked = false;
-      showToast('Permission denied — enable notifications in browser settings');
-    }
-  });
-}
-
-// ─── FIRST-TIME WALKTHROUGH ───────────────────────────────────────────────────
-const WT_KEY = 'lunations_wt_done_v1';
-let _wtStep = 0;
-
-const WT_STEPS = [
-  {
-    icon: '🌙',
-    title: 'Welcome to Lunations',
-    body: 'A lunar journal. You will track your energy, mood, and patterns across every cycle of the year. The sky and your inner weather, mapped together.',
-    target: null,
-    position: 'center',
-  },
-  {
-    icon: '📝',
-    title: 'Log Your Day',
-    body: 'The Today tab is your home base. Each morning, log four numbers — energy, mood, clarity, creativity — and a few words if you feel like it. Takes 60 seconds.',
-    target: 'sectionMyDay',
-    position: 'above',
-  },
-  {
-    icon: '✦',
-    title: 'Your Daily Reading',
-    body: 'Every day you get a personalized reading based on the actual sky — your moon sign, phase, and natal chart. Tap "↺ Refresh" any time for a fresh one.',
-    target: 'sectionReading',
-    position: 'above',
-  },
-  {
-    icon: '🌑',
-    title: 'The Sky',
-    body: 'Tap "The Sky" section to see Vedic day panel, space weather, and planetary influences. Hover any term for a tooltip explanation.',
-    target: 'sectionSky',
-    position: 'above',
-  },
-  {
-    icon: '◈',
-    title: 'Cycles',
-    body: 'After a few weeks of logging, the Cycles tab shows your patterns — which moon phases lift your energy, which ones challenge you. Your personal lunar fingerprint.',
-    target: null,
-    position: 'center',
-  },
-  {
-    icon: '⚙',
-    title: 'Set Your Profile',
-    body: 'Go to Settings → Birth Profile and add your birthday. It makes your readings specific to you — natal sun, moon, and if you add it, rising sign too.',
-    target: null,
-    position: 'center',
-  },
-  {
-    icon: '🔥',
-    title: 'You are in.',
-    body: 'Log one entry today to start your record. The sky is already tracking — now you track yourself alongside it.',
-    target: null,
-    position: 'center',
-  },
-];
-
-function startWalkthrough(force){
-  if(!force && localStorage.getItem(WT_KEY)) return;
-  _wtStep = 0;
-  renderWalkthroughStep();
-}
-
-function renderWalkthroughStep(){
-  // Remove any existing overlay
-  document.getElementById('wtOverlay')?.remove();
-
-  const step = WT_STEPS[_wtStep];
-  if(!step) return finishWalkthrough();
-
-  const overlay = document.createElement('div');
-  overlay.className = 'wt-overlay';
-  overlay.id = 'wtOverlay';
-
-  // Spotlight
-  const spotlight = document.createElement('div');
-  spotlight.className = 'wt-spotlight';
-  if(step.target){
-    const el = document.getElementById(step.target);
-    if(el){
-      const r = el.getBoundingClientRect();
-      spotlight.style.cssText = `left:${r.left-8}px;top:${r.top-8+window.scrollY}px;width:${r.width+16}px;height:${r.height+16}px;`;
-    }
-  } else {
-    spotlight.style.cssText = 'left:-9999px;top:-9999px;width:1px;height:1px;';
-  }
-  overlay.appendChild(spotlight);
-
-  // Card
-  const card = document.createElement('div');
-  card.className = 'wt-card';
-
-  // Position card
-  if(step.target && document.getElementById(step.target)){
-    const r = document.getElementById(step.target).getBoundingClientRect();
-    const spaceBelow = window.innerHeight - r.bottom;
-    if(spaceBelow > 220){
-      card.style.top = (r.bottom + window.scrollY + 16) + 'px';
-    } else {
-      card.style.top = Math.max(16, r.top + window.scrollY - 220) + 'px';
-    }
-  } else {
-    card.style.top = '50%';
-    card.style.transform = 'translate(-50%,-50%)';
-  }
-
-  // Dots
-  const dots = WT_STEPS.map((_,i) =>
-    '<div class="wt-dot' + (i===_wtStep?' active':'') + '"></div>'
-  ).join('');
-
-  const isLast = _wtStep === WT_STEPS.length - 1;
-  const isFirst = _wtStep === 0;
-
-  card.innerHTML = '<div class="wt-card-top">'
-    +'<div class="wt-step-dots">'+dots+'</div>'
-    +'<button class="wt-skip" onclick="finishWalkthrough()">Skip</button>'
-    +'</div>'
-    +'<span class="wt-icon">'+step.icon+'</span>'
-    +'<div class="wt-title">'+step.title+'</div>'
-    +'<div class="wt-body">'+step.body+'</div>'
-    +'<div class="wt-btns">'
-    +(!isFirst ? '<button class="wt-btn-back" onclick="wtBack()">← Back</button>' : '')
-    +'<button class="wt-btn-next" onclick="'+(isLast?'finishWalkthrough()':'wtNext()')+'">'+
-      (isLast ? 'Start journaling ✦' : 'Next →')+'</button>'
-    +'</div>';
-
-  overlay.appendChild(card);
-  document.body.appendChild(overlay);
-
-  // Scroll target into view
-  if(step.target){
-    const el = document.getElementById(step.target);
-    if(el){
-      el.scrollIntoView({behavior:'smooth', block:'center'});
-      // Open section if collapsed
-      if(el.classList.contains('today-section-collapsed')){
-        toggleTodaySection(step.target);
-      }
-    }
-  }
-}
-
-function wtNext(){ _wtStep++; renderWalkthroughStep(); }
-function wtBack(){ if(_wtStep>0){ _wtStep--; renderWalkthroughStep(); } }
-
-function finishWalkthrough(){
-  document.getElementById('wtOverlay')?.remove();
-  localStorage.setItem(WT_KEY, '1');
-  // Focus the entry form
-  const formWrap = document.getElementById('entryFormWrap');
-  if(formWrap && formWrap.style.display !== 'none'){
-    formWrap.scrollIntoView({behavior:'smooth', block:'start'});
-  }
-  showToast("✦ You are all set — log your first entry");
-}
-
-
-// ─── URL PARAM HANDLING ───────────────────────────────────────────────────────
-(function handleUrlParams(){
-  const params = new URLSearchParams(window.location.search);
-  if(params.get('signin') === '1'){
-    // Auto-open sign in modal after app loads
-    setTimeout(() => {
-      if(!currentUser) openAuthModal();
-    }, 800);
-  }
-})();
-
-
-// Nudge to sign up after 3 entries if not signed in
-function checkSignupNudge(){
-  if(currentUser) return;
-  const entries = loadEntries();
-  const count = Object.keys(entries).length;
-  const nudged = localStorage.getItem('lunations_nudged');
-  if(count >= 3 && !nudged){
-    localStorage.setItem('lunations_nudged', '1');
-    setTimeout(() => {
-      showToast('✦ Loving Lunations? Sign in to back up your entries');
-    }, 2000);
-  }
-}
-
-function sendPasswordReset(){
-  const email = document.getElementById('authEmail')?.value?.trim();
-  if(!email){ document.getElementById('authError').textContent = 'Enter your email first'; return; }
-  if(!sbClient){ return; }
-  sbClient.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/app'
-  }).then(({error}) => {
-    if(error) document.getElementById('authError').textContent = error.message;
-    else {
-      document.getElementById('authError').style.color = 'rgba(100,200,100,.7)';
-      document.getElementById('authError').textContent = 'Reset email sent — check your inbox';
-    }
-  });
-}
-
-// ─── AUTH GATE FOR AI CALLS ───────────────────────────────────────────────────
-function canUseAI(){
-  return !!currentUser; // Only signed-in users get AI readings
-}
-
-// Fallback horoscope text for non-logged-in users
-// Pulled from a curated set based on phase + moon sign - no API needed
-const PHASE_FALLBACKS = {
-  "New Moon": [
-    "The new moon marks a threshold. What you plant in stillness tonight takes root quietly. No force needed, just intention.",
-    "Darkness before the first light. The field is empty and ready. Sit with what wants to begin.",
-    "At the new moon the cycle breathes in. This is the moment of seeding, not striving.",
-  ],
-  "Waxing Crescent": [
-    "The light returns in a thin edge. Lean toward what you set in motion. Small steps carry the new moon charge.",
-    "First emergence. The seed is pushing upward. Tend the new direction without rushing the growth.",
-    "Crescent energy is tentative and potent. What you nurture now has the full cycle behind it.",
-  ],
-  "First Quarter": [
-    "The square of tension is also the square of decision. Something asks to be committed to or released.",
-    "Half-light, half-dark. The friction here is generative. Push through it.",
-    "First quarter asks: are you still aligned with what you set at the new moon? Adjust if needed.",
-  ],
-  "Waxing Gibbous": [
-    "Nearly full. The work is in refinement now. What needs polishing before the peak?",
-    "Waxing gibbous is the phase of patience. Almost there. Hold the intention clearly.",
-    "The pressure before fullness. Stay with it. What you are building is close to completion.",
-  ],
-  "Full Moon": [
-    "Full illumination. What has been hidden surfaces. What has been building arrives. Feel all of it.",
-    "The moon at her peak. Completion energy is high. Celebrate what the cycle brought and release what it is done with.",
-    "Peak transmission. The channel between inner and outer is wide open tonight.",
-  ],
-  "Waning Gibbous": [
-    "The gratitude phase. The harvest is in. Now integrate what arrived at the full moon.",
-    "Waning gibbous is for sharing and distributing what you gathered. Give some of it away.",
-    "After the peak comes the gift of integration. Let the full moon revelations settle.",
-  ],
-  "Last Quarter": [
-    "The second square. Release what the cycle revealed is done. Make space for what comes at the new moon.",
-    "Last quarter asks for forgiveness and letting go. Nothing needs to be carried into the next cycle.",
-    "The clearing begins. What no longer serves the next cycle, let it go here.",
-  ],
-  "Waning Crescent": [
-    "The balsamic moon. Rest, dream, and restore. The cycle is completing itself.",
-    "Surrender phase. Do less than you think you should. The next moon needs you rested.",
-    "Waning crescent is for the inner world. Dreams carry information now. Listen to them.",
-  ],
-};
-
-function getFallbackReading(phase, mSign, sSign, profile){
-  const phaseTexts = PHASE_FALLBACKS[phase.name] || PHASE_FALLBACKS['New Moon'];
-  const idx = new Date().getDate() % phaseTexts.length;
-  let text = phaseTexts[idx];
-  if(mSign) text += ' Moon moves through ' + mSign.name + ' — ' + (mSign.keywords.split(',')[0].trim()) + '.';
-  return text;
-}
-
-
-// ─── AI READING TONE ──────────────────────────────────────────────────────────
-const TONE_KEY = 'lunations_tone_v1';
-const AI_TONES = [
-  { id:'vedic',     label:'Vedic',     icon:'🕉',  desc:'Sanskrit-grounded. Tithi, nakshatra, planetary dharma.' },
-  { id:'goddess',   label:'Goddess',   icon:'🌹',  desc:'Devotional. Divine Feminine. Goddess archetypes.' },
-  { id:'mystic',    label:'Mystic',    icon:'✦',   desc:'Esoteric, poetic. Reads the symbolic layer.' },
-  { id:'direct',    label:'Direct',    icon:'◈',   desc:'Clear, practical. No fluff, just insight.' },
-  { id:'source',    label:'Source',    icon:'∞',   desc:'Unified field. Quantum-spiritual synthesis.' },
-  { id:'elemental', label:'Elemental', icon:'🔥',  desc:'Fire, earth, air, water. Nature-based language.' },
-];
-
-function getAITone(){ return localStorage.getItem(TONE_KEY) || 'mystic'; }
-function setAITone(id){
-  localStorage.setItem(TONE_KEY, id);
-  renderToneGrid();
-  updateToneLabel();
-  localStorage.removeItem(RK);
-  showToast('✦ Tone updated — next reading will reflect this');
-}
-
-function updateToneLabel(){
-  const t = AI_TONES.find(t => t.id === getAITone());
-  const el = document.getElementById('readingToneName');
-  if(el && t) el.textContent = t.label;
-}
-
-function renderToneGrid(){
-  const grid = document.getElementById('toneGrid');
-  if(!grid) return;
-  const current = getAITone();
-  grid.innerHTML = AI_TONES.map(t => `
-    <div onclick="setAITone('${t.id}')" style="cursor:pointer;padding:12px;border-radius:8px;border:1px solid ${t.id===current?'rgba(201,168,76,.5)':'rgba(245,240,232,.08)'};background:${t.id===current?'rgba(201,168,76,.08)':'rgba(245,240,232,.02)'};transition:all .15s;">
-      <div style="font-size:20px;margin-bottom:6px;">${t.icon}</div>
-      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:${t.id===current?'var(--gold)':'rgba(245,240,232,.6)'};">${t.label}</div>
-      <div style="font-size:11px;color:rgba(245,240,232,.3);margin-top:3px;font-style:italic;line-height:1.4;">${t.desc}</div>
-    </div>`).join('');
-}
-
-function getTonePromptAddition(){
-  const tone = getAITone();
-  const t = AI_TONES.find(t => t.id === tone);
-  const additions = {
-    vedic:     'Write in a Vedic astrology register. Reference tithi, nakshatra, and planetary dharma. Sanskrit terms welcome where natural.',
-    goddess:   'Write from a devotional, Divine Feminine perspective. Reference goddess archetypes when relevant. Warm, reverent, embodied.',
-    mystic:    'Write with poetic, esoteric depth. Lean into symbol, myth, and the liminal. No cliches.',
-    direct:    'Be direct and practical. No filler, no mystical padding. Concrete insight only.',
-    source:    'Write from a unified field perspective — consciousness, frequency, quantum resonance. Synthesize spiritual and scientific.',
-    elemental: 'Ground everything in the four elements. Speak the language of fire, earth, air, and water. Nature-based and embodied.',
-  };
-  return additions[tone] || additions.mystic;
-}
-
-
-// ─── MENSTRUAL CYCLE TRACKING ─────────────────────────────────────────────────
-const CYCLE_KEY = 'lunations_cycle_v1';
-
-function toggleCycleFields(on){
-  const fields = document.getElementById('cycleFields');
-  const thumb = document.getElementById('cycleToggleThumb');
-  if(fields) fields.style.display = on ? 'block' : 'none';
-  if(thumb) thumb.style.transform = on ? 'translateX(20px)' : '';
-  if(thumb) thumb.style.background = on ? 'rgba(200,130,160,.9)' : 'rgba(245,240,232,.4)';
-}
-
-function saveCycleData(){
-  const trackEl = document.getElementById('obTrackCycle');
-  if(!trackEl || !trackEl.checked) return;
-  const startEl = document.getElementById('obCycleStart');
-  const lenEl = document.getElementById('obCycleLength');
-  if(!startEl?.value) return;
-  const data = {
-    trackCycle: true,
-    lastStart: startEl.value,
-    cycleLength: parseInt(lenEl?.value) || 28,
-    updatedAt: new Date().toISOString(),
-  };
-  localStorage.setItem(CYCLE_KEY, JSON.stringify(data));
-  return data;
-}
-
-function loadCycleData(){
-  try{ return JSON.parse(localStorage.getItem(CYCLE_KEY)||'null'); }
-  catch(e){ return null; }
-}
-
-function getCycleDay(){
-  const data = loadCycleData();
-  if(!data?.lastStart) return null;
-  const start = new Date(data.lastStart + 'T00:00:00');
-  const today = new Date(); today.setHours(0,0,0,0);
-  const daysSince = Math.floor((today - start) / 86400000);
-  const cycleLen = data.cycleLength || 28;
-  const dayInCycle = (daysSince % cycleLen) + 1;
-  // Determine phase
-  let phase, color;
-  if(dayInCycle <= 5){ phase = 'Menstrual'; color = 'rgba(180,80,100,.7)'; }
-  else if(dayInCycle <= 13){ phase = 'Follicular'; color = 'rgba(100,160,120,.7)'; }
-  else if(dayInCycle <= 16){ phase = 'Ovulatory'; color = 'rgba(201,168,76,.8)'; }
-  else{ phase = 'Luteal'; color = 'rgba(140,100,180,.7)'; }
-  return { day: dayInCycle, phase, color, cycleLen };
-}
-
-function renderCyclePhaseWidget(){
-  const data = getCycleDay();
-  if(!data) return;
-  // Show in Today > Now section near the streak
-  const streakBar = document.getElementById('streakBar');
-  if(!streakBar) return;
-  let cycleEl = document.getElementById('cyclePhaseWidget');
-  if(!cycleEl){
-    cycleEl = document.createElement('div');
-    cycleEl.id = 'cyclePhaseWidget';
-    cycleEl.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:12px;';
-    streakBar.after(cycleEl);
-  }
-  cycleEl.innerHTML = `<div style="display:flex;align-items:center;gap:8px;background:rgba(245,240,232,.02);border:1px solid rgba(180,100,140,.15);border-radius:20px;padding:5px 14px;">
-    <span style="font-size:13px;">🌸</span>
-    <span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;color:${data.color};">${data.phase}</span>
-    <span style="font-size:11px;color:rgba(245,240,232,.25);">Day ${data.day} of ${data.cycleLen}</span>
-  </div>`;
-}
-
-
-function saveCycleFromSettings(){
-  const startEl = document.getElementById('settingsCycleStart');
-  const lenEl = document.getElementById('settingsCycleLength');
-  if(!startEl?.value){ showToast('Enter your last period start date'); return; }
-  const data = {
-    trackCycle: true,
-    lastStart: startEl.value,
-    cycleLength: parseInt(lenEl?.value) || 28,
-    updatedAt: new Date().toISOString(),
-  };
-  localStorage.setItem(CYCLE_KEY, JSON.stringify(data));
-  showToast('✦ Cycle data saved');
-}
-
-function renderProfileNudge(){
-  const p = loadProfile();
-  const el = document.getElementById('profileNudge');
-  if(!el) return;
-  if(p?.name && p?.dob){
-    el.style.display = 'none';
-    return;
-  }
-  el.style.display = 'block';
-  const missing = [];
-  if(!p?.name) missing.push('name');
-  if(!p?.dob) missing.push('birth date');
-  el.innerHTML = '<div style="background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.12);border-radius:8px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;">'
-    +'<div style="font-size:13px;color:rgba(245,240,232,.45);font-style:italic;">Add your '+ missing.join(' and ') +' for personalized readings</div>'
-    +'<button onclick="openOnboarding()" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding:6px 14px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--gold);cursor:pointer;">Set up →</button>'
-    +'</div>';
-}
-
-// ─── PDF CYCLE REPORT ─────────────────────────────────────────────────────────
-function generateCycleReport(){
-  const entries = loadEntries();
-  const profile = loadProfile();
-  const now = new Date();
-  
-  // Get current cycle entries
-  const nm = getCycleStart(cycleOffset || 0);
-  const cycleKeys = Object.keys(entries).filter(k => {
-    const d = new Date(k + 'T12:00:00');
-    return d >= nm && d <= now;
-  }).sort();
-
-  if(!cycleKeys.length){
-    showToast('No entries in this cycle yet');
-    return;
-  }
-
-  const phase = moonPhaseInfo(nm);
-  const mSign = moonSignApprox(nm);
-  const cycleNum = Math.max(1, Math.min(13, getCycleNum(nm)));
-
-  // Calculate averages
-  const avg = (arr) => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1) : '—';
-  const avgE = avg(cycleKeys.map(k=>entries[k].energy||0));
-  const avgM = avg(cycleKeys.map(k=>entries[k].mood||0));
-  const avgC = avg(cycleKeys.map(k=>entries[k].clarity||0));
-  const avgCr = avg(cycleKeys.map(k=>entries[k].creativity||0));
-
-  // Quality frequency
-  const qualCounts = {};
-  cycleKeys.forEach(k => (entries[k].qualities||[]).forEach(q => qualCounts[q]=(qualCounts[q]||0)+1));
-  const topQuals = Object.entries(qualCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
-
-  // Peak days
-  const peakEnergy = cycleKeys.sort((a,b)=>(entries[b].energy||0)-(entries[a].energy||0))[0];
-  const peakMood = cycleKeys.sort((a,b)=>(entries[b].mood||0)-(entries[a].mood||0))[0];
-
-  // Entry excerpts (up to 5 meaningful ones)
-  const excerpts = cycleKeys
-    .filter(k => entries[k].text && entries[k].text.length > 30)
-    .slice(0, 5);
-
-  const nmDate = nm.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  const reportDate = now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  const name = profile?.name || 'Anonymous';
-
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Lunations · Cycle ${cycleNum} Report</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap');
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#fff; color:#1a1510; font-family:'EB Garamond',serif; font-size:14px; line-height:1.7; }
-  .page { max-width:680px; margin:0 auto; padding:48px 40px; }
-  .header { text-align:center; border-bottom:1px solid #d4b870; padding-bottom:28px; margin-bottom:32px; }
-  .logo { font-family:'Cinzel',serif; font-size:11px; letter-spacing:.25em; color:#8a6a20; text-transform:uppercase; margin-bottom:8px; }
-  .cycle-title { font-family:'Cinzel',serif; font-size:26px; color:#1a1510; margin-bottom:4px; }
-  .cycle-sub { font-size:14px; color:#8a6a20; font-style:italic; }
-  .meta { font-size:12px; color:#999; margin-top:8px; }
-  .section { margin-bottom:28px; }
-  .section-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:#8a6a20; margin-bottom:12px; border-bottom:1px solid #e8d49a; padding-bottom:6px; }
-  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:4px; }
-  .metric { text-align:center; padding:12px; border:1px solid #e8d49a; border-radius:6px; }
-  .metric-val { font-family:'Cinzel',serif; font-size:24px; color:#8a6a20; display:block; }
-  .metric-label { font-size:11px; color:#999; margin-top:2px; }
-  .quality-pills { display:flex; flex-wrap:wrap; gap:6px; }
-  .quality-pill { font-size:12px; color:#8a6a20; border:1px solid #e8d49a; border-radius:20px; padding:3px 12px; }
-  .excerpt { margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid #f0e8d0; }
-  .excerpt:last-child { border-bottom:none; }
-  .excerpt-date { font-family:'Cinzel',serif; font-size:9px; letter-spacing:.1em; color:#8a6a20; text-transform:uppercase; margin-bottom:4px; }
-  .excerpt-text { font-size:14px; color:#3a2e20; font-style:italic; line-height:1.75; }
-  .footer { text-align:center; border-top:1px solid #e8d49a; padding-top:16px; margin-top:32px; font-size:11px; color:#bbb; font-family:'Cinzel',serif; letter-spacing:.1em; }
-  @media print { body { -webkit-print-color-adjust:exact; } }
-</style>
-</head>
-<body>
-<div class="page">
-  <div class="header">
-    <div class="logo">Lunations</div>
-    <div class="cycle-title">Cycle ${cycleNum} · ${mSign.name}</div>
-    <div class="cycle-sub">${nmDate} · ${cycleKeys.length} days logged</div>
-    <div class="meta">Report for ${name} · Generated ${reportDate}</div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">Averages This Cycle</div>
-    <div class="metrics">
-      <div class="metric"><span class="metric-val">${avgE}</span><div class="metric-label">Energy</div></div>
-      <div class="metric"><span class="metric-val">${avgM}</span><div class="metric-label">Mood</div></div>
-      <div class="metric"><span class="metric-val">${avgC}</span><div class="metric-label">Clarity</div></div>
-      <div class="metric"><span class="metric-val">${avgCr}</span><div class="metric-label">Creativity</div></div>
-    </div>
-  </div>
-
-  ${topQuals.length ? `<div class="section">
-    <div class="section-label">Most Present Qualities</div>
-    <div class="quality-pills">${topQuals.map(([q,n])=>`<span class="quality-pill">${q} (${n}×)</span>`).join('')}</div>
-  </div>` : ''}
-
-  <div class="section">
-    <div class="section-label">Peak Days</div>
-    <p style="color:#555;font-style:italic;">
-      Highest energy: ${peakEnergy ? new Date(peakEnergy+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' — ' + (entries[peakEnergy]?.energy||0) + '/10' : '—'}<br>
-      Highest mood: ${peakMood ? new Date(peakMood+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' — ' + (entries[peakMood]?.mood||0) + '/10' : '—'}
-    </p>
-  </div>
-
-  ${excerpts.length ? `<div class="section">
-    <div class="section-label">Journal Excerpts</div>
-    ${excerpts.map(k => {
-      const d = new Date(k+'T12:00:00');
-      const e = entries[k];
-      return `<div class="excerpt">
-        <div class="excerpt-date">${d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})} · ${moonPhaseInfo(d).name}</div>
-        <div class="excerpt-text">${(e.text||'').slice(0,300)}${e.text?.length > 300 ? '…' : ''}</div>
-      </div>`;
-    }).join('')}
-  </div>` : ''}
-
-  <div class="footer">the sky remembers who you are · lunations.app</div>
-</div>
-`;
-
-  // Open in new window for print/save as PDF
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
-  setTimeout(() => win.print(), 500);
-}
-
-
-// ─── SETTINGS MODAL ──────────────────────────────────────────────────────────
-function openSettingsModal(){
-  renderSettingsModal();
-  document.getElementById('settingsModal').classList.add('open');
-}
-
-function closeSettingsModal(){
-  document.getElementById('settingsModal').classList.remove('open');
-}
-
-function renderSettingsModal(){
-  const profile = loadProfile();
-  const entries = loadEntries();
-  const entryCount = Object.keys(entries).filter(k => !entries[k].isMockData).length;
-
-  // Combined Account + Profile section
-  const smAcc = document.getElementById('smAccountContent');
-  if(smAcc){
-    let html = '';
-
-    // ── Avatar + profile identity ──────────────────────────────────────────
-    const avatarUrl = localStorage.getItem('lunations_avatar_v1') || '';
-    const displayName = profile?.name || (currentUser ? currentUser.email.split('@')[0] : 'Guest');
-    
-    html += '<div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">';
-    // Avatar
-    html += '<div id="smAvatarWrap" style="position:relative;flex-shrink:0;">';
-    if(avatarUrl){
-      html += '<img src="'+avatarUrl+'" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid rgba(201,168,76,.3);">';
-    } else {
-      const initials = displayName.slice(0,2).toUpperCase();
-      html += '<div style="width:64px;height:64px;border-radius:50%;background:rgba(201,168,76,.1);border:2px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:20px;color:rgba(201,168,76,.7);">'+initials+'</div>';
-    }
-    html += '<label style="position:absolute;bottom:0;right:0;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;" title="Upload photo">'
-      + '<input type="file" accept="image/*" onchange="uploadAvatar(this)" style="display:none;">📷</label>';
-    html += '</div>';
-
-    // Name + email + astro
-    html += '<div style="flex:1;min-width:0;">';
-    html += '<div style="font-family:Cinzel,serif;font-size:15px;color:rgba(245,240,232,.85);margin-bottom:2px;">'+displayName+'</div>';
-    if(currentUser) html += '<div style="font-size:12px;color:rgba(245,240,232,.35);margin-bottom:6px;">'+currentUser.email+'</div>';
-    if(profile?.dob){
-      const bd=new Date(profile.dob+'T12:00:00'),ns=sunSignForDate(bd),nm=moonSignApprox(bd);
-      html += '<div style="font-size:12px;color:rgba(245,240,232,.45);">'+ns.symbol+' '+ns.name+' · '+nm.symbol+' '+nm.name+(profile.rising?' · '+profile.rising+' ↑':'')+'</div>';
-      if(profile.birthCity) html += '<div style="font-size:11px;color:rgba(245,240,232,.25);margin-top:2px;">'+profile.birthCity+'</div>';
-    } else {
-      html += '<div style="font-size:12px;color:rgba(245,240,232,.3);font-style:italic;">Add your birth date for personalized readings.</div>';
-    }
-    html += '</div>';
-    html += '</div>';
-
-    // ── Stats row ──────────────────────────────────────────────────────────
-    if(currentUser){
-      const lastSync = localStorage.getItem('lunations_last_sync') || 'never';
-      html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">'
-        +'<div style="background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:10px;text-align:center;">'
-        +'<div style="font-family:Cinzel,serif;font-size:20px;color:var(--gold);">'+entryCount+'</div>'
-        +'<div style="font-size:10px;color:rgba(245,240,232,.3);margin-top:2px;">entries</div></div>'
-        +'<div style="background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.07);border-radius:6px;padding:10px;text-align:center;">'
-        +'<div style="font-family:Cinzel,serif;font-size:12px;color:rgba(245,240,232,.5);">'+lastSync+'</div>'
-        +'<div style="font-size:10px;color:rgba(245,240,232,.3);margin-top:2px;">last sync</div></div>'
-        +'</div>';
-    }
-
-    // ── Profile actions ────────────────────────────────────────────────────
-    html += '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">';
-    html += '<button class="save-btn" style="margin-top:0;" onclick="openOnboarding();closeSettingsModal()">Edit Profile</button>';
-    if(!currentUser){
-      html += '<button class="save-btn" style="margin-top:0;" onclick="openAuthModal();closeSettingsModal()">Sign In / Create Account</button>';
-    }
-    html += '</div>';
-
-    // ── Account actions (signed in only) ───────────────────────────────────
-    if(currentUser){
-      html += '<div style="display:flex;flex-direction:column;gap:8px;">'
-        +'<button class="save-btn" style="margin-top:0;" onclick="openChangeEmailModal()">Change Email</button>'
-        +'<button class="save-btn" style="margin-top:0;" onclick="openChangePasswordModal()">Change Password</button>'
-        +'<div id="smEmailFormWrap"></div>'
-        +'<div id="smPwFormWrap"></div>'
-        +'<button class="save-btn" style="margin-top:4px;border-color:rgba(200,80,80,.3);color:rgba(220,100,100,.7);" onclick="confirmDeleteAccount()">Delete Account</button>'
-        +'<button class="save-btn" style="margin-top:0;background:rgba(245,240,232,.02);border-color:rgba(245,240,232,.1);" onclick="confirmSignOut()">Sign Out</button>'
-        +'</div>';
-    }
-
-    smAcc.innerHTML = html;
-  }
-
-  // Mode grid
-  const smMG = document.getElementById('smModeGrid');
-  if(smMG){
-    const current = getCurrentMode();
-    smMG.innerHTML = Object.entries(MODES).map(function(entry){
-      var key=entry[0], m=entry[1], sel=current===key;
-      var bdr=sel?'rgba(201,168,76,.5)':'rgba(245,240,232,.08)';
-      var bg=sel?'rgba(201,168,76,.08)':'rgba(245,240,232,.02)';
-      var col=sel?'var(--gold)':'rgba(245,240,232,.5)';
-      return '<div onclick="setMode(\'' + key + '\')" style="cursor:pointer;padding:10px;border-radius:8px;border:1px solid '+bdr+';background:'+bg+';text-align:center;"><div style="font-size:18px;margin-bottom:4px;">'+m.icon+'</div><div style="font-family:Cinzel,serif;font-size:10px;color:'+col+';">'+m.name+'</div></div>';
-    }).join('');
-  }
-
-  // Tone grid
-  const smTG = document.getElementById('smToneGrid');
-  if(smTG){
-    const currentTone = getAITone();
-    smTG.innerHTML = AI_TONES.map(function(t){
-      var sel=t.id===currentTone;
-      var bdr=sel?'rgba(201,168,76,.5)':'rgba(245,240,232,.08)';
-      var bg=sel?'rgba(201,168,76,.08)':'rgba(245,240,232,.02)';
-      var col=sel?'var(--gold)':'rgba(245,240,232,.5)';
-      return '<div onclick="setAITone(\'' + t.id + '\')" style="cursor:pointer;padding:10px;border-radius:8px;border:1px solid '+bdr+';background:'+bg+';text-align:center;"><div style="font-size:18px;margin-bottom:4px;">'+t.icon+'</div><div style="font-family:Cinzel,serif;font-size:10px;color:'+col+';">'+t.label+'</div></div>';
-    }).join('');
-  }
-
-  // Toggles
-  const tv = document.getElementById('smToggleVedic');
-  const tt = document.getElementById('smToggleTransits');
-  const ti = document.getElementById('smToggleIntention');
-  if(tv) tv.checked = getSetting('showVedic', true);
-  if(tt) tt.checked = getSetting('showTransits', true);
-  if(ti) ti.checked = getSetting('showIntention', true);
-
-  // Icon grid
-  const smIG = document.getElementById('smIconGrid');
-  if(smIG){
-    const currentIcon = getSetting('icon','🌙');
-    smIG.innerHTML = ICON_OPTIONS.map(function(opt){
-      var sel=opt.glyph===currentIcon;
-      return '<div class="icon-option'+(sel?' selected':'')+'" onclick="setIcon('+JSON.stringify(opt.glyph)+',this)" style="padding:8px 12px;"><span class="icon-glyph">'+opt.glyph+'</span><span class="icon-label" style="font-size:10px;">'+opt.label+'</span></div>';
-    }).join('');
-  }
-
-  // Storage info
-  const smSI = document.getElementById('smStorageInfo');
-  if(smSI){
-    const totalSize = JSON.stringify(entries).length;
-    const kb = (totalSize/1024).toFixed(1);
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const keys = Object.keys(entries).sort();
-    smSI.innerHTML = entryCount + ' entries recorded · ' + kb + ' KB<br>'
-      + 'First: ' + (keys.length ? keys[0] : '—') + ' · Latest: ' + (keys.length ? keys[keys.length-1] : '—') + '<br>'
-      + 'Timezone: ' + tz;
-  }
-
-  // Cycle tracker
-  const cd = loadCycleData();
-  const smCS = document.getElementById('smCycleStart');
-  const smCL = document.getElementById('smCycleLength');
-  if(smCS && cd?.lastStart) smCS.value = cd.lastStart;
-  if(smCL && cd?.cycleLength) smCL.value = cd.cycleLength;
-}
-
-function saveCycleFromSettingsModal(){
-  const startEl = document.getElementById('smCycleStart');
-  const lenEl = document.getElementById('smCycleLength');
-  if(!startEl?.value){ showToast('Enter your last period start date'); return; }
-  const data = {
-    trackCycle: true,
-    lastStart: startEl.value,
-    cycleLength: parseInt(lenEl?.value) || 28,
-    updatedAt: new Date().toISOString(),
-  };
-  localStorage.setItem(CYCLE_KEY, JSON.stringify(data));
-  showToast('Cycle data saved');
-  renderCyclePhaseWidget();
-}
-
-// Inline email/pw change forms (no prompt())
-function openChangeEmailModal(){
-  const wrap = document.getElementById('smEmailFormWrap');
-  if(!wrap) return;
-  wrap.innerHTML = '<div style="margin-top:8px;padding:12px;background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.1);border-radius:8px;">'
-    + '<div style="font-size:12px;color:rgba(245,240,232,.4);margin-bottom:8px;">New email address</div>'
-    + '<input id="newEmailInput" type="email" placeholder="new@email.com" style="width:100%;background:rgba(245,240,232,.05);border:1px solid rgba(245,240,232,.15);border-radius:6px;padding:10px;color:rgba(245,240,232,.8);font-size:14px;box-sizing:border-box;margin-bottom:8px;">'
-    + '<button class="save-btn" style="margin-top:0;width:100%;" onclick="submitEmailChange()">Send Confirmation</button>'
-    + '</div>';
-  setTimeout(() => document.getElementById('newEmailInput')?.focus(), 50);
-}
-
-function submitEmailChange(){
-  const v = document.getElementById('newEmailInput')?.value?.trim();
-  if(!v || !v.includes('@')){ showToast('Enter a valid email'); return; }
-  if(!sbClient) return;
-  sbClient.auth.updateUser({email: v}).then(({error}) => {
-    if(error) showToast('Error: ' + error.message);
-    else { showToast('Confirmation sent — check your inbox'); document.getElementById('smEmailFormWrap').innerHTML = ''; }
-  });
-}
-
-function openChangePasswordModal(){
-  const wrap = document.getElementById('smPwFormWrap');
-  if(!wrap) return;
-  wrap.innerHTML = '<div style="margin-top:8px;padding:12px;background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.1);border-radius:8px;">'
-    + '<div style="font-size:12px;color:rgba(245,240,232,.4);margin-bottom:8px;">New password (min 8 characters)</div>'
-    + '<input id="newPwInput" type="password" placeholder="New password" style="width:100%;background:rgba(245,240,232,.05);border:1px solid rgba(245,240,232,.15);border-radius:6px;padding:10px;color:rgba(245,240,232,.8);font-size:14px;box-sizing:border-box;margin-bottom:8px;">'
-    + '<button class="save-btn" style="margin-top:0;width:100%;" onclick="submitPasswordChange()">Update Password</button>'
-    + '</div>';
-  setTimeout(() => document.getElementById('newPwInput')?.focus(), 50);
-}
-
-function submitPasswordChange(){
-  const v = document.getElementById('newPwInput')?.value;
-  if(!v || v.length < 8){ showToast('Password must be at least 8 characters'); return; }
-  if(!sbClient) return;
-  sbClient.auth.updateUser({password: v}).then(({error}) => {
-    if(error) showToast('Error: ' + error.message);
-    else { showToast('Password updated'); document.getElementById('smPwFormWrap').innerHTML = ''; }
-  });
-}
-
-
-function setIconFromEl(el){
-  const glyph = el.dataset.glyph || el.getAttribute('data-glyph');
-  if(glyph) setIcon(glyph, el);
-}
-
-function uploadAvatar(input){
-  const file = input.files[0];
-  if(!file) return;
-  if(file.size > 500000){ showToast('Image too large — max 500KB'); return; }
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const dataUrl = e.target.result;
-    localStorage.setItem('lunations_avatar_v1', dataUrl);
-    showToast('✦ Avatar updated');
-    renderSettingsModal(); // re-render to show new avatar
-    updateSideMenuAccount(); // update sidebar
-  };
-  reader.readAsDataURL(file);
-}
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
@@ -6396,8 +5086,7 @@ restoreFromIDB().then(restored => {
 function enterApp(){
   localStorage.setItem('lj_entered','1');
   document.getElementById('landingScreen').classList.add('hidden');
-  // Start walkthrough for new users
-  setTimeout(() => startWalkthrough(), 600);
+  if(!loadProfile() && !currentUser) setTimeout(openOnboarding, 800);
 }
 
 (function(){
@@ -6405,7 +5094,7 @@ function enterApp(){
   if(!ls) return;
   if(localStorage.getItem('lj_entered')){
     ls.classList.add('hidden');
-    setTimeout(() => startWalkthrough(), 800);
+    if(!loadProfile() && !currentUser) setTimeout(openOnboarding, 1800);
   }
 })();
 
@@ -6974,107 +5663,35 @@ async function confirmDeleteAccount(){
 
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-<!-- SETTINGS MODAL -->
-<div class="modal-overlay" id="settingsModal" style="z-index:350;">
-  <div class="modal-box" style="max-width:480px;max-height:90vh;overflow-y:auto;padding:0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;position:sticky;top:0;background:#1a160e;z-index:1;border-bottom:1px solid rgba(245,240,232,.07);">
-      <div style="font-family:'Cinzel',serif;font-size:16px;letter-spacing:.1em;color:rgba(245,240,232,.85);">Settings</div>
-      <button class="modal-close" onclick="closeSettingsModal()" style="position:static;">×</button>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal-box" style="max-width:460px;">
+    <button class="modal-close" onclick="document.getElementById('shareModal').classList.remove('open')">×</button>
+    <div class="modal-title">Share Your Cycle</div>
+    <div id="sharePreviewContent"></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="save-btn" style="margin-top:0;flex:1;" onclick="shareCard()">Share</button>
+      <button class="save-btn" style="margin-top:0;flex:1;opacity:.5;" onclick="showToast('Screenshot to save your card')">Screenshot</button>
     </div>
-    <div id="settingsModalBody" style="padding:20px 24px 28px;">
+    <p style="font-size:12px;color:rgba(245,240,232,.2);text-align:center;margin-top:12px;font-style:italic;">Tip: screenshot the card above to share as an image</p>
+  </div>
+</div>
 
-      <!-- ACCOUNT + PROFILE COMBINED -->
-      <div class="sm-section" id="smAccount">
-        <div id="smAccountContent">
-          <!-- Populated by renderSettingsModal() -->
-        </div>
-      </div>
-      <hr class="sm-divider">
-
-      <div class="sm-section">
-        <div class="sm-section-label">Tradition</div>
-        <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:12px;">The lens through which the sky speaks to you.</div>
-        <div id="smModeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;"></div>
-      </div>
-      <hr class="sm-divider">
-
-      <div class="sm-section">
-        <div class="sm-section-label">Reading Tone</div>
-        <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:12px;">How your AI readings speak to you.</div>
-        <div id="smToneGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;"></div>
-      </div>
-      <hr class="sm-divider">
-
-      <div class="sm-section">
-        <div class="sm-section-label">Display</div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-size:14px;color:rgba(245,240,232,.6);">Show Vedic Day Panel</span>
-            <label class="toggle-wrap"><input type="checkbox" id="smToggleVedic" onchange="saveSetting('showVedic',this.checked);renderToday()"><span class="toggle"></span></label>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-size:14px;color:rgba(245,240,232,.6);">Show Transit Alerts</span>
-            <label class="toggle-wrap"><input type="checkbox" id="smToggleTransits" onchange="saveSetting('showTransits',this.checked);renderToday()"><span class="toggle"></span></label>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-size:14px;color:rgba(245,240,232,.6);">Show Intention Banner</span>
-            <label class="toggle-wrap"><input type="checkbox" id="smToggleIntention" onchange="saveSetting('showIntention',this.checked);renderIntentionBanner()"><span class="toggle"></span></label>
-          </div>
-        </div>
-        <div style="font-size:12px;color:rgba(245,240,232,.3);margin-bottom:8px;">App Icon</div>
-        <div id="smIconGrid" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
-      </div>
-      <hr class="sm-divider">
-
-      <div class="sm-section">
-        <div class="sm-section-label">Cycle Tracking</div>
-        <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:12px;">Track your menstrual cycle alongside the lunar cycle.</div>
-        <div class="ob-field" style="margin-bottom:10px;">
-          <label class="ob-label">Last period start</label>
-          <input class="ob-input" type="date" id="smCycleStart">
-        </div>
-        <div class="ob-field" style="margin-bottom:12px;">
-          <label class="ob-label">Average cycle length (days)</label>
-          <input class="ob-input" type="number" id="smCycleLength" min="21" max="45" value="28">
-        </div>
-        <button class="save-btn" style="margin-top:0;border-color:rgba(180,100,140,.3);color:rgba(200,130,160,.8);" onclick="saveCycleFromSettingsModal()">Save Cycle Data</button>
-      </div>
-      <hr class="sm-divider">
-
-      <div class="sm-section">
-        <div class="sm-section-label">Data &amp; Backup</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="save-btn" style="margin-top:0;" onclick="forceSyncAll();showToast('Syncing...')">↑ Sync All to Cloud</button>
-          <button class="save-btn" style="margin-top:0;" onclick="exportEntries()">↓ Download Backup (JSON)</button>
-          <button class="save-btn" style="margin-top:0;" onclick="generateCycleReport()">📄 Cycle Report (PDF)</button>
-          <label style="cursor:pointer;">
-            <input type="file" id="smImportFile" accept=".json" onchange="importEntries(event)" style="display:none;">
-            <span class="save-btn" style="display:block;margin-top:0;text-align:center;" onclick="document.getElementById('smImportFile').click()">↑ Import from File</span>
-          </label>
-        </div>
-        <div id="smStorageInfo" style="font-size:12px;color:rgba(245,240,232,.3);font-style:italic;margin-top:12px;line-height:1.8;"></div>
-      </div>
-      <hr class="sm-divider">
-
-      <div class="sm-section">
-        <div class="sm-section-label">Install &amp; Share</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="save-btn" style="margin-top:0;" onclick="pwsInstall()">📲 Add to Home Screen</button>
-          <button class="save-btn" style="margin-top:0;background:rgba(245,240,232,.02);" onclick="openShareCard();closeSettingsModal()">✦ Share My Cycle Card</button>
-        </div>
-      </div>
-      <hr class="sm-divider">
-
-      <div class="sm-section">
-        <div style="font-size:12px;color:rgba(245,240,232,.2);line-height:1.9;font-style:italic;">the sky remembers who you are · lunations.app<br>Your data is private and local. Entries sync when signed in.</div>
-        <button class="save-btn" style="margin-top:12px;background:rgba(245,240,232,.02);" onclick="startWalkthrough(true);closeSettingsModal()">↺ Replay Tour</button>
-      </div>
-
+<!-- PWA INSTALL BANNER -->
+<div class="pwa-banner" id="pwaBanner">
+  <div class="pwa-banner-icon">🌙</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Install Lunations</div>
+    <div class="pwa-banner-sub">Add to home screen for the full experience</div>
+    <div class="pwa-banner-btns">
+      <button class="pwa-install-btn" onclick="pwsInstall()">Install</button>
+      <button class="pwa-dismiss-btn" onclick="pwaDismiss()">Not now</button>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
 </body>
 </html>
