@@ -44,6 +44,7 @@ module.exports = async function handler(req, res) {
           birth_time: profile.time || null,
           rising: profile.rising || null,
           notes: profile.notes || null,
+          birth_city: profile.birthCity || null,
           settings: profile.settings || {},
         })
         .select()
