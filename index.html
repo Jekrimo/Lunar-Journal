@@ -1757,7 +1757,10 @@ const loadEntries=()=>{
     return real;
   }catch(e){return{};}
 };
-const saveEntries=e=>{idbSet('entries',e);};
+const saveEntries = e => { 
+  localStorage.setItem('lunations_v1', JSON.stringify(e));
+  idbSet('entries', e); 
+};
 const loadProfile=()=>{try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}};
 async function loadProfileWithIDBFallback(){
   const p=loadProfile();
