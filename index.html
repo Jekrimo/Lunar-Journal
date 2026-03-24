@@ -1633,7 +1633,6 @@
   </div>
 </div>
 
-<script src="/api/config">
 <script src="/api/config"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -2257,42 +2256,81 @@ function renderQualityTags(){document.getElementById('qualityTags').innerHTML=QU
 function selectedQualities(){return[...document.querySelectorAll('#qualityTags .tag-btn.selected')].map(b=>b.textContent);}
 
 // ─── SAVE ENTRY ───────────────────────────────────────────────────────────────
-function saveEntry(){
-  const now=new Date(),key=entryKey(now),entries=loadEntries();
-  const phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now);
-  const tithi=getTithi(now),nakshatra=getNakshatra(now),vara=getVara(now);
-  const transits=getTransitAlerts().map(a=>a.title);
-  const planets=allPlanets(now).filter(p=>p&&p.sign).slice(0,6).map(p=>p.name+' in '+(p.sign?.name||''));
-  entries[key]={
-    energy:+document.getElementById('sliderEnergy').value,
-    mood:+document.getElementById('sliderMood').value,
-    clarity:+document.getElementById('sliderClarity').value,
-    creativity:+document.getElementById('sliderCreativity').value,
-    qualities:selectedQualities(),
-    text:document.getElementById('entryText').value.trim(),
-    dream:document.getElementById('dreamText').value.trim(),
-    intention:document.getElementById('intentionText').value.trim(),
-    phase:phase.name,
-    phaseAge:Math.floor(phase.age),
-    phasePct:phase.pct,
-    moonSign:mSign.name,
-    sunSign:sSign.name,
-    tithi:tithi.num+' '+tithi.name,
-    tithiQuality:tithi.quality,
-    nakshatra:nakshatra.name,
-    nakshatraPada:nakshatra.pada,
-    vara:vara.name,
-    planets:planets,
-    activeTransits:transits,
-    timestamp:now.toISOString(),
-    sadhana:(document.getElementById('sadhanaText')?.value||'').trim(),
+function saveEntry() {
+  const key = entryKey(new Date());
+  const entries = loadEntries();
+  const existing = entries[key] || {};
+
+  const energy    = parseInt(document.getElementById('sliderEnergy').value);
+  const mood      = parseInt(document.getElementById('sliderMood').value);
+  const clarity   = parseInt(document.getElementById('sliderClarity').value);
+  const creativity= parseInt(document.getElementById('sliderCreativity').value);
+  const text      = document.getElementById('entryText').value.trim();
+  const dreams    = document.getElementById('dreamText').value.trim();
+  const sadhana   = document.getElementById('sadhanaText').value.trim();
+  const intention = document.getElementById('intentionText').value.trim();
+  const qualities = [...document.querySelectorAll('#qualityTags .tag-btn.selected')].map(b => b.textContent);
+  const moon      = currentMoonData();
+
+  const entry = {
+    ...existing,
+    date: key,
+    energy, mood, clarity, creativity,
+    text, dreams, sadhana, intention, qualities,
+    moonPhase: moon?.phase || '',
+    moonSign:  moon?.sign  || '',
+    timestamp: Date.now()
   };
-  saveEntries(entries);
-  pushEntryToCloud(key, entries[key]); // async, non-blocking
-  showSubmittedCard(entries[key]); // collapse form into summary card
-  renderEveningCheckin();
-  // Auto-backup to localStorage secondary key
-  localStorage.setItem('lunations_backup_'+key, JSON.stringify(entries[key]));
+
+  // Always write to localStorage first
+  entries[key] = entry;
+  try {
+    localStorage.setItem('lunations_entries', JSON.stringify(entries));
+  } catch(e) {
+    console.error('localStorage save failed:', e);
+  }
+
+  // Cloud sync fire-and-forget — never blocks the save
+  if (currentUser) {
+    syncEntryToCloud(key, entry).catch(e => console.warn('Cloud sync failed (entry still saved locally):', e));
+  }
+
+  showSaveConfirm();
+  renderTodayEntry();
+  renderStreakBar();
+}
+
+// ── FIX 1b: saveEveningEntry — same pattern ───────────────────────────────
+function saveEveningEntry() {
+  const key = entryKey(new Date());
+  const entries = loadEntries();
+  const existing = entries[key] || {};
+
+  const eveEnergy    = parseInt(document.getElementById('eveSliderEnergy').value);
+  const eveMood      = parseInt(document.getElementById('eveSliderMood').value);
+  const eveClarity   = parseInt(document.getElementById('eveSliderClarity').value);
+  const eveCreativity= parseInt(document.getElementById('eveSliderCreativity').value);
+  const eveText      = document.getElementById('eveText').value.trim();
+
+  const entry = {
+    ...existing,
+    date: key,
+    eveEnergy, eveMood, eveClarity, eveCreativity, eveText,
+    eveTimestamp: Date.now()
+  };
+
+  entries[key] = entry;
+  try {
+    localStorage.setItem('lunations_entries', JSON.stringify(entries));
+  } catch(e) {
+    console.error('localStorage evening save failed:', e);
+  }
+
+  if (currentUser) {
+    syncEntryToCloud(key, entry).catch(e => console.warn('Cloud sync failed (eve entry still saved locally):', e));
+  }
+
+  renderEveningEntry();
 }
 
 // ─── ENTRIES LIST ─────────────────────────────────────────────────────────────
@@ -3592,21 +3630,55 @@ async function signIn(){
   }
 }
 
-async function signOut(){
-  window._signingOut = true;
-  if(!sbClient) return;
-  closeSettingsModal();
+async function signOut() {
+  try {
+    if (window.supabase) await window.supabase.auth.signOut();
+  } catch(e) {
+    console.warn('Supabase signout error:', e);
+  }
+
+  // Clear auth state
+  window.currentUser = null;
+
+  // Clear today's displayed data
+  document.getElementById('readingText').innerHTML = '<span class="reading-loading">Consulting the sky…</span>';
+  document.getElementById('readingSigninNote').style.display = '';
+  document.getElementById('entrySubmittedCard').style.display = 'none';
+  document.getElementById('eveSubmittedCard').style.display = 'none';
+  document.getElementById('eveFormWrap') && (document.getElementById('eveFormWrap').style.display = '');
+  document.getElementById('eveningCheckin').style.display = 'none';
+
+  // Reset entry form
+  document.getElementById('entryFormWrap').style.display = 'none';
+  document.getElementById('sliderEnergy').value = 5;
+  document.getElementById('sliderMood').value   = 5;
+  document.getElementById('sliderClarity').value = 5;
+  document.getElementById('sliderCreativity').value = 5;
+  document.getElementById('valEnergy').textContent = '5';
+  document.getElementById('valMood').textContent   = '5';
+  document.getElementById('valClarity').textContent = '5';
+  document.getElementById('valCreativity').textContent = '5';
+  document.getElementById('entryText').value    = '';
+  document.getElementById('dreamText').value    = '';
+  document.getElementById('sadhanaText').value  = '';
+  document.getElementById('intentionText').value = '';
+
+  // Update side menu
+  const emailEl = document.getElementById('sideMenuEmail');
+  if (emailEl) emailEl.textContent = 'Not signed in';
+
+  // Close side menu if open
   closeSideMenu();
-  showToast('Signing out…');
-  try { await sbClient.auth.signOut(); } catch(e){}
-  currentUser = null;
-  // Clear ALL lunations local data including lj_entered so landing shows
-  Object.keys(localStorage).forEach(k => {
-    if(k.startsWith('lunations') || k === 'lj_entered') localStorage.removeItem(k);
-  });
-  try{ idbSet('entries', {}); idbSet('profile', null); } catch(e){}
-  // Hard redirect to landing page
-  window.location.replace('/');
+
+  // Show landing screen
+  const landing = document.getElementById('landingScreen');
+  if (landing) {
+    landing.classList.remove('hidden');
+    landing.style.display = '';
+  }
+
+  // Reset to Today tab
+  navTabTap('today', document.querySelector('.nav-tab'));
 }
 
 function confirmSignOut(){
