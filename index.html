@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260324160904">
+<meta name="build" content="20260324161331">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -1655,6 +1655,8 @@
 
 
 
+
+
 // Supabase config — filled in by api/index.js at serve time
 // Config injected by /api/config — Supabase public keys
 // Falls back to empty strings (guest mode) if not configured
@@ -2017,7 +2019,20 @@ function renderComparison(){
   const np=allPlanets(now).slice(0,5),lp=allPlanets(last).slice(0,5);
   document.getElementById('compareSkyContent').innerHTML=np.map((p,i)=>{const l=lp[i],moved=(p.sign?.name||'')!==(l.sign?.name||'');return`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(245,240,232,.05);"><span style="font-size:16px;min-width:22px;">${p.symbol}</span><span style="font-size:13px;color:rgba(245,240,232,.35);min-width:70px;">${p.name}</span><span style="font-size:14px;color:rgba(245,240,232,.4);">${l.sign?.symbol||''} ${l.sign?.name||''}</span><span style="font-size:11px;color:rgba(245,240,232,.2);margin:0 4px;">→</span><span style="font-size:14px;color:${moved?'rgba(201,168,76,.85)':'rgba(245,240,232,.55)'};">${p.sign?.symbol||''} ${p.sign?.name||''}</span>${moved?'<span style="font-size:10px;color:rgba(201,168,76,.5);margin-left:4px;font-family:Cinzel,serif;letter-spacing:.05em;">MOVED</span>':''}</div>`;}).join('');
   const tc=document.getElementById('compareTextContent');
-  if(lE?.text)tc.innerHTML=`<div style="font-size:15px;color:rgba(245,240,232,.6);line-height:1.8;font-style:italic;">"${lE.text.slice(0,300)}${lE.text.length>300?'…':''}"</div>${lE.qualities?.length?`<div class="entry-qualities" style="margin-top:10px;">${lE.qualities.map(q=>`<span class="quality-pill">${q}</span>`).join('')}</div>`:''} ${lE.intention?`<div style="margin-top:10px;font-size:13px;color:rgba(245,240,232,.35);font-style:italic;">Intention: ${lE.intention}</div>`:''}`;
+  if(lE?.text){
+    const isLong = lE.text.length > 300;
+    const preview = lE.text.slice(0, 300);
+    const qualHtml = lE.qualities?.length ? `<div class="entry-qualities" style="margin-top:10px;">${lE.qualities.map(q=>`<span class="quality-pill">${q}</span>`).join('')}</div>` : '';
+    const intentHtml = lE.intention ? `<div style="margin-top:10px;font-size:13px;color:rgba(245,240,232,.35);font-style:italic;">Intention: ${lE.intention}</div>` : '';
+    tc.innerHTML = `
+      <div id="lcJournalWrap" style="cursor:${isLong?'pointer':'default'};" onclick="${isLong?'toggleLastCycleEntry()':''}">
+        <div id="lcJournalText" style="font-size:15px;color:rgba(245,240,232,.6);line-height:1.8;font-style:italic;">"${preview}${isLong?'<span id="lcEllipsis">…</span>':''}"
+          <span id="lcFullText" style="display:none;">${lE.text.slice(300)}</span>
+        </div>
+        ${isLong ? `<div id="lcExpandBtn" style="margin-top:8px;font-family:Cinzel,serif;font-size:10px;letter-spacing:.1em;color:rgba(201,168,76,.5);text-transform:uppercase;">Read full entry ▾</div>` : ''}
+      </div>
+      ${qualHtml}${intentHtml}`;
+  }
   else tc.innerHTML=`<div style="color:rgba(245,240,232,.25);font-style:italic;font-size:15px;">No entry for ${last.toLocaleDateString('en-US',{month:'long',day:'numeric'})}. Begin recording now — the mirror fills itself forward.</div>`;
 }
 
@@ -3343,19 +3358,16 @@ async function onSignedIn(user, isNew){
 }
 
 function onSignedOut(){
-  // Clear all user data from localStorage on sign out
-  const keysToKeep = ['lj_entered', 'lunations_mode_v1']; // keep app state
-  const allKeys = Object.keys(localStorage);
-  allKeys.forEach(k => {
-    if(!keysToKeep.includes(k) && k.startsWith('lunations')){
-      localStorage.removeItem(k);
-    }
-  });
+  // Called by Supabase auth state change — signOut() handles redirect/cleanup
+  // Just update UI state in case sign-out happened externally (e.g. another tab)
   currentUser = null;
-  renderAuthBadge();
-  updateSideMenuAccount();
-  renderToday();
-  showToast('Signed out — local data cleared');
+  if(!window._signingOut){
+    // External sign-out (another tab etc) - clean up and redirect
+    Object.keys(localStorage).forEach(k => {
+      if(k.startsWith('lunations') || k === 'lj_entered') localStorage.removeItem(k);
+    });
+    window.location.replace('/');
+  }
 }
 
 async function pullCloudEntries(){
@@ -3581,24 +3593,20 @@ async function signIn(){
 }
 
 async function signOut(){
+  window._signingOut = true;
   if(!sbClient) return;
-  await sbClient.auth.signOut();
-  currentUser = null;
-  // Always clear all local data on signout
-  [EK, PK, RK, EVE_KEY,
-   'lunations_intention_v1','lunations_reading_v1',
-   'lunations_collective_v1','lunations_pattern_insight_v1',
-   'lunations_last_sync','lunations_profile_loaded_v1',SWK,
-   'lunations_mode_v1'
-  ].forEach(k => localStorage.removeItem(k));
-  // Clear IndexedDB too
-  try{ idbSet('entries', {}); idbSet('profile', null); } catch(e){}
-  renderAuthBadge();
+  closeSettingsModal();
   closeSideMenu();
-  closeAuthModal();
-  showToast('Signed out');
-  // Go to landing page - clean slate, shows login option
-  setTimeout(() => window.location.href = '/', 600);
+  showToast('Signing out…');
+  try { await sbClient.auth.signOut(); } catch(e){}
+  currentUser = null;
+  // Clear ALL lunations local data including lj_entered so landing shows
+  Object.keys(localStorage).forEach(k => {
+    if(k.startsWith('lunations') || k === 'lj_entered') localStorage.removeItem(k);
+  });
+  try{ idbSet('entries', {}); idbSet('profile', null); } catch(e){}
+  // Hard redirect to landing page
+  window.location.replace('/');
 }
 
 function confirmSignOut(){
@@ -6346,6 +6354,17 @@ function disableCycleTracking(){
   renderSettingsModal();
   showToast('Cycle tracking turned off');
 }
+
+function toggleLastCycleEntry(){
+  const full = document.getElementById('lcFullText');
+  const ellipsis = document.getElementById('lcEllipsis');
+  const btn = document.getElementById('lcExpandBtn');
+  if(!full) return;
+  const expanded = full.style.display !== 'none';
+  full.style.display = expanded ? 'none' : 'inline';
+  if(ellipsis) ellipsis.style.display = expanded ? 'inline' : 'none';
+  if(btn) btn.innerHTML = expanded ? 'Read full entry ▾' : 'Collapse ▴';
+}
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
 
@@ -7014,6 +7033,8 @@ async function confirmDeleteAccount(){
     console.error('Delete account error:', e);
   }
 }
+
+
 
 
 
