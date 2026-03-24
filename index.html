@@ -3625,12 +3625,20 @@ async function signIn(){
 }
 
 async function signOut() {
-  try {
-    if (window.supabase) await window.supabase.auth.signOut();
-  } catch(e) {
-    console.warn('Supabase signout error:', e);
-  }
-
+window._signingOut = true;
+  if(!sbClient) return;
+  closeSettingsModal();
+  closeSideMenu();
+  showToast('Signing out…');
+  try { await sbClient.auth.signOut(); } catch(e){}
+  currentUser = null;
+  // Clear ALL lunations local data including lj_entered so landing shows
+  Object.keys(localStorage).forEach(k => {
+    if(k.startsWith('lunations') || k === 'lj_entered') localStorage.removeItem(k);
+  });
+  try{ idbSet('entries', {}); idbSet('profile', null); } catch(e){}
+  // Hard redirect to landing page
+  window.location.replace('/');
   // Clear auth state
   window.currentUser = null;
 
