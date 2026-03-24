@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260324131224">
+<meta name="build" content="20260324160904">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -632,8 +632,8 @@
     <span class="landing-feature">✦ Pattern charts</span>
     <span class="landing-feature">✦ Last cycle mirror</span>
   </div>
-  <button class="landing-cta" onclick="localStorage.setItem('lj_entered','1');document.getElementById('landingScreen').style.display='none';">Begin Your Record</button>
-<button onclick="localStorage.setItem('lj_entered','1');document.getElementById('landingScreen').style.display='none';setTimeout(openAuthModal,400);" style="margin-top:12px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:none;border:1px solid rgba(245,240,232,.12);border-radius:20px;padding:8px 20px;color:rgba(245,240,232,.35);cursor:pointer;display:block;width:fit-content;margin-left:auto;margin-right:auto;">Sign in to existing account</button>
+  <button class="landing-cta" onclick="enterApp()">Begin Your Record</button>
+<button onclick="enterApp();setTimeout(openAuthModal,400);" Sign in to existing account</button>
 </div>
 <div class="starfield"></div>
 <div class="app-shell">
@@ -1167,12 +1167,14 @@
     <div id="skyForecastCards"><div class="forecast-empty">Loading sky forecast…</div></div>
   </div>
     </div>
+
+  <!-- Share Card -->
+  <div style="padding:8px 0 16px;">
+    <button class="save-btn" style="width:100%;text-align:center;background:rgba(201,168,76,.05);border-color:rgba(201,168,76,.25);" onclick="openShareCard()">✦ Share My Cycle Card</button>
+    <div style="text-align:center;font-size:12px;color:rgba(245,240,232,.2);font-style:italic;margin-top:8px;">Share your current phase and energy</div>
+  </div>
   
   <!-- SHARE CYCLE CARD — bottom of Cycles tab -->
-  <div style="margin-top:8px;padding:16px 0 4px;">
-    <button class="save-btn" style="width:100%;text-align:center;margin-top:0;background:rgba(201,168,76,.05);border-color:rgba(201,168,76,.25);" onclick="openShareCard()">✦ Share My Cycle Card</button>
-    <div style="text-align:center;font-size:12px;color:rgba(245,240,232,.2);font-style:italic;margin-top:8px;">Share your current phase and energy with someone</div>
-  </div>
 
 </div>
 
@@ -1411,7 +1413,7 @@
     <!-- CYCLE TRACKER SETTINGS -->
   <div class="astro-card" style="margin-bottom:20px;" id="cycleTrackerCard">
     <div class="card-label" style="margin-bottom:10px;">Cycle Tracking</div>
-    <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:12px;">Track your menstrual cycle alongside the lunar cycle.</div>
+    <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:12px;">Track your cycle alongside the lunar calendar.</div>
     <div class="ob-field" style="margin-bottom:10px;">
       <label class="ob-label">Last period start</label>
       <input class="ob-input" type="date" id="settingsCycleStart">
@@ -1636,6 +1638,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
+
+
 
 
 
@@ -4165,7 +4169,22 @@ const MODES = {
 
 const MK = 'lunations_mode_v1';
 function getCurrentMode(){ return localStorage.getItem(MK) || 'vedic'; }
-function setMode(mode){ localStorage.setItem(MK, mode); localStorage.removeItem(RK); renderToday(); renderVedicPanel(); }
+function setMode(mode){
+  localStorage.setItem(MK, mode);
+  localStorage.removeItem(RK);
+  renderToday();
+  renderVedicPanel();
+  // Refresh modal grids if open
+  if(document.getElementById('settingsModal')?.classList.contains('open')){
+    const smMG = document.getElementById('smModeGrid');
+    if(smMG) smMG.querySelectorAll('[onclick]').forEach(el => {
+      const isSelected = el.getAttribute('onclick')?.includes("'"+mode+"'");
+      el.style.border = '1px solid '+(isSelected?'rgba(201,168,76,.5)':'rgba(245,240,232,.08)');
+      el.style.background = isSelected?'rgba(201,168,76,.08)':'rgba(245,240,232,.02)';
+      el.querySelector('div:last-child').style.color = isSelected?'var(--gold)':'rgba(245,240,232,.5)';
+    });
+  }
+}
 function getModeData(){ return MODES[getCurrentMode()] || MODES.vedic; }
 
 
@@ -5495,7 +5514,7 @@ function renderBirthChart(){
         ${aspects.map(a => `<div style="font-size:13px;color:rgba(245,240,232,.5);margin-bottom:4px;font-style:italic;">✦ ${a}</div>`).join('')}
       </div>` : ''}
 
-      ${!rising ? `<div style="font-size:12px;color:rgba(245,240,232,.2);font-style:italic;">Add your rising sign in Edit Profile for a more complete picture.</div>` : ''}
+      ${!rising ? `<div style="font-size:12px;color:rgba(245,240,232,.2);font-style:italic;">Add your rising sign in Birth Data for a more complete picture.</div>` : ''}
       ${!profile.birthCity ? `<div style="font-size:12px;color:rgba(245,240,232,.2);font-style:italic;margin-top:4px;">Add your birth city to include it in your daily readings.</div>` : ''}
     </div>`;
 }
@@ -5789,7 +5808,17 @@ function setAITone(id){
   renderToneGrid();
   updateToneLabel();
   localStorage.removeItem(RK);
-  showToast('✦ Tone updated — next reading will reflect this');
+  showToast('✦ Tone: ' + (AI_TONES.find(t=>t.id===id)?.label || id));
+  // Refresh modal grids if open
+  if(document.getElementById('settingsModal')?.classList.contains('open')){
+    const smTG = document.getElementById('smToneGrid');
+    if(smTG) smTG.querySelectorAll('[onclick]').forEach(el => {
+      const isSelected = el.getAttribute('onclick')?.includes("'"+id+"'");
+      el.style.border = '1px solid '+(isSelected?'rgba(201,168,76,.5)':'rgba(245,240,232,.08)');
+      el.style.background = isSelected?'rgba(201,168,76,.08)':'rgba(245,240,232,.02)';
+      el.querySelector('div:last-child').style.color = isSelected?'var(--gold)':'rgba(245,240,232,.5)';
+    });
+  }
 }
 
 function updateToneLabel(){
@@ -6127,7 +6156,7 @@ function renderSettingsModal(){
 
     // ── Profile actions ────────────────────────────────────────────────────
     html += '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">';
-    html += '<button class="save-btn" style="margin-top:0;" onclick="openOnboarding();closeSettingsModal()">Edit Profile</button>';
+    html += '<button class="save-btn" style="margin-top:0;" onclick="openOnboarding();closeSettingsModal()">Edit Birth Data</button>';
     if(!currentUser){
       html += '<button class="save-btn" style="margin-top:0;" onclick="openAuthModal();closeSettingsModal()">Sign In / Create Account</button>';
     }
@@ -6204,12 +6233,29 @@ function renderSettingsModal(){
       + 'Timezone: ' + tz;
   }
 
-  // Cycle tracker
-  const cd = loadCycleData();
-  const smCS = document.getElementById('smCycleStart');
-  const smCL = document.getElementById('smCycleLength');
-  if(smCS && cd?.lastStart) smCS.value = cd.lastStart;
-  if(smCL && cd?.cycleLength) smCL.value = cd.cycleLength;
+  // Menstrual Cycle - conditional
+  const smCycleSec = document.getElementById('smCycleSection');
+  const smCycleDiv = document.getElementById('smCycleDivider');
+  if(smCycleSec){
+    const cd = loadCycleData();
+    const tracking = profile?.trackCycle || cd?.trackCycle;
+    if(tracking){
+      if(smCycleDiv) smCycleDiv.style.display='';
+      smCycleSec.innerHTML = '<div class="sm-section-label">Menstrual Cycle</div>'
+        +'<div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:12px;">Track your cycle alongside the lunar calendar.</div>'
+        +'<div class="ob-field" style="margin-bottom:10px;"><label class="ob-label">Last period start</label>'
+        +'<input class="ob-input" type="date" id="smCycleStart" value="'+(cd&&cd.lastStart?cd.lastStart:'')+'"></div>'
+        +'<div class="ob-field" style="margin-bottom:12px;"><label class="ob-label">Average cycle length (days)</label>'
+        +'<input class="ob-input" type="number" id="smCycleLength" min="21" max="45" value="'+(cd&&cd.cycleLength?cd.cycleLength:28)+'"></div>'
+        +'<div style="display:flex;gap:8px;">'
+        +'<button class="save-btn" style="margin-top:0;flex:1;border-color:rgba(180,100,140,.3);color:rgba(200,130,160,.8);" onclick="saveCycleFromSettingsModal()">Save</button>'
+        +'<button class="save-btn" style="margin-top:0;background:none;border-color:rgba(245,240,232,.08);color:rgba(245,240,232,.3);font-size:11px;" onclick="disableCycleTracking()">Turn off</button>'
+        +'</div>';
+    } else {
+      if(smCycleDiv) smCycleDiv.style.display='none';
+      smCycleSec.innerHTML = '';
+    }
+  }
 }
 
 function saveCycleFromSettingsModal(){
@@ -6289,6 +6335,16 @@ function uploadAvatar(input){
     updateSideMenuAccount(); // update sidebar
   };
   reader.readAsDataURL(file);
+}
+
+function disableCycleTracking(){
+  const cd=loadCycleData()||{};
+  cd.trackCycle=false;
+  localStorage.setItem(CYCLE_KEY,JSON.stringify(cd));
+  const p=loadProfile();
+  if(p){p.trackCycle=false;saveProfileData(p);}
+  renderSettingsModal();
+  showToast('Cycle tracking turned off');
 }
 // ─── LANDING ──────────────────────────────────────────────────────────────────
 // enterApp defined at init
@@ -6973,6 +7029,8 @@ async function confirmDeleteAccount(){
 
 
 
+
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
@@ -7028,20 +7086,8 @@ async function confirmDeleteAccount(){
       </div>
       <hr class="sm-divider">
 
-      <div class="sm-section">
-        <div class="sm-section-label">Cycle Tracking</div>
-        <div style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;margin-bottom:12px;">Track your menstrual cycle alongside the lunar cycle.</div>
-        <div class="ob-field" style="margin-bottom:10px;">
-          <label class="ob-label">Last period start</label>
-          <input class="ob-input" type="date" id="smCycleStart">
-        </div>
-        <div class="ob-field" style="margin-bottom:12px;">
-          <label class="ob-label">Average cycle length (days)</label>
-          <input class="ob-input" type="number" id="smCycleLength" min="21" max="45" value="28">
-        </div>
-        <button class="save-btn" style="margin-top:0;border-color:rgba(180,100,140,.3);color:rgba(200,130,160,.8);" onclick="saveCycleFromSettingsModal()">Save Cycle Data</button>
-      </div>
-      <hr class="sm-divider">
+      <div class="sm-section" id="smCycleSection"></div>
+      <div id="smCycleDivider" style="display:none;"><hr class="sm-divider"></div>
 
       <div class="sm-section">
         <div class="sm-section-label">Data &amp; Backup</div>
