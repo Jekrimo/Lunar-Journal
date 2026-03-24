@@ -1756,7 +1756,7 @@ const loadEntries=()=>{
     return real;
   }catch(e){return{};}
 };
-const saveEntries=e=>{localStorage.setItem(EK,JSON.stringify(e));idbSet('entries',e);};
+const saveEntries=e=>{idbSet('entries',e);};
 const loadProfile=()=>{try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}};
 async function loadProfileWithIDBFallback(){
   const p=loadProfile();
@@ -2291,7 +2291,7 @@ function saveEntry(){
   showSubmittedCard(entries[key]); // collapse form into summary card
   renderEveningCheckin();
   // Auto-backup to localStorage secondary key
-  localStorage.setItem('lunations_backup_'+key, JSON.stringify(entries[key]));
+  // localStorage.setItem('lunations_v1'+key, JSON.stringify(entries[key]));
 }
 
 // ── FIX 1b: saveEveningEntry — same pattern ───────────────────────────────
