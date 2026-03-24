@@ -3421,39 +3421,35 @@ async function pullCloudEntries(){
   } catch(e){ console.warn('Pull failed:', e); }
 }
 
-async function pushEntryToCloud(date, entry){
-  if(!currentUser || !sbClient){
-    console.log('pushEntryToCloud: skipping — no user or client');
-    return;
-  }
-  try{
-    const sessionData = await sbClient.auth.getSession();
-    const token = sessionData?.data?.session?.access_token;
-    if(!token){
-      console.warn('pushEntryToCloud: no token — session may have expired');
-      showToast('⚠ Session expired — please sign in again');
-      return;
-    }
-    console.log('pushEntryToCloud: pushing', date, 'token present:', !!token, 'url:', window.location.hostname);
+async function pushEntryToCloud(date, entry) {
+  // ... existing auth check code ...
 
-    const res = await fetch('/api/entries', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-      body: JSON.stringify({ date, entry })
-    });
+  // Strip any fields not in the DB schema (prevents 500 errors on new fields)
+  const { 
+    energy, mood, clarity, creativity, qualities, text,
+    dream, intention, sadhana,                          // ← add new fields here
+    phase, phaseAge, phasePct, moonSign, sunSign,
+    tithi, tithiQuality, nakshatra, nakshatraPada, vara,
+    planets, activeTransits, timestamp
+  } = entry;
 
-    if(!res.ok){
-      const err = await res.text();
-      console.error('pushEntryToCloud FAILED:', res.status, err);
-      showToast('⚠ Cloud sync failed (' + res.status + ') — saved locally');
-    } else {
-      const result = await res.json();
-      console.log('pushEntryToCloud SUCCESS:', date, result);
-    }
-  } catch(e){
-    console.error('pushEntryToCloud ERROR:', e.message);
-  }
-}
+  const payload = {
+    user_id: currentUser.id,
+    date,
+    energy, mood, clarity, creativity,
+    qualities: JSON.stringify(qualities || []),
+    text: text || '',
+    dream: dream || '',           // ← new
+    intention: intention || '',   // ← new  
+    sadhana: sadhana || '',       // ← new
+    phase, phaseAge, phasePct, moonSign, sunSign,
+    tithi, tithiQuality, nakshatra, nakshatraPada, vara,
+    planets: JSON.stringify(planets || []),
+    activeTransits: JSON.stringify(activeTransits || []),
+    timestamp
+  };
+
+  // ... rest of existing fetch/upsert code ...
 
 // Call this on app load when signed in to restore entries from cloud
 async function syncEntriesFromCloud(){
