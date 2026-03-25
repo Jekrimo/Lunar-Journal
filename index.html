@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260325192756">
+<meta name="build" content="20260325212819">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -269,7 +269,7 @@
   }
   .app-shell{position:relative;z-index:1;}
   /* FIRST-TIME WALKTHROUGH */
-  .wt-overlay{position:fixed;inset:0;z-index:500;pointer-events:all;}
+  .wt-overlay{position:fixed;inset:0;z-index:500;pointer-events:all;background:rgba(0,0,0,.5);}
   .wt-spotlight{position:absolute;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.75);transition:all .35s ease;pointer-events:none;}
   .wt-card{position:fixed;left:50%;transform:translateX(-50%);background:#1a160e;border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:22px 24px;width:calc(100%-32px);max-width:360px;z-index:501;box-shadow:0 8px 40px rgba(0,0,0,.6);pointer-events:all;transition:all .35s ease;}
   .wt-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -721,7 +721,15 @@
   <!-- Navigation -->
   <div class="side-menu-section" style="padding-top:16px;">
     <div class="side-menu-section-label">Navigate</div>
-    <button class="side-menu-item" onclick="navTo('today')"><span class="side-menu-item-icon">🌙</span><div><div class="side-menu-item-label">Today</div></div></button>
+    <button id="upgradeBtnSideMenu" class="side-menu-item" onclick="openUpgradeModal();closeSideMenu()">
+  <span class="side-menu-item-icon">✦</span>
+  <div><div class="side-menu-item-label" style="color:var(--gold);">Upgrade</div><div class="side-menu-item-sub">Plus &amp; Pro plans</div></div>
+</button>
+<button id="billingBtnSideMenu" class="side-menu-item" style="display:none;" onclick="openBillingPortal();closeSideMenu()">
+  <span class="side-menu-item-icon">💳</span>
+  <div><div class="side-menu-item-label">Manage Billing</div><div class="side-menu-item-sub">Subscription &amp; invoices</div></div>
+</button>
+<button class="side-menu-item" onclick="navTo('today')"><span class="side-menu-item-icon">🌙</span><div><div class="side-menu-item-label">Today</div></div></button>
     <button class="side-menu-item" onclick="navTo('cycles')"><span class="side-menu-item-icon">◈</span><div><div class="side-menu-item-label">Cycles</div><div class="side-menu-item-sub">Last cycle, patterns, forecast</div></div></button>
     <button class="side-menu-item" onclick="navTo('cycle')"><span class="side-menu-item-icon">📅</span><div><div class="side-menu-item-label">Calendar</div></div></button>
     <button class="side-menu-item" onclick="navTo('entries')"><span class="side-menu-item-icon">📖</span><div><div class="side-menu-item-label">Journal</div></div></button>
@@ -1717,13 +1725,21 @@
 // Falls back to empty strings (guest mode) if not configured
 window.SUPABASE_URL = window.SUPABASE_URL || '';
 window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+
+// ─── STORAGE ──────────────────────────────────────────────────────────────────
+const EK='lunations_v1', PK='lunations_profile_v1', RK='lunations_reading_v1';
+
+// ── Payments globals (var for hoisting) ──────────────────────────────────
+var _userTier = 'free';
+var _billingInterval = 'monthly';
+var _billingPortalUrl = null;
+var PRICES = { plus:{monthly:'',yearly:''}, pro:{monthly:'',yearly:''} };
+var TIER_RANK = { free:0, plus:1, pro:2 };
+// Price IDs injected by /api/config
 window.STRIPE_PRICE_PLUS_MONTHLY = window.STRIPE_PRICE_PLUS_MONTHLY || '';
 window.STRIPE_PRICE_PLUS_YEARLY  = window.STRIPE_PRICE_PLUS_YEARLY  || '';
 window.STRIPE_PRICE_PRO_MONTHLY  = window.STRIPE_PRICE_PRO_MONTHLY  || '';
 window.STRIPE_PRICE_PRO_YEARLY   = window.STRIPE_PRICE_PRO_YEARLY   || '';
-
-// ─── STORAGE ──────────────────────────────────────────────────────────────────
-const EK='lunations_v1', PK='lunations_profile_v1', RK='lunations_reading_v1';
 
 // ── Migrate old key names from before the Lunations rebrand ──────────────────
 (function migrateLegacyKeys(){
@@ -1970,12 +1986,38 @@ async function generateReading(force=false){
     if(profile.birthCity)profileCtx+=` Birth city: ${profile.birthCity}.`;
   }
   const planetSummary=planets.slice(0,6).map(p=>`${p.name} in ${p.sign?.name||''}`).join(', ');
-  const prompt=`You are a skilled astrologer writing a daily reading for someone's private Lunations journal. Tone: direct and interpretive — specific, not vague or generic. Second person, present tense. Under 130 words total. One paragraph.
+  // Build recent journal context
+  let entryCtx = '';
+  try {
+    const allEntries = loadEntries();
+    const recentKeys = Object.keys(allEntries).sort().slice(-7);
+    if (recentKeys.length >= 2) {
+      const recent = recentKeys.map(k => allEntries[k]).filter(Boolean);
+      const avgEnergy = (recent.reduce((s,e) => s+(e.energy||5),0)/recent.length).toFixed(1);
+      const avgMood = (recent.reduce((s,e) => s+(e.mood||5),0)/recent.length).toFixed(1);
+      const allQ = recent.flatMap(e => e.qualities||[]);
+      const topQ = [...new Set(allQ)].slice(0,4).join(', ');
+      entryCtx = `\n\nJournal context (last ${recent.length} days): avg energy ${avgEnergy}/10, mood ${avgMood}/10.`;
+      if (topQ) entryCtx += ` Recurring qualities: ${topQ}.`;
+      const todayEntry = allEntries[entryKey(new Date())];
+      if (todayEntry?.text) entryCtx += ` Today's reflection: "${todayEntry.text.slice(0,100)}${todayEntry.text.length>100?'...':''}"`;
+      if (recent.length >= 4) {
+        const half = Math.floor(recent.length/2);
+        const e1 = recent.slice(0,half).reduce((s,e)=>s+(e.energy||5),0)/half;
+        const e2 = recent.slice(half).reduce((s,e)=>s+(e.energy||5),0)/(recent.length-half);
+        if (Math.abs(e2-e1) > 0.8) entryCtx += ` Energy trending ${e2>e1?'up':'down'} this week.`;
+      }
+    }
+  } catch(_) {}
+
+  const prompt=`You are a skilled astrologer writing a daily reading for someone's private Lunations journal. Tone: direct and interpretive — specific, not vague or generic. Second person, present tense. Under 140 words. One paragraph.
 
 Today's sky: ${phase.name} (day ${Math.floor(phase.age)} of 29-day cycle), Moon in ${mSign.name} (${mSign.element} sign — ${mSign.keywords}), Sun in ${sSign.name}. Planets: ${planetSummary}.
-${profileCtx}
+${profileCtx}${entryCtx}
 
-Write the reading. Include: one specific tension or opportunity in today's sky, one practical or internal suggestion. No filler phrases. Do not begin with "Today" as the first word. ${getTonePromptAddition()}`;
+Write the reading. Where relevant, weave in what you know about this person's recent patterns. Include one specific tension or opportunity today, one practical suggestion. No filler. Do not begin with "Today". ${getTonePromptAddition()}`;
+  if (_readingInFlight) { _readingQueue = true; return; }
+  _readingInFlight = true;
   try{
     const res=await fetch('/api/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
     if(!res.ok){
@@ -1991,6 +2033,9 @@ Write the reading. Include: one specific tension or opportunity in today's sky, 
     console.warn('Reading API error:', e.message);
     const el = document.getElementById('readingText');
     if(el) el.textContent = buildFallbackReading(phase,mSign,sSign,profile);
+  } finally {
+    _readingInFlight = false;
+    if (_readingQueue) { _readingQueue = false; setTimeout(() => generateReading(true), 1000); }
   }
 }
 function buildFallbackReading(phase,mSign,sSign,profile){
@@ -2357,7 +2402,7 @@ function saveEntry(){
   // localStorage.setItem('lunations_v1'+key, JSON.stringify(entries[key]));
 }
 
-// ── saveEveningEntry ─────────────────────────────────────────────────────
+// ── saveEveningEntry ────────────────────────────────────────────────────────
 function saveEveningEntry() {
   const todayKey = entryKey(new Date());
   const entries = loadEntries();
@@ -2930,6 +2975,7 @@ function openOnboarding(){
   if(p){
     if(p.name)  document.getElementById('obName').value=p.name;
     if(p.dob)   document.getElementById('obDOB').value=p.dob;
+    if(p.tone)  { localStorage.setItem(TONE_KEY, p.tone); updateToneLabel(); renderToneGrid(); }
     if(p.time)  document.getElementById('obTime').value=p.time;
     if(p.rising)document.getElementById('obRising').value=p.rising;
     if(p.notes) document.getElementById('obNotes').value=p.notes;
@@ -3486,7 +3532,7 @@ async function pushEntryToCloud(date, entry) {
     });
     if (!res.ok) { console.error('pushEntryToCloud FAILED', res.status, await res.text()); return; }
     const data = await res.json();
-    console.log('pushEntryToCloud ok, synced', data.synced, 'for', date);
+    console.log('pushEntryToCloud ok:', data.synced, 'synced for', date);
   } catch(e) { console.error('pushEntryToCloud error:', e.message); }
 }
 // Call this on app load when signed in to restore entries from cloud
@@ -3559,7 +3605,10 @@ async function offerLocalMigration(count, entries){
 }
 
 function renderAuthBadge(){
-  updateUpgradeBtnVisibility(); updateSideMenuAccount();
+  const upgradeBtn = document.getElementById('upgradeBtnSideMenu');
+  const billingBtn = document.getElementById('billingBtnSideMenu');
+  if (upgradeBtn) upgradeBtn.style.display = (_userTier === 'free') ? '' : 'none';
+  if (billingBtn) billingBtn.style.display = (_userTier !== 'free') ? '' : 'none'; updateSideMenuAccount();
   const wrap = document.getElementById('authBadgeWrap');
   if(!wrap) return;
   if(!sbClient){
@@ -5696,7 +5745,7 @@ function renderWalkthroughStep(){
       spotlight.style.cssText = `left:${r.left-8}px;top:${r.top-8+window.scrollY}px;width:${r.width+16}px;height:${r.height+16}px;`;
     }
   } else {
-    spotlight.style.cssText = 'left:-9999px;top:-9999px;width:1px;height:1px;';
+    spotlight.style.cssText = 'display:none;';
   }
   overlay.appendChild(spotlight);
 
@@ -5812,6 +5861,9 @@ function sendPasswordReset(){
 }
 
 // ─── AUTH GATE FOR AI CALLS ───────────────────────────────────────────────────
+let _readingInFlight = false;
+let _readingQueue = false;
+
 function canUseAI(){
   return !!currentUser; // Only signed-in users get AI readings
 }
@@ -5888,6 +5940,7 @@ function setAITone(id){
   updateToneLabel();
   localStorage.removeItem(RK);
   showToast('✦ Tone: ' + (AI_TONES.find(t=>t.id===id)?.label || id));
+  const p = loadProfile(); if (p) { p.tone = id; saveProfileData(p); }
   // Refresh modal grids if open
   if(document.getElementById('settingsModal')?.classList.contains('open')){
     const smTG = document.getElementById('smToneGrid');
@@ -7106,65 +7159,54 @@ async function confirmDeleteAccount(){
 }
 
 
-
 // ═══════════════════════════════════════════════════════════════════════════
 // PAYMENTS & TIER SYSTEM
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Globals declared with var for hoisting — referenced by renderAuthBadge etc
-var _userTier = 'free';
-var _billingInterval = 'monthly';
-var _billingPortalUrl = null;
-var PRICES = {
-  plus: { monthly: window.STRIPE_PRICE_PLUS_MONTHLY || '', yearly: window.STRIPE_PRICE_PLUS_YEARLY || '' },
-  pro:  { monthly: window.STRIPE_PRICE_PRO_MONTHLY  || '', yearly: window.STRIPE_PRICE_PRO_YEARLY  || '' },
-};
-var TIER_RANK = { free: 0, plus: 1, pro: 2 };
-
-function hasTier(required) { return TIER_RANK[_userTier] >= TIER_RANK[required]; }
+function hasTier(req) { return TIER_RANK[_userTier] >= TIER_RANK[req]; }
 function getUserTier() { return _userTier; }
 
 async function loadUserTier() {
   if (!currentUser || !sbClient) { _userTier = 'free'; return; }
   try {
     const token = (await sbClient.auth.getSession())?.data?.session?.access_token;
-    if (!token) { _userTier = 'free'; return; }
+    if (!token) return;
     const res = await fetch('/api/billing', { headers: { Authorization: 'Bearer ' + token } });
     if (res.ok) {
-      const data = await res.json();
-      _userTier = data.tier || 'free';
-      _billingPortalUrl = data.portalUrl || null;
+      const d = await res.json();
+      _userTier = d.tier || 'free';
+      _billingPortalUrl = d.portalUrl || null;
+      // Update PRICES from config if not already set
+      PRICES.plus.monthly = window.STRIPE_PRICE_PLUS_MONTHLY || '';
+      PRICES.plus.yearly  = window.STRIPE_PRICE_PLUS_YEARLY  || '';
+      PRICES.pro.monthly  = window.STRIPE_PRICE_PRO_MONTHLY  || '';
+      PRICES.pro.yearly   = window.STRIPE_PRICE_PRO_YEARLY   || '';
       renderTierBadge();
-      updateUpgradeBtnVisibility();
+      renderAuthBadge();
     }
   } catch(e) { console.warn('loadUserTier:', e.message); }
 }
 
 function renderTierBadge() {
-  const badge = document.getElementById('tierBadge');
-  if (!badge) return;
-  const labels = { free: 'Free', plus: 'Plus ✦', pro: 'Pro ✦' };
-  badge.className = 'tier-badge ' + _userTier;
-  badge.textContent = labels[_userTier] || 'Free';
-}
-
-function updateUpgradeBtnVisibility() {
-  const upgradeBtn = document.getElementById('upgradeBtnSideMenu');
-  const billingBtn = document.getElementById('billingBtnSideMenu');
-  if (upgradeBtn) upgradeBtn.style.display = (_userTier === 'free') ? '' : 'none';
-  if (billingBtn) billingBtn.style.display = (_userTier !== 'free') ? '' : 'none';
+  const b = document.getElementById('tierBadge');
+  if (!b) return;
+  const labels = { free:'Free', plus:'Plus ✦', pro:'Pro ✦' };
+  b.className = 'tier-badge ' + _userTier;
+  b.textContent = labels[_userTier] || 'Free';
 }
 
 function openUpgradeModal(reason) {
-  const modal = document.getElementById('upgradeModal');
-  if (!modal) return;
+  // Populate prices from config
+  PRICES.plus.monthly = window.STRIPE_PRICE_PLUS_MONTHLY || '';
+  PRICES.plus.yearly  = window.STRIPE_PRICE_PLUS_YEARLY  || '';
+  PRICES.pro.monthly  = window.STRIPE_PRICE_PRO_MONTHLY  || '';
+  PRICES.pro.yearly   = window.STRIPE_PRICE_PRO_YEARLY   || '';
+  const m = document.getElementById('upgradeModal');
+  if (!m) return;
   if (reason) { const el = document.getElementById('upgradeModalReason'); if (el) el.textContent = reason; }
-  modal.classList.add('open');
+  m.classList.add('open');
 }
-
-function closeUpgradeModal() {
-  document.getElementById('upgradeModal')?.classList.remove('open');
-}
+function closeUpgradeModal() { document.getElementById('upgradeModal')?.classList.remove('open'); }
 
 function setBillingInterval(interval) {
   _billingInterval = interval;
@@ -7186,7 +7228,7 @@ function setBillingInterval(interval) {
 async function startCheckout(plan) {
   if (!currentUser) { closeUpgradeModal(); openAuthModal(); return; }
   const priceId = PRICES[plan]?.[_billingInterval];
-  if (!priceId) { showToast('Payments coming soon'); return; }
+  if (!priceId) { showToast('Payments coming soon — check back shortly'); return; }
   try {
     showToast('Opening checkout…');
     const token = (await sbClient.auth.getSession())?.data?.session?.access_token;
@@ -7195,7 +7237,7 @@ async function startCheckout(plan) {
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ priceId })
     });
-    if (!res.ok) { const err = await res.json().catch(() => ({})); showToast('Checkout error: ' + (err.error || res.status)); return; }
+    if (!res.ok) { const e = await res.json().catch(()=>({error:res.status})); showToast('Checkout error: '+(e.error||res.status)); return; }
     const { url } = await res.json();
     if (url) window.location.href = url;
   } catch(e) { console.error('startCheckout:', e.message); showToast('Something went wrong'); }
@@ -7210,13 +7252,13 @@ async function openBillingPortal() {
 }
 
 function checkUpgradeRedirect() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('upgraded') === '1') {
-    showToast('✨ Welcome to Lunations Plus!');
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('upgraded') === '1') {
+    showToast('✨ Welcome to Lunations Plus! Your account is upgraded.');
     loadUserTier();
     window.history.replaceState({}, '', '/app');
   }
-  if (params.get('upgrade') === 'cancelled') window.history.replaceState({}, '', '/app');
+  if (p.get('upgrade') === 'cancelled') window.history.replaceState({}, '', '/app');
 }
 
 function requireTier(tier, reason) {
@@ -7334,7 +7376,7 @@ function requireTier(tier, reason) {
         <ul class="plan-features">
           <li>Unlimited AI readings with natal chart</li>
           <li>Cloud sync across all devices</li>
-          <li>Full pattern analysis &amp; cycle history</li>
+          <li>Full pattern analysis</li>
           <li>PDF cycle reports</li>
         </ul>
         <button class="plan-cta" onclick="startCheckout('plus')">Begin Plus ✦</button>
@@ -7345,10 +7387,9 @@ function requireTier(tier, reason) {
         <div class="plan-price-sub" id="proPriceSub">per month</div>
         <ul class="plan-features">
           <li>Everything in Plus</li>
-          <li>AI-generated cycle summaries</li>
-          <li>Priority reading generation</li>
-          <li>Custom tradition &amp; tone saved</li>
-          <li>Early access to new features</li>
+          <li>AI cycle summaries</li>
+          <li>Custom tradition saved</li>
+          <li>Early access to features</li>
         </ul>
         <button class="plan-cta" onclick="startCheckout('pro')">Begin Pro ✦</button>
       </div>
