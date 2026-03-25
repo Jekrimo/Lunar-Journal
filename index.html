@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260324161331">
+<meta name="build" content="20260325162355">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -1584,7 +1584,7 @@
     <div class="modal-title">🌙 Evening Entry</div>
     <div id="eveEditorDate" style="font-size:13px;color:rgba(245,240,232,.4);font-style:italic;margin-bottom:20px;margin-top:-12px;"></div>
     <input type="hidden" id="eveEditorDateKey">
-    <div class="section-heading">Energy & Mood</div>
+    <div class="section-heading">Energy &amp; Mood</div>
     <div class="glow-bars-wrap">
       <div class="glow-bar-row">
         <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Energy ⚡</span>
@@ -2350,12 +2350,11 @@ function saveEntry(){
   // localStorage.setItem('lunations_v1'+key, JSON.stringify(entries[key]));
 }
 
-// ── saveEveningEntry (Today tab evening check-in) ────────────────────────────
+// ── saveEveningEntry (Today tab) ─────────────────────────────────────────
 function saveEveningEntry() {
   const todayKey = entryKey(new Date());
   const entries = loadEntries();
   const morning = entries[todayKey];
-
   const eveData = {
     eveEnergy:    +document.getElementById('eveSliderEnergy').value,
     eveMood:      +document.getElementById('eveSliderMood').value,
@@ -2364,7 +2363,6 @@ function saveEveningEntry() {
     eveText:      document.getElementById('eveText').value.trim(),
     eveTimestamp: new Date().toISOString(),
   };
-
   entries[todayKey] = { ...(morning || {}), ...eveData };
   saveEntries(entries);
   pushEntryToCloud(todayKey, entries[todayKey]);
@@ -3471,23 +3469,17 @@ async function pushEntryToCloud(date, entry) {
   try {
     const session = await sbClient.auth.getSession();
     const token = session?.data?.session?.access_token;
-    if (!token) { console.warn('pushEntryToCloud: no auth token'); return; }
+    if (!token) { console.warn('pushEntryToCloud: no token'); return; }
     console.log('pushEntryToCloud: pushing', date);
     const res = await fetch('/api/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ entries: { [date]: entry } })
     });
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error('pushEntryToCloud FAILED:', res.status, errText);
-      return;
-    }
+    if (!res.ok) { console.error('pushEntryToCloud FAILED:', res.status, await res.text()); return; }
     const data = await res.json();
-    console.log('pushEntryToCloud: success, synced', data.synced, 'for', date);
-  } catch(e) {
-    console.error('pushEntryToCloud error:', e.message);
-  }
+    console.log('pushEntryToCloud success, synced', data.synced, 'for', date);
+  } catch(e) { console.error('pushEntryToCloud error:', e.message); }
 }
 // Call this on app load when signed in to restore entries from cloud
 async function syncEntriesFromCloud(){
@@ -3505,7 +3497,7 @@ async function syncEntriesFromCloud(){
     if(count > 0){
       const local = loadEntries();
       const localCount = Object.keys(local).length;
-      // Merge: newer timestamp wins — local recent saves survive a sync pull
+      // Merge: newer timestamp wins — local recent saves survive
       const merged = { ...local };
       Object.entries(cloud).forEach(([k, cv]) => {
         const lv = local[k];
@@ -3673,12 +3665,10 @@ async function signOut() {
   showToast('Signing out…');
   try { await sbClient.auth.signOut(); } catch(e) {}
   currentUser = null;
-  // Clear all local data so landing shows on next load
   Object.keys(localStorage).forEach(k => {
     if (k.startsWith('lunations') || k === 'lj_entered') localStorage.removeItem(k);
   });
   try { idbSet('entries', {}); idbSet('profile', null); } catch(e) {}
-  // Small delay so toast is visible, then redirect cleanly
   setTimeout(() => { window.location.replace('/'); }, 700);
 }
 

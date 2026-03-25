@@ -1,50 +1,49 @@
-const CACHE = 'lunations-v2';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-];
+// Lunations Service Worker
+const CACHE = 'lunations-v3';
+const OFFLINE_URLS = ['/app', '/lunationslogo.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => {
-      // Only cache same-origin assets
-      return Promise.allSettled(ASSETS.map(url => c.add(url)));
-    }).catch(() => {})
+    caches.open(CACHE).then(cache => cache.addAll(OFFLINE_URLS)).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-  
-  // Only handle http/https — ignore chrome-extension and other schemes
-  if(!url.protocol.startsWith('http')) return;
-  
-  // Never intercept API calls
-  if(url.pathname.startsWith('/api/')) return;
 
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if(cached) return cached;
-      return fetch(e.request).then(res => {
-        if(res.ok && e.request.method === 'GET' && url.protocol.startsWith('http')) {
-          try {
-            const clone = res.clone();
-            caches.open(CACHE).then(c => c.put(e.request, clone)).catch(() => {});
-          } catch(err) {}
-        }
+  // Always network-first for API calls — never serve from cache
+  if (url.pathname.startsWith('/api/')) {
+    e.respondWith(fetch(e.request).catch(() =>
+      new Response(JSON.stringify({ error: 'offline' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    ));
+    return;
+  }
+
+  // For the app shell — network first, fallback to cache
+  if (url.pathname === '/app' || url.pathname === '/') {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(cache => cache.put(e.request, clone));
         return res;
-      }).catch(() => caches.match('/index.html'));
-    })
+      }).catch(() => caches.match('/app'))
+    );
+    return;
+  }
+
+  // For everything else — cache first, fallback to network
+  e.respondWith(
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
