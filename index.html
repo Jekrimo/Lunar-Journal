@@ -6510,7 +6510,7 @@ function exportEntries(){
 
 // ─── SERVICE WORKER REGISTRATION ─────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('api/sw.js').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('/api/sw.js').catch(()=>{}));
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
