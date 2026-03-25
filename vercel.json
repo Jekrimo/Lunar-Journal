@@ -8,21 +8,36 @@
   },
   "routes": [
     {
+      "src": "/api/webhook",
+      "dest": "/api/webhook.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/$1.js"
     },
-    { "src": "/sw.js", "dest": "/sw.js" },
     {
-      "src": "/app",
-      "dest": "/index.html"
+      "src": "/sw.js",
+      "dest": "/sw.js"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json"
     },
     {
       "src": "/lunationslogo\\.png",
       "dest": "/lunationslogo.png"
     },
     {
-      "src": "/lunationslogo\\.jpg",
-      "dest": "/lunationslogo.jpg"
+      "src": "/icon-192\\.png",
+      "dest": "/icon-192.png"
+    },
+    {
+      "src": "/icon-512\\.png",
+      "dest": "/icon-512.png"
+    },
+    {
+      "src": "/app",
+      "dest": "/index.html"
     },
     {
       "src": "/",

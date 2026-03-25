@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260325162355">
+<meta name="build" content="20260325192756">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -617,6 +617,41 @@
   .landing-feature{font-size:13px;color:rgba(245,240,232,.35);display:flex;align-items:center;gap:6px;}
   .landing-cta{font-family:"Cinzel",serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:14px 36px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:var(--gold);cursor:pointer;transition:all .2s;}
   .landing-cta:hover{background:rgba(201,168,76,.2);box-shadow:0 0 30px rgba(201,168,76,.15);}
+
+  /* ── PAYMENTS ─────────────────────────────────────────────────────────── */
+  .tier-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:20px;border:1px solid;}
+  .tier-badge.free{border-color:rgba(245,240,232,.15);color:rgba(245,240,232,.3);}
+  .tier-badge.plus{border-color:rgba(201,168,76,.4);color:var(--gold);background:rgba(201,168,76,.07);}
+  .tier-badge.pro{border-color:rgba(160,100,240,.4);color:rgba(200,160,255,.9);background:rgba(140,80,220,.08);}
+  .upgrade-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:center;justify-content:center;padding:16px;}
+  .upgrade-modal-overlay.open{display:flex;}
+  .upgrade-modal{background:#12100d;border:1px solid rgba(201,168,76,.25);border-radius:14px;padding:32px 28px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;position:relative;}
+  .upgrade-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6;}
+  .upgrade-modal-title{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);letter-spacing:.1em;margin-bottom:6px;}
+  .upgrade-modal-sub{font-size:15px;color:rgba(245,240,232,.45);font-style:italic;margin-bottom:28px;line-height:1.6;}
+  .plan-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+  @media(max-width:480px){.plan-cards{grid-template-columns:1fr;}}
+  .plan-card{background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.1);border-radius:10px;padding:20px;position:relative;overflow:hidden;}
+  .plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent);}
+  .plan-card.pro-card::before{background:linear-gradient(90deg,transparent,rgba(160,100,240,.5),transparent);}
+  .plan-card.pro-card{border-color:rgba(140,80,220,.25);}
+  .plan-name{font-family:'Cinzel',serif;font-size:14px;letter-spacing:.1em;color:rgba(245,240,232,.85);margin-bottom:4px;}
+  .plan-price{font-family:'Cinzel',serif;font-size:26px;color:var(--gold);line-height:1;margin-bottom:2px;}
+  .plan-card.pro-card .plan-price{color:rgba(200,160,255,.9);}
+  .plan-price-sub{font-size:11px;color:rgba(245,240,232,.3);margin-bottom:14px;font-style:italic;}
+  .plan-features{list-style:none;padding:0;margin:0;}
+  .plan-features li{font-size:13px;color:rgba(245,240,232,.55);padding:4px 0;display:flex;align-items:flex-start;gap:7px;line-height:1.4;}
+  .plan-features li::before{content:'✦';color:rgba(201,168,76,.5);font-size:9px;flex-shrink:0;margin-top:3px;}
+  .plan-card.pro-card .plan-features li::before{color:rgba(160,100,240,.6);}
+  .plan-cta{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;width:100%;padding:11px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);border-radius:4px;color:var(--gold);cursor:pointer;margin-top:16px;transition:all .2s;}
+  .plan-cta:hover{background:rgba(201,168,76,.18);}
+  .plan-card.pro-card .plan-cta{background:rgba(140,80,220,.1);border-color:rgba(160,100,240,.35);color:rgba(200,160,255,.9);}
+  .billing-toggle{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:24px;}
+  .billing-toggle-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;padding:6px 18px;background:none;border:1px solid rgba(245,240,232,.1);border-radius:20px;color:rgba(245,240,232,.35);cursor:pointer;transition:all .15s;text-transform:uppercase;}
+  .billing-toggle-btn.active{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.3);color:var(--gold);}
+  .save-badge{background:rgba(60,140,80,.15);border:1px solid rgba(60,140,80,.3);color:#7acc8a;font-size:10px;padding:2px 8px;border-radius:20px;}
+  .upgrade-close{position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(245,240,232,.3);font-size:20px;cursor:pointer;}
+  .manage-billing-btn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;background:none;border:1px solid rgba(201,168,76,.2);border-radius:20px;color:rgba(201,168,76,.6);cursor:pointer;}
 </style>
 </head>
 <body>
@@ -678,6 +713,7 @@
       <div>
         <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:rgba(201,168,76,.8);">Settings</div>
         <div id="sideMenuEmail" style="font-size:12px;color:rgba(245,240,232,.3);margin-top:1px;">Not signed in</div>
+<span class="tier-badge free" id="tierBadge" style="margin-top:6px;">Free</span>
       </div>
     </button>
   </div>
@@ -1576,7 +1612,6 @@
     <div id="modalContent"></div>
   </div>
 </div>
-
 <!-- EVENING EDITOR MODAL -->
 <div class="modal-overlay" id="eveningEditorModal" onclick="if(event.target===this)document.getElementById('eveningEditorModal').classList.remove('open')">
   <div class="modal-box" style="max-width:480px;">
@@ -1586,42 +1621,10 @@
     <input type="hidden" id="eveEditorDateKey">
     <div class="section-heading">Energy &amp; Mood</div>
     <div class="glow-bars-wrap">
-      <div class="glow-bar-row">
-        <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Energy ⚡</span>
-        <div class="glow-bar-track">
-          <div class="glow-bar-fill" id="eveEditorFillEnergy" style="width:50%;background:rgba(140,100,200,.65);"></div>
-          <input type="range" min="1" max="10" value="5" id="eveEditorEnergy" class="glow-bar-input"
-            oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValEnergy').textContent=this.value">
-        </div>
-        <span class="glow-bar-val" id="eveEditorValEnergy" style="color:rgba(160,120,220,.8);">5</span>
-      </div>
-      <div class="glow-bar-row">
-        <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Mood 🌙</span>
-        <div class="glow-bar-track">
-          <div class="glow-bar-fill" id="eveEditorFillMood" style="width:50%;background:rgba(120,90,180,.6);"></div>
-          <input type="range" min="1" max="10" value="5" id="eveEditorMood" class="glow-bar-input"
-            oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValMood').textContent=this.value">
-        </div>
-        <span class="glow-bar-val" id="eveEditorValMood" style="color:rgba(160,120,220,.8);">5</span>
-      </div>
-      <div class="glow-bar-row">
-        <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Clarity ✦</span>
-        <div class="glow-bar-track">
-          <div class="glow-bar-fill" id="eveEditorFillClarity" style="width:50%;background:rgba(100,120,200,.6);"></div>
-          <input type="range" min="1" max="10" value="5" id="eveEditorClarity" class="glow-bar-input"
-            oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValClarity').textContent=this.value">
-        </div>
-        <span class="glow-bar-val" id="eveEditorValClarity" style="color:rgba(160,120,220,.8);">5</span>
-      </div>
-      <div class="glow-bar-row">
-        <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Creativity 🔥</span>
-        <div class="glow-bar-track">
-          <div class="glow-bar-fill" id="eveEditorFillCreativity" style="width:50%;background:rgba(160,90,200,.6);"></div>
-          <input type="range" min="1" max="10" value="5" id="eveEditorCreativity" class="glow-bar-input"
-            oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValCreativity').textContent=this.value">
-        </div>
-        <span class="glow-bar-val" id="eveEditorValCreativity" style="color:rgba(160,120,220,.8);">5</span>
-      </div>
+      <div class="glow-bar-row"><span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Energy ⚡</span><div class="glow-bar-track"><div class="glow-bar-fill" id="eveEditorFillEnergy" style="width:50%;background:rgba(140,100,200,.65);"></div><input type="range" min="1" max="10" value="5" id="eveEditorEnergy" class="glow-bar-input" oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValEnergy').textContent=this.value"></div><span class="glow-bar-val" id="eveEditorValEnergy" style="color:rgba(160,120,220,.8);">5</span></div>
+      <div class="glow-bar-row"><span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Mood 🌙</span><div class="glow-bar-track"><div class="glow-bar-fill" id="eveEditorFillMood" style="width:50%;background:rgba(120,90,180,.6);"></div><input type="range" min="1" max="10" value="5" id="eveEditorMood" class="glow-bar-input" oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValMood').textContent=this.value"></div><span class="glow-bar-val" id="eveEditorValMood" style="color:rgba(160,120,220,.8);">5</span></div>
+      <div class="glow-bar-row"><span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Clarity ✦</span><div class="glow-bar-track"><div class="glow-bar-fill" id="eveEditorFillClarity" style="width:50%;background:rgba(100,120,200,.6);"></div><input type="range" min="1" max="10" value="5" id="eveEditorClarity" class="glow-bar-input" oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValClarity').textContent=this.value"></div><span class="glow-bar-val" id="eveEditorValClarity" style="color:rgba(160,120,220,.8);">5</span></div>
+      <div class="glow-bar-row"><span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Creativity 🔥</span><div class="glow-bar-track"><div class="glow-bar-fill" id="eveEditorFillCreativity" style="width:50%;background:rgba(160,90,200,.6);"></div><input type="range" min="1" max="10" value="5" id="eveEditorCreativity" class="glow-bar-input" oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValCreativity').textContent=this.value"></div><span class="glow-bar-val" id="eveEditorValCreativity" style="color:rgba(160,120,220,.8);">5</span></div>
     </div>
     <div class="section-heading" style="color:rgba(160,120,220,.5);">Closing Thoughts</div>
     <textarea class="journal-text" id="eveEditorText" rows="4" style="border-color:rgba(120,90,160,.2);" placeholder="How did the day actually unfold?"></textarea>
@@ -1714,6 +1717,10 @@
 // Falls back to empty strings (guest mode) if not configured
 window.SUPABASE_URL = window.SUPABASE_URL || '';
 window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+window.STRIPE_PRICE_PLUS_MONTHLY = window.STRIPE_PRICE_PLUS_MONTHLY || '';
+window.STRIPE_PRICE_PLUS_YEARLY  = window.STRIPE_PRICE_PLUS_YEARLY  || '';
+window.STRIPE_PRICE_PRO_MONTHLY  = window.STRIPE_PRICE_PRO_MONTHLY  || '';
+window.STRIPE_PRICE_PRO_YEARLY   = window.STRIPE_PRICE_PRO_YEARLY   || '';
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 const EK='lunations_v1', PK='lunations_profile_v1', RK='lunations_reading_v1';
@@ -2350,12 +2357,12 @@ function saveEntry(){
   // localStorage.setItem('lunations_v1'+key, JSON.stringify(entries[key]));
 }
 
-// ── saveEveningEntry (Today tab) ─────────────────────────────────────────
+// ── saveEveningEntry ─────────────────────────────────────────────────────
 function saveEveningEntry() {
   const todayKey = entryKey(new Date());
   const entries = loadEntries();
-  const morning = entries[todayKey];
-  const eveData = {
+  entries[todayKey] = {
+    ...(entries[todayKey] || {}),
     eveEnergy:    +document.getElementById('eveSliderEnergy').value,
     eveMood:      +document.getElementById('eveSliderMood').value,
     eveClarity:   +document.getElementById('eveSliderClarity').value,
@@ -2363,7 +2370,6 @@ function saveEveningEntry() {
     eveText:      document.getElementById('eveText').value.trim(),
     eveTimestamp: new Date().toISOString(),
   };
-  entries[todayKey] = { ...(morning || {}), ...eveData };
   saveEntries(entries);
   pushEntryToCloud(todayKey, entries[todayKey]);
   renderEveningCheckin();
@@ -3377,6 +3383,8 @@ async function pullCloudProfile(){
 }
 async function onSignedIn(user, isNew){
   renderAuthBadge();
+  loadUserTier();
+  checkUpgradeRedirect();
 
   // Always pull profile from cloud first — this is the source of truth
   const profileLoaded = await pullCloudProfile();
@@ -3470,15 +3478,15 @@ async function pushEntryToCloud(date, entry) {
     const session = await sbClient.auth.getSession();
     const token = session?.data?.session?.access_token;
     if (!token) { console.warn('pushEntryToCloud: no token'); return; }
-    console.log('pushEntryToCloud: pushing', date);
+    console.log('pushEntryToCloud:', date);
     const res = await fetch('/api/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ entries: { [date]: entry } })
     });
-    if (!res.ok) { console.error('pushEntryToCloud FAILED:', res.status, await res.text()); return; }
+    if (!res.ok) { console.error('pushEntryToCloud FAILED', res.status, await res.text()); return; }
     const data = await res.json();
-    console.log('pushEntryToCloud success, synced', data.synced, 'for', date);
+    console.log('pushEntryToCloud ok, synced', data.synced, 'for', date);
   } catch(e) { console.error('pushEntryToCloud error:', e.message); }
 }
 // Call this on app load when signed in to restore entries from cloud
@@ -3497,7 +3505,6 @@ async function syncEntriesFromCloud(){
     if(count > 0){
       const local = loadEntries();
       const localCount = Object.keys(local).length;
-      // Merge: newer timestamp wins — local recent saves survive
       const merged = { ...local };
       Object.entries(cloud).forEach(([k, cv]) => {
         const lv = local[k];
@@ -3551,7 +3558,8 @@ async function offerLocalMigration(count, entries){
   });
 }
 
-function renderAuthBadge(){ updateSideMenuAccount();
+function renderAuthBadge(){
+  updateUpgradeBtnVisibility(); updateSideMenuAccount();
   const wrap = document.getElementById('authBadgeWrap');
   if(!wrap) return;
   if(!sbClient){
@@ -7097,10 +7105,128 @@ async function confirmDeleteAccount(){
   }
 }
 
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-<!-- SETTINGS MODAL -->
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PAYMENTS & TIER SYSTEM
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Globals declared with var for hoisting — referenced by renderAuthBadge etc
+var _userTier = 'free';
+var _billingInterval = 'monthly';
+var _billingPortalUrl = null;
+var PRICES = {
+  plus: { monthly: window.STRIPE_PRICE_PLUS_MONTHLY || '', yearly: window.STRIPE_PRICE_PLUS_YEARLY || '' },
+  pro:  { monthly: window.STRIPE_PRICE_PRO_MONTHLY  || '', yearly: window.STRIPE_PRICE_PRO_YEARLY  || '' },
+};
+var TIER_RANK = { free: 0, plus: 1, pro: 2 };
+
+function hasTier(required) { return TIER_RANK[_userTier] >= TIER_RANK[required]; }
+function getUserTier() { return _userTier; }
+
+async function loadUserTier() {
+  if (!currentUser || !sbClient) { _userTier = 'free'; return; }
+  try {
+    const token = (await sbClient.auth.getSession())?.data?.session?.access_token;
+    if (!token) { _userTier = 'free'; return; }
+    const res = await fetch('/api/billing', { headers: { Authorization: 'Bearer ' + token } });
+    if (res.ok) {
+      const data = await res.json();
+      _userTier = data.tier || 'free';
+      _billingPortalUrl = data.portalUrl || null;
+      renderTierBadge();
+      updateUpgradeBtnVisibility();
+    }
+  } catch(e) { console.warn('loadUserTier:', e.message); }
+}
+
+function renderTierBadge() {
+  const badge = document.getElementById('tierBadge');
+  if (!badge) return;
+  const labels = { free: 'Free', plus: 'Plus ✦', pro: 'Pro ✦' };
+  badge.className = 'tier-badge ' + _userTier;
+  badge.textContent = labels[_userTier] || 'Free';
+}
+
+function updateUpgradeBtnVisibility() {
+  const upgradeBtn = document.getElementById('upgradeBtnSideMenu');
+  const billingBtn = document.getElementById('billingBtnSideMenu');
+  if (upgradeBtn) upgradeBtn.style.display = (_userTier === 'free') ? '' : 'none';
+  if (billingBtn) billingBtn.style.display = (_userTier !== 'free') ? '' : 'none';
+}
+
+function openUpgradeModal(reason) {
+  const modal = document.getElementById('upgradeModal');
+  if (!modal) return;
+  if (reason) { const el = document.getElementById('upgradeModalReason'); if (el) el.textContent = reason; }
+  modal.classList.add('open');
+}
+
+function closeUpgradeModal() {
+  document.getElementById('upgradeModal')?.classList.remove('open');
+}
+
+function setBillingInterval(interval) {
+  _billingInterval = interval;
+  document.getElementById('billingMonthly')?.classList.toggle('active', interval === 'monthly');
+  document.getElementById('billingYearly')?.classList.toggle('active', interval === 'yearly');
+  if (interval === 'yearly') {
+    document.getElementById('plusPrice').textContent = '$4';
+    document.getElementById('plusPriceSub').textContent = 'per month, billed $49/yr';
+    document.getElementById('proPrice').textContent = '$7';
+    document.getElementById('proPriceSub').textContent = 'per month, billed $89/yr';
+  } else {
+    document.getElementById('plusPrice').textContent = '$7';
+    document.getElementById('plusPriceSub').textContent = 'per month';
+    document.getElementById('proPrice').textContent = '$13';
+    document.getElementById('proPriceSub').textContent = 'per month';
+  }
+}
+
+async function startCheckout(plan) {
+  if (!currentUser) { closeUpgradeModal(); openAuthModal(); return; }
+  const priceId = PRICES[plan]?.[_billingInterval];
+  if (!priceId) { showToast('Payments coming soon'); return; }
+  try {
+    showToast('Opening checkout…');
+    const token = (await sbClient.auth.getSession())?.data?.session?.access_token;
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ priceId })
+    });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); showToast('Checkout error: ' + (err.error || res.status)); return; }
+    const { url } = await res.json();
+    if (url) window.location.href = url;
+  } catch(e) { console.error('startCheckout:', e.message); showToast('Something went wrong'); }
+}
+
+async function openBillingPortal() {
+  if (_billingPortalUrl) { window.open(_billingPortalUrl, '_blank'); return; }
+  showToast('Loading…');
+  await loadUserTier();
+  if (_billingPortalUrl) window.open(_billingPortalUrl, '_blank');
+  else showToast('No active subscription found');
+}
+
+function checkUpgradeRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('upgraded') === '1') {
+    showToast('✨ Welcome to Lunations Plus!');
+    loadUserTier();
+    window.history.replaceState({}, '', '/app');
+  }
+  if (params.get('upgrade') === 'cancelled') window.history.replaceState({}, '', '/app');
+}
+
+function requireTier(tier, reason) {
+  if (hasTier(tier)) return true;
+  openUpgradeModal(reason || 'Upgrade to access this feature.');
+  return false;
+}
+
+</script>
+
 <!-- SETTINGS MODAL -->
 <div class="modal-overlay" id="settingsModal" style="z-index:350;">
   <div class="modal-box" style="max-width:480px;max-height:90vh;overflow-y:auto;padding:0;">
@@ -7186,6 +7312,48 @@ async function confirmDeleteAccount(){
       </div>
 
     </div>
+  </div>
+</div>
+
+
+<!-- UPGRADE MODAL -->
+<div class="upgrade-modal-overlay" id="upgradeModal">
+  <div class="upgrade-modal">
+    <button class="upgrade-close" onclick="closeUpgradeModal()">×</button>
+    <div class="upgrade-modal-title">Unlock Lunations</div>
+    <p class="upgrade-modal-sub" id="upgradeModalReason">Upgrade to access the full depth of your practice.</p>
+    <div class="billing-toggle">
+      <button class="billing-toggle-btn active" id="billingMonthly" onclick="setBillingInterval('monthly')">Monthly</button>
+      <button class="billing-toggle-btn" id="billingYearly" onclick="setBillingInterval('yearly')">Yearly <span class="save-badge">Save 40%</span></button>
+    </div>
+    <div class="plan-cards">
+      <div class="plan-card">
+        <div class="plan-name">Lunations Plus</div>
+        <div class="plan-price" id="plusPrice">$7</div>
+        <div class="plan-price-sub" id="plusPriceSub">per month</div>
+        <ul class="plan-features">
+          <li>Unlimited AI readings with natal chart</li>
+          <li>Cloud sync across all devices</li>
+          <li>Full pattern analysis &amp; cycle history</li>
+          <li>PDF cycle reports</li>
+        </ul>
+        <button class="plan-cta" onclick="startCheckout('plus')">Begin Plus ✦</button>
+      </div>
+      <div class="plan-card pro-card">
+        <div class="plan-name">Lunations Pro</div>
+        <div class="plan-price" id="proPrice">$13</div>
+        <div class="plan-price-sub" id="proPriceSub">per month</div>
+        <ul class="plan-features">
+          <li>Everything in Plus</li>
+          <li>AI-generated cycle summaries</li>
+          <li>Priority reading generation</li>
+          <li>Custom tradition &amp; tone saved</li>
+          <li>Early access to new features</li>
+        </ul>
+        <button class="plan-cta" onclick="startCheckout('pro')">Begin Pro ✦</button>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:rgba(245,240,232,.2);font-style:italic;">Cancel anytime. Secure checkout via Stripe.</div>
   </div>
 </div>
 

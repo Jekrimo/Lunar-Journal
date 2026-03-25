@@ -1,15 +1,13 @@
-// Serves public Supabase config as a JS file
-// The anon key is safe to expose client-side — RLS handles all security
-// Called as <script src="/api/config"></script> from index.html
-
-module.exports = function handler(req, res) {
-  const url = process.env.SUPABASE_URL || '';
-  const key = process.env.SUPABASE_ANON_KEY || '';
-
+module.exports = (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
-  res.setHeader('Cache-Control', 's-maxage=3600'); // cache for 1 hour
+  res.setHeader('Cache-Control', 'no-store');
 
-  res.status(200).send(
-    `window.SUPABASE_URL = ${JSON.stringify(url)};\nwindow.SUPABASE_ANON_KEY = ${JSON.stringify(key)};`
-  );
-}
+  res.send(`
+window.SUPABASE_URL = ${JSON.stringify(process.env.SUPABASE_URL || '')};
+window.SUPABASE_ANON_KEY = ${JSON.stringify(process.env.SUPABASE_ANON_KEY || '')};
+window.STRIPE_PRICE_PLUS_MONTHLY = ${JSON.stringify(process.env.STRIPE_PRICE_PLUS_MONTHLY || '')};
+window.STRIPE_PRICE_PLUS_YEARLY  = ${JSON.stringify(process.env.STRIPE_PRICE_PLUS_YEARLY  || '')};
+window.STRIPE_PRICE_PRO_MONTHLY  = ${JSON.stringify(process.env.STRIPE_PRICE_PRO_MONTHLY  || '')};
+window.STRIPE_PRICE_PRO_YEARLY   = ${JSON.stringify(process.env.STRIPE_PRICE_PRO_YEARLY   || '')};
+  `.trim());
+};
