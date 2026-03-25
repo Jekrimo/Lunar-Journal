@@ -3426,35 +3426,33 @@ async function pullCloudEntries(){
 }
 
 async function pushEntryToCloud(date, entry) {
-  // ... existing auth check code ...
+  if (!currentUser || !sbClient) return;
+  try {
+    const session = await sbClient.auth.getSession();
+    const token = session?.data?.session?.access_token;
+    if (!token) { console.warn('pushEntryToCloud: no token'); return; }
 
-  // Strip any fields not in the DB schema (prevents 500 errors on new fields)
-  const { 
-    energy, mood, clarity, creativity, qualities, text,
-    dream, intention, sadhana,                          // ← add new fields here
-    phase, phaseAge, phasePct, moonSign, sunSign,
-    tithi, tithiQuality, nakshatra, nakshatraPada, vara,
-    planets, activeTransits, timestamp
-  } = entry;
+    console.log('pushEntryToCloud: pushing', date, 'token present:', !!token, 'url:', window.location.hostname);
 
-  const payload = {
-    user_id: currentUser.id,
-    date,
-    energy, mood, clarity, creativity,
-    qualities: JSON.stringify(qualities || []),
-    text: text || '',
-    dream: dream || '',           // ← new
-    intention: intention || '',   // ← new  
-    sadhana: sadhana || '',       // ← new
-    phase, phaseAge, phasePct, moonSign, sunSign,
-    tithi, tithiQuality, nakshatra, nakshatraPada, vara,
-    planets: JSON.stringify(planets || []),
-    activeTransits: JSON.stringify(activeTransits || []),
-    timestamp
-  };
+    // POST the single entry via /api/sync (same endpoint used by syncNow)
+    const res = await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ entries: { [date]: entry } })
+    });
 
-  // ... rest of existing fetch/upsert code ...
-};
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('pushEntryToCloud FAILED:', res.status, errText);
+      return;
+    }
+
+    const data = await res.json();
+    console.log('pushEntryToCloud: synced', data.synced, 'entry for', date);
+  } catch(e) {
+    console.error('pushEntryToCloud error:', e.message);
+  }
+}
 // Call this on app load when signed in to restore entries from cloud
 async function syncEntriesFromCloud(){
   if(!currentUser || !sbClient) return;
@@ -3471,8 +3469,15 @@ async function syncEntriesFromCloud(){
     if(count > 0){
       const local = loadEntries();
       const localCount = Object.keys(local).length;
-      // Cloud wins — it's source of truth
-      const merged = { ...local, ...cloud };
+      // Merge: newer timestamp wins for each date key (local recent entries survive)
+      const merged = { ...local };
+      Object.entries(cloud).forEach(([k, cv]) => {
+        const lv = local[k];
+        if (!lv) { merged[k] = cv; return; }
+        const cloudTs = cv.timestamp ? new Date(cv.timestamp).getTime() : 0;
+        const localTs = lv.timestamp ? new Date(lv.timestamp).getTime() : 0;
+        if (cloudTs >= localTs) merged[k] = cv;
+      });
       saveEntries(merged);
       console.log('syncEntriesFromCloud: merged', localCount, 'local +', count, 'cloud =', Object.keys(merged).length);
       // Re-render if on today or entries view
