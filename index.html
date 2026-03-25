@@ -1577,7 +1577,57 @@
   </div>
 </div>
 
-<!-- ONBOARDING / PROFILE -->
+<!-- EVENING EDITOR MODAL -->
+<div class="modal-overlay" id="eveningEditorModal">
+  <div class="modal-box" style="max-width:480px;">
+    <button class="modal-close" onclick="document.getElementById('eveningEditorModal').classList.remove('open')">×</button>
+    <div class="modal-title">🌙 Evening Entry</div>
+    <div id="eveEditorDate" style="font-size:13px;color:rgba(245,240,232,.4);font-style:italic;margin-bottom:20px;margin-top:-12px;"></div>
+    <input type="hidden" id="eveEditorDateKey">
+    <div class="section-heading">Energy & Mood</div>
+    <div class="glow-bars-wrap">
+      <div class="glow-bar-row">
+        <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Energy ⚡</span>
+        <div class="glow-bar-track">
+          <div class="glow-bar-fill" id="eveEditorFillEnergy" style="width:50%;background:rgba(140,100,200,.65);"></div>
+          <input type="range" min="1" max="10" value="5" id="eveEditorEnergy" class="glow-bar-input"
+            oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValEnergy').textContent=this.value">
+        </div>
+        <span class="glow-bar-val" id="eveEditorValEnergy" style="color:rgba(160,120,220,.8);">5</span>
+      </div>
+      <div class="glow-bar-row">
+        <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Mood 🌙</span>
+        <div class="glow-bar-track">
+          <div class="glow-bar-fill" id="eveEditorFillMood" style="width:50%;background:rgba(120,90,180,.6);"></div>
+          <input type="range" min="1" max="10" value="5" id="eveEditorMood" class="glow-bar-input"
+            oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValMood').textContent=this.value">
+        </div>
+        <span class="glow-bar-val" id="eveEditorValMood" style="color:rgba(160,120,220,.8);">5</span>
+      </div>
+      <div class="glow-bar-row">
+        <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Clarity ✦</span>
+        <div class="glow-bar-track">
+          <div class="glow-bar-fill" id="eveEditorFillClarity" style="width:50%;background:rgba(100,120,200,.6);"></div>
+          <input type="range" min="1" max="10" value="5" id="eveEditorClarity" class="glow-bar-input"
+            oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValClarity').textContent=this.value">
+        </div>
+        <span class="glow-bar-val" id="eveEditorValClarity" style="color:rgba(160,120,220,.8);">5</span>
+      </div>
+      <div class="glow-bar-row">
+        <span class="glow-bar-label" style="color:rgba(160,120,220,.5);">Creativity 🔥</span>
+        <div class="glow-bar-track">
+          <div class="glow-bar-fill" id="eveEditorFillCreativity" style="width:50%;background:rgba(160,90,200,.6);"></div>
+          <input type="range" min="1" max="10" value="5" id="eveEditorCreativity" class="glow-bar-input"
+            oninput="this.previousElementSibling.style.width=((this.value-1)/9*100)+'%';document.getElementById('eveEditorValCreativity').textContent=this.value">
+        </div>
+        <span class="glow-bar-val" id="eveEditorValCreativity" style="color:rgba(160,120,220,.8);">5</span>
+      </div>
+    </div>
+    <div class="section-heading" style="color:rgba(160,120,220,.5);">Closing Thoughts</div>
+    <textarea class="journal-text" id="eveEditorText" rows="4" style="border-color:rgba(120,90,160,.2);" placeholder="How did the day actually unfold?"></textarea>
+    <button class="save-btn" onclick="saveEveningEditor()" style="margin-top:16px;width:100%;text-align:center;border-color:rgba(140,100,200,.3);color:rgba(160,120,220,.8);background:rgba(120,90,160,.06);">Save Evening Entry</button>
+  </div>
+</div>
 <div class="ob-overlay" id="obOverlay">
   <div class="ob-box">
     <div class="ob-title">Birth Profile</div>
@@ -2298,37 +2348,36 @@ function saveEntry(){
   // localStorage.setItem('lunations_v1'+key, JSON.stringify(entries[key]));
 }
 
-// ── FIX 1b: saveEveningEntry — same pattern ───────────────────────────────
+// ── saveEveningEntry (Today tab) ─────────────────────────────────────────────
 function saveEveningEntry() {
-  const key = entryKey(new Date());
+  const todayKey = entryKey(new Date());
   const entries = loadEntries();
-  const existing = entries[key] || {};
+  const morning = entries[todayKey];
 
-  const eveEnergy    = parseInt(document.getElementById('eveSliderEnergy').value);
-  const eveMood      = parseInt(document.getElementById('eveSliderMood').value);
-  const eveClarity   = parseInt(document.getElementById('eveSliderClarity').value);
-  const eveCreativity= parseInt(document.getElementById('eveSliderCreativity').value);
-  const eveText      = document.getElementById('eveText').value.trim();
-
-  const entry = {
-    ...existing,
-    date: key,
-    eveEnergy, eveMood, eveClarity, eveCreativity, eveText,
-    eveTimestamp: Date.now()
+  const eveData = {
+    energy:    +document.getElementById('eveSliderEnergy').value,
+    mood:      +document.getElementById('eveSliderMood').value,
+    clarity:   +document.getElementById('eveSliderClarity').value,
+    creativity:+document.getElementById('eveSliderCreativity').value,
+    text:      document.getElementById('eveText').value.trim(),
+    timestamp: new Date().toISOString(),
   };
 
-  entries[key] = entry;
-  try {
-    localStorage.setItem('lunations_entries', JSON.stringify(entries));
-  } catch(e) {
-    console.error('localStorage evening save failed:', e);
-  }
+  // Always save locally even without a morning entry
+  entries[todayKey] = {
+    ...(morning || {}),
+    eveEnergy:    eveData.energy,
+    eveMood:      eveData.mood,
+    eveClarity:   eveData.clarity,
+    eveCreativity:eveData.creativity,
+    eveText:      eveData.text,
+    eveTimestamp: eveData.timestamp,
+  };
+  saveEntries(entries);
+  pushEntryToCloud(todayKey, entries[todayKey]);
 
-  if (currentUser) {
-    syncEntryToCloud(key, entry).catch(e => console.warn('Cloud sync failed (eve entry still saved locally):', e));
-  }
-
-  renderEveningEntry();
+  renderEveningCheckin();
+  showToast('✦ Evening check-in saved');
 }
 
 // ─── ENTRIES LIST ─────────────────────────────────────────────────────────────
@@ -3430,25 +3479,20 @@ async function pushEntryToCloud(date, entry) {
   try {
     const session = await sbClient.auth.getSession();
     const token = session?.data?.session?.access_token;
-    if (!token) { console.warn('pushEntryToCloud: no token'); return; }
-
-    console.log('pushEntryToCloud: pushing', date, 'token present:', !!token, 'url:', window.location.hostname);
-
-    // POST the single entry via /api/sync (same endpoint used by syncNow)
+    if (!token) { console.warn('pushEntryToCloud: no auth token'); return; }
+    console.log('pushEntryToCloud: pushing', date);
     const res = await fetch('/api/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ entries: { [date]: entry } })
     });
-
     if (!res.ok) {
       const errText = await res.text();
       console.error('pushEntryToCloud FAILED:', res.status, errText);
       return;
     }
-
     const data = await res.json();
-    console.log('pushEntryToCloud: synced', data.synced, 'entry for', date);
+    console.log('pushEntryToCloud: success, synced', data.synced, 'for', date);
   } catch(e) {
     console.error('pushEntryToCloud error:', e.message);
   }
@@ -3469,7 +3513,7 @@ async function syncEntriesFromCloud(){
     if(count > 0){
       const local = loadEntries();
       const localCount = Object.keys(local).length;
-      // Merge: newer timestamp wins for each date key (local recent entries survive)
+      // Merge: newer timestamp wins per date key so recent local saves survive
       const merged = { ...local };
       Object.entries(cloud).forEach(([k, cv]) => {
         const lv = local[k];
@@ -3630,62 +3674,20 @@ async function signIn(){
 }
 
 async function signOut() {
-window._signingOut = true;
+  window._signingOut = true;
   if(!sbClient) return;
   closeSettingsModal();
   closeSideMenu();
   showToast('Signing out…');
   try { await sbClient.auth.signOut(); } catch(e){}
   currentUser = null;
-  // Clear ALL lunations local data including lj_entered so landing shows
+  // Clear ALL lunations local data including lj_entered so landing shows on next load
   Object.keys(localStorage).forEach(k => {
     if(k.startsWith('lunations') || k === 'lj_entered') localStorage.removeItem(k);
   });
   try{ idbSet('entries', {}); idbSet('profile', null); } catch(e){}
-  // Hard redirect to landing page
-  window.location.replace('/');
-  // Clear auth state
-  window.currentUser = null;
-
-  // Clear today's displayed data
-  document.getElementById('readingText').innerHTML = '<span class="reading-loading">Consulting the sky…</span>';
-  document.getElementById('readingSigninNote').style.display = '';
-  document.getElementById('entrySubmittedCard').style.display = 'none';
-  document.getElementById('eveSubmittedCard').style.display = 'none';
-  document.getElementById('eveFormWrap') && (document.getElementById('eveFormWrap').style.display = '');
-  document.getElementById('eveningCheckin').style.display = 'none';
-
-  // Reset entry form
-  document.getElementById('entryFormWrap').style.display = 'none';
-  document.getElementById('sliderEnergy').value = 5;
-  document.getElementById('sliderMood').value   = 5;
-  document.getElementById('sliderClarity').value = 5;
-  document.getElementById('sliderCreativity').value = 5;
-  document.getElementById('valEnergy').textContent = '5';
-  document.getElementById('valMood').textContent   = '5';
-  document.getElementById('valClarity').textContent = '5';
-  document.getElementById('valCreativity').textContent = '5';
-  document.getElementById('entryText').value    = '';
-  document.getElementById('dreamText').value    = '';
-  document.getElementById('sadhanaText').value  = '';
-  document.getElementById('intentionText').value = '';
-
-  // Update side menu
-  const emailEl = document.getElementById('sideMenuEmail');
-  if (emailEl) emailEl.textContent = 'Not signed in';
-
-  // Close side menu if open
-  closeSideMenu();
-
-  // Show landing screen
-  const landing = document.getElementById('landingScreen');
-  if (landing) {
-    landing.classList.remove('hidden');
-    landing.style.display = '';
-  }
-
-  // Reset to Today tab
-  navTabTap('today', document.querySelector('.nav-tab'));
+  // Small delay to let toast show, then redirect to landing
+  setTimeout(() => { window.location.replace('/'); }, 800);
 }
 
 function confirmSignOut(){
