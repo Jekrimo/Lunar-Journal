@@ -7,41 +7,16 @@
     }
   },
   "routes": [
-    {
-      "src": "/api/webhook",
-      "dest": "/api/webhook.js"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1.js"
-    },
-    {
-      "src": "/sw.js",
-      "dest": "/sw.js"
-    },
-    {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
-    },
-    {
-      "src": "/lunationslogo\\.png",
-      "dest": "/lunationslogo.png"
-    },
-    {
-      "src": "/icon-192\\.png",
-      "dest": "/icon-192.png"
-    },
-    {
-      "src": "/icon-512\\.png",
-      "dest": "/icon-512.png"
-    },
-    {
-      "src": "/app",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/",
-      "dest": "/landing.html"
-    }
+    { "src": "/api/webhook", "dest": "/api/webhook.js" },
+    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    { "src": "/sw.js", "dest": "/sw.js" },
+    { "src": "/manifest.json", "dest": "/manifest.json" },
+    { "src": "/lunationslogo\\.png", "dest": "/lunationslogo.png" },
+    { "src": "/icon-192\\.png", "dest": "/icon-192.png" },
+    { "src": "/icon-512\\.png", "dest": "/icon-512.png" },
+    { "src": "/privacy", "dest": "/privacy.html" },
+    { "src": "/terms", "dest": "/terms.html" },
+    { "src": "/app", "dest": "/index.html" },
+    { "src": "/", "dest": "/landing.html" }
   ]
 }

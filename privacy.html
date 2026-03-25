@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Lunations</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#c9a84c;--bg:#080604;--text:rgba(245,240,232,.85);--text-dim:rgba(245,240,232,.5);--border:rgba(201,168,76,.15);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;line-height:1.8;}
+.wrap{max-width:720px;margin:0 auto;padding:80px 24px 120px;}
+header{display:flex;align-items:center;justify-content:space-between;padding:24px 40px;border-bottom:1px solid var(--border);margin-bottom:64px;}
+.logo{font-family:'Cinzel',serif;font-size:14px;letter-spacing:.2em;color:var(--gold);text-decoration:none;text-transform:uppercase;}
+.back{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;color:rgba(201,168,76,.5);text-decoration:none;text-transform:uppercase;transition:color .2s;}
+.back:hover{color:var(--gold);}
+h1{font-family:'Cinzel',serif;font-size:clamp(22px,4vw,36px);color:var(--gold);letter-spacing:.08em;margin-bottom:8px;}
+.date{font-size:14px;color:var(--text-dim);font-style:italic;margin-bottom:48px;}
+h2{font-family:'Cinzel',serif;font-size:16px;letter-spacing:.1em;color:rgba(245,240,232,.7);text-transform:uppercase;margin:40px 0 14px;}
+p{font-size:17px;color:var(--text-dim);margin-bottom:16px;}
+ul{padding-left:20px;margin-bottom:16px;}
+li{font-size:17px;color:var(--text-dim);margin-bottom:8px;}
+a{color:var(--gold);text-decoration:none;}
+a:hover{text-decoration:underline;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:40px 0;}
+footer{text-align:center;padding:40px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;color:rgba(245,240,232,.2);text-transform:uppercase;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+<header>
+  <a href="/" class="logo">Lunations</a>
+  <a href="/" class="back">← Back</a>
+</header>
+
+<div class="wrap">
+  <h1>Privacy Policy</h1>
+  <p class="date">Last updated: March 2026</p>
+
+  <p>Lunations is a personal lunar journal. Your journal entries, feelings, and reflections are private and belong to you. This policy explains what we collect, why, and how we protect it.</p>
+
+  <div class="divider"></div>
+
+  <h2>What We Collect</h2>
+  <p>We collect the minimum necessary to provide the service:</p>
+  <ul>
+    <li><strong>Account information</strong> — your email address, used to identify your account and restore your data across devices.</li>
+    <li><strong>Journal entries</strong> — your daily entries (energy, mood, clarity, creativity, reflections, dreams, intentions). Stored securely in our database, accessible only to you.</li>
+    <li><strong>Birth profile</strong> — name, date of birth, birth time, rising sign, and birth city, if you choose to provide them. Used only to personalize your AI readings.</li>
+    <li><strong>Subscription data</strong> — payment and billing information is handled entirely by Stripe. We store only your Stripe customer ID and subscription status, never your card details.</li>
+  </ul>
+
+  <h2>What We Do Not Collect</h2>
+  <ul>
+    <li>We do not sell your data to anyone, ever.</li>
+    <li>We do not use your journal content for advertising.</li>
+    <li>We do not train AI models on your private journal entries.</li>
+    <li>We do not share your personal information with third parties except as required to deliver the service (Supabase for database, Stripe for payments, Anthropic for AI readings).</li>
+    <li>We do not track you across other websites.</li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <h2>AI Readings</h2>
+  <p>Your daily readings are generated using Anthropic's Claude API. When a reading is generated, we send a prompt that includes:</p>
+  <ul>
+    <li>Today's astrological sky data (moon phase, planetary positions)</li>
+    <li>Your birth data (if provided) — natal sun, moon, rising</li>
+    <li>A summary of your recent journal patterns (average energy/mood, recurring qualities)</li>
+    <li>Your today's reflection text (if already written)</li>
+  </ul>
+  <p>This data is sent to Anthropic to generate your reading. Anthropic's <a href="https://www.anthropic.com/privacy" target="_blank">privacy policy</a> applies to that processing. We do not send your full journal history — only recent patterns and the current day.</p>
+
+  <h2>Data Storage</h2>
+  <p>Your data is stored in Supabase, a PostgreSQL database provider. Data is encrypted in transit and at rest. Your journal entries are protected by row-level security — only you can read or write your own data.</p>
+  <p>We also store data in your browser's localStorage and IndexedDB for offline access. This data is local to your device and is not shared.</p>
+
+  <div class="divider"></div>
+
+  <h2>Your Rights</h2>
+  <ul>
+    <li><strong>Access</strong> — you can export all your entries at any time from Settings → Export.</li>
+    <li><strong>Deletion</strong> — you can permanently delete your account and all data from Settings → Delete Account. This removes your entries, profile, and auth record from our systems immediately.</li>
+    <li><strong>Portability</strong> — your export is in JSON format, readable by any standard tool.</li>
+    <li><strong>Correction</strong> — you can update or edit any entry or profile information directly in the app.</li>
+  </ul>
+
+  <h2>Data Retention</h2>
+  <p>We keep your data as long as your account is active. When you delete your account, all data is permanently removed within 24 hours. Stripe may retain billing records for their own legal compliance obligations.</p>
+
+  <div class="divider"></div>
+
+  <h2>Children</h2>
+  <p>Lunations is not intended for users under 13. We do not knowingly collect data from children under 13. If you believe we have collected data from a minor, please contact us and we will delete it immediately.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>We may update this policy as the app evolves. Significant changes will be communicated via email or an in-app notice. Continuing to use Lunations after changes constitutes acceptance.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about your data or this policy: <a href="mailto:hello@lunations.app">hello@lunations.app</a></p>
+</div>
+
+<footer>Lunations · lunations.app · Built with devotion</footer>
+</body>
+</html>

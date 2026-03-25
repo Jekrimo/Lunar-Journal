@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260325212819">
+<meta name="build" content="20260325215146">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -6302,6 +6302,7 @@ function renderSettingsModal(){
         +'<div id="smEmailFormWrap"></div>'
         +'<div id="smPwFormWrap"></div>'
         +'<button class="save-btn" style="margin-top:4px;border-color:rgba(200,80,80,.3);color:rgba(220,100,100,.7);" onclick="confirmDeleteAccount()">Delete Account</button>'
+        +'<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(245,240,232,.05);font-size:12px;color:rgba(245,240,232,.2);text-align:center;"><a href="/privacy" target="_blank" style="color:rgba(201,168,76,.3);text-decoration:none;">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms" target="_blank" style="color:rgba(201,168,76,.3);text-decoration:none;">Terms of Service</a></div>'
         +'<button class="save-btn" style="margin-top:0;background:rgba(245,240,232,.02);border-color:rgba(245,240,232,.1);" onclick="confirmSignOut()">Sign Out</button>'
         +'</div>';
     }
@@ -7075,6 +7076,11 @@ function renderAccountSettings(){
       <button class="save-btn" style="margin-top:0;" onclick="openChangeEmailModal()">Change Email</button>
       <button class="save-btn" style="margin-top:0;" onclick="openChangePasswordModal()">Change Password</button>
       <button class="save-btn" style="margin-top:0;border-color:rgba(200,80,80,.3);color:rgba(220,100,100,.7);" onclick="confirmDeleteAccount()">Delete Account</button>
+      <div style="margin-top:20px;font-size:12px;color:rgba(245,240,232,.2);text-align:center;">
+        <a href="/privacy" target="_blank" style="color:rgba(201,168,76,.3);text-decoration:none;">Privacy Policy</a>
+        &nbsp;·&nbsp;
+        <a href="/terms" target="_blank" style="color:rgba(201,168,76,.3);text-decoration:none;">Terms of Service</a>
+      </div>
     </div>`;
 }
 
@@ -7394,7 +7400,12 @@ function requireTier(tier, reason) {
         <button class="plan-cta" onclick="startCheckout('pro')">Begin Pro ✦</button>
       </div>
     </div>
-    <div style="text-align:center;font-size:12px;color:rgba(245,240,232,.2);font-style:italic;">Cancel anytime. Secure checkout via Stripe.</div>
+    <div style="text-align:center;font-size:12px;color:rgba(245,240,232,.2);font-style:italic;">
+      Cancel anytime. Secure checkout via Stripe.<br>
+      <a href="/privacy" target="_blank" style="color:rgba(201,168,76,.3);text-decoration:none;">Privacy Policy</a>
+      &nbsp;·&nbsp;
+      <a href="/terms" target="_blank" style="color:rgba(201,168,76,.3);text-decoration:none;">Terms of Service</a>
+    </div>
   </div>
 </div>
 
