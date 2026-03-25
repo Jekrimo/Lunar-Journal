@@ -1689,24 +1689,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Supabase config — filled in by api/index.js at serve time
 // Config injected by /api/config — Supabase public keys
 // Falls back to empty strings (guest mode) if not configured
@@ -6528,7 +6510,7 @@ function exportEntries(){
 
 // ─── SERVICE WORKER REGISTRATION ─────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('api/sw.js').catch(()=>{}));
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
