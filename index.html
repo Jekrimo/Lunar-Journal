@@ -6,7 +6,7 @@
 <title>Lunations</title>
 <meta name="description" content="Track yourself across cycles. Lunations is a lunar journal with personalized daily readings, Vedic astrology, and pattern tracking across 13 cycles a year.">
 <meta name="theme-color" content="#0f0c09">
-<meta name="build" content="20260325223549">
+<meta name="build" content="20260326111759">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -631,7 +631,7 @@
   .upgrade-modal-sub{font-size:15px;color:rgba(245,240,232,.45);font-style:italic;margin-bottom:28px;line-height:1.6;}
   .plan-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
   @media(max-width:480px){.plan-cards{grid-template-columns:1fr;}}
-  .plan-card{background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.1);border-radius:10px;padding:20px;position:relative;overflow:hidden;}
+  .plan-card{background:rgba(245,240,232,.03);border:1px solid rgba(245,240,232,.1);border-radius:10px;padding:20px;position:relative;}
   .plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent);}
   .plan-card.pro-card::before{background:linear-gradient(90deg,transparent,rgba(160,100,240,.5),transparent);}
   .plan-card.pro-card{border-color:rgba(140,80,220,.25);}
@@ -651,20 +651,19 @@
   .billing-toggle-btn.active{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.3);color:var(--gold);}
   .save-badge{background:rgba(60,140,80,.15);border:1px solid rgba(60,140,80,.3);color:#7acc8a;font-size:10px;padding:2px 8px;border-radius:20px;}
   .upgrade-close{position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(245,240,232,.3);font-size:20px;cursor:pointer;}
-  /* ── WELCOME MODAL ────────────────────────────────────────────────────── */
-  .welcome-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:450;align-items:center;justify-content:center;padding:16px;}
+  .welcome-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:450;align-items:center;justify-content:center;padding:16px;}
   .welcome-overlay.open{display:flex;}
-  .welcome-modal{background:#0f0c09;border:1px solid rgba(201,168,76,.3);border-radius:16px;padding:40px 32px;max-width:440px;width:100%;text-align:center;position:relative;overflow:hidden;}
+  .welcome-modal{background:#0f0c09;border:1px solid rgba(201,168,76,.3);border-radius:16px;padding:40px 32px;max-width:420px;width:100%;text-align:center;position:relative;}
   .welcome-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-  .welcome-moon{font-size:56px;margin-bottom:16px;display:block;animation:moonPulse 3s ease-in-out infinite;}
+  .welcome-moon{font-size:52px;margin-bottom:14px;display:block;animation:moonPulse 3s ease-in-out infinite;}
   .welcome-title{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);letter-spacing:.1em;margin-bottom:10px;}
-  .welcome-sub{font-size:16px;color:rgba(245,240,232,.55);font-style:italic;line-height:1.7;margin-bottom:28px;}
-  .welcome-facts{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;text-align:left;}
-  .welcome-fact{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:rgba(245,240,232,.03);border:1px solid rgba(201,168,76,.12);border-radius:8px;}
-  .welcome-fact-icon{font-size:18px;flex-shrink:0;}
+  .welcome-sub{font-size:16px;color:rgba(245,240,232,.5);font-style:italic;line-height:1.7;margin-bottom:24px;}
+  .welcome-facts{display:flex;flex-direction:column;gap:9px;margin-bottom:24px;text-align:left;}
+  .welcome-fact{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:rgba(245,240,232,.03);border:1px solid rgba(201,168,76,.1);border-radius:8px;}
+  .welcome-fact-icon{font-size:17px;flex-shrink:0;}
   .welcome-fact-text{font-size:14px;color:rgba(245,240,232,.5);line-height:1.5;}
   .welcome-fact-text strong{color:rgba(245,240,232,.8);font-weight:400;}
-  .welcome-cta{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:14px 36px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);border-radius:4px;color:var(--gold);cursor:pointer;transition:all .2s;width:100%;}
+  .welcome-cta{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:13px 36px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);border-radius:4px;color:var(--gold);cursor:pointer;transition:all .2s;width:100%;}
   .welcome-cta:hover{background:rgba(201,168,76,.2);}
 </style>
 </head>
@@ -1742,17 +1741,11 @@ window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 const EK='lunations_v1', PK='lunations_profile_v1', RK='lunations_reading_v1';
-
-// ── Payments & tier (var = hoisted) ──────────────────────────────────────
-var _userTier = 'free';
-var _billingInterval = 'monthly';
-var _billingPortalUrl = null;
-var PRICES = { plus:{monthly:'',yearly:''}, pro:{monthly:'',yearly:''} };
-var TIER_RANK = { free:0, plus:1, pro:2 };
 window.STRIPE_PRICE_PLUS_MONTHLY = window.STRIPE_PRICE_PLUS_MONTHLY||'';
 window.STRIPE_PRICE_PLUS_YEARLY  = window.STRIPE_PRICE_PLUS_YEARLY ||'';
 window.STRIPE_PRICE_PRO_MONTHLY  = window.STRIPE_PRICE_PRO_MONTHLY ||'';
 window.STRIPE_PRICE_PRO_YEARLY   = window.STRIPE_PRICE_PRO_YEARLY  ||'';
+
 
 // ── Migrate old key names from before the Lunations rebrand ──────────────────
 (function migrateLegacyKeys(){
@@ -1999,7 +1992,6 @@ async function generateReading(force=false){
     if(profile.birthCity)profileCtx+=` Birth city: ${profile.birthCity}.`;
   }
   const planetSummary=planets.slice(0,6).map(p=>`${p.name} in ${p.sign?.name||''}`).join(', ');
-  // Build recent journal context
   let entryCtx = '';
   try {
     const allEntries = loadEntries();
@@ -2007,12 +1999,12 @@ async function generateReading(force=false){
     if (recentKeys.length >= 2) {
       const recent = recentKeys.map(k => allEntries[k]).filter(Boolean);
       const avgEnergy = (recent.reduce((s,e)=>s+(e.energy||5),0)/recent.length).toFixed(1);
-      const avgMood = (recent.reduce((s,e)=>s+(e.mood||5),0)/recent.length).toFixed(1);
+      const avgMood   = (recent.reduce((s,e)=>s+(e.mood||5),0)/recent.length).toFixed(1);
       const topQ = [...new Set(recent.flatMap(e=>e.qualities||[]))].slice(0,4).join(', ');
       entryCtx = `\n\nJournal context (last ${recent.length} days): avg energy ${avgEnergy}/10, mood ${avgMood}/10.`;
       if (topQ) entryCtx += ` Recurring qualities: ${topQ}.`;
       const todayEntry = allEntries[entryKey(new Date())];
-      if (todayEntry?.text) entryCtx += ` Today\u2019s reflection: "${todayEntry.text.slice(0,100)}${todayEntry.text.length>100?'...':''}"`;
+      if (todayEntry?.text) entryCtx += ` Today's reflection: "${todayEntry.text.slice(0,100)}${todayEntry.text.length>100?'...':''}"`;
       if (recent.length >= 4) {
         const half = Math.floor(recent.length/2);
         const e1 = recent.slice(0,half).reduce((s,e)=>s+(e.energy||5),0)/half;
@@ -2027,7 +2019,7 @@ async function generateReading(force=false){
 Today's sky: ${phase.name} (day ${Math.floor(phase.age)} of 29-day cycle), Moon in ${mSign.name} (${mSign.element} sign — ${mSign.keywords}), Sun in ${sSign.name}. Planets: ${planetSummary}.
 ${profileCtx}${entryCtx}
 
-Write the reading. Where relevant, weave in what you know about this person's recent patterns. Include one specific tension or opportunity today, one practical suggestion. No filler. Do not begin with "Today". ${getTonePromptAddition()}`;
+Write the reading. Weave in this person's recent patterns where relevant. Include one specific tension or opportunity today, one practical suggestion. No filler. Do not begin with "Today". ${getTonePromptAddition()}`;
   if (_readingInFlight) { _readingQueue = true; return; }
   _readingInFlight = true;
   try{
@@ -2414,24 +2406,7 @@ function saveEntry(){
   // localStorage.setItem('lunations_v1'+key, JSON.stringify(entries[key]));
 }
 
-// ── FIX 1b: saveEveningEntry — same pattern ───────────────────────────────
-function saveEveningEntry() {
-  const todayKey = entryKey(new Date());
-  const entries = loadEntries();
-  entries[todayKey] = {
-    ...(entries[todayKey] || {}),
-    eveEnergy:    +document.getElementById('eveSliderEnergy').value,
-    eveMood:      +document.getElementById('eveSliderMood').value,
-    eveClarity:   +document.getElementById('eveSliderClarity').value,
-    eveCreativity:+document.getElementById('eveSliderCreativity').value,
-    eveText:      document.getElementById('eveText').value.trim(),
-    eveTimestamp: new Date().toISOString(),
-  };
-  saveEntries(entries);
-  pushEntryToCloud(todayKey, entries[todayKey]);
-  renderEveningCheckin();
-  showToast('✦ Evening check-in saved');
-}
+// saveEveningEntry defined below
 
 // ─── ENTRIES LIST ─────────────────────────────────────────────────────────────
 function renderEntries(){
@@ -3443,7 +3418,7 @@ async function onSignedIn(user, isNew){
   renderAuthBadge();
   loadUserTier();
   checkUpgradeRedirect();
-  if (isNew) setTimeout(() => showWelcomeModal(), 1200);
+  if (isNew) setTimeout(showWelcomeModal, 1400);
 
   // Always pull profile from cloud first — this is the source of truth
   const profileLoaded = await pullCloudProfile();
@@ -3617,10 +3592,10 @@ async function offerLocalMigration(count, entries){
 }
 
 function renderAuthBadge(){
-  const upgradeBtn = document.getElementById('upgradeBtnSideMenu');
-  const billingBtn = document.getElementById('billingBtnSideMenu');
-  if (upgradeBtn) upgradeBtn.style.display = (_userTier==='free') ? '' : 'none';
-  if (billingBtn) billingBtn.style.display = (_userTier!=='free') ? '' : 'none'; updateSideMenuAccount();
+  const up = document.getElementById('upgradeBtnSideMenu');
+  const bi = document.getElementById('billingBtnSideMenu');
+  if (up) up.style.display = (_userTier==='free') ? '' : 'none';
+  if (bi) bi.style.display = (_userTier!=='free') ? '' : 'none'; updateSideMenuAccount();
   const wrap = document.getElementById('authBadgeWrap');
   if(!wrap) return;
   if(!sbClient){
@@ -3720,7 +3695,7 @@ async function signIn(){
     currentUser = data.user;
     renderAuthBadge();
     closeAuthModal();
-    localStorage.setItem('lj_entered', '1'); // Mark as entered so tour doesn't fire
+    localStorage.setItem('lj_entered', '1');
     showToast('✦ Signed in — syncing your entries');
     await pullCloudEntries();
     renderToday();
@@ -5732,9 +5707,8 @@ const WT_STEPS = [
 
 function startWalkthrough(force){
   if(!force && localStorage.getItem(WT_KEY)) return;
-  // Don't show tour to returning users who have journal entries
   if(!force && Object.keys(loadEntries()).length > 0) {
-    localStorage.setItem(WT_KEY, '1'); // Mark done silently
+    localStorage.setItem(WT_KEY, '1');
     return;
   }
   _wtStep = 0;
@@ -7180,6 +7154,16 @@ async function confirmDeleteAccount(){
 // PAYMENTS, TIER & WELCOME
 // ═══════════════════════════════════════════════════════════════════════════
 
+var _userTier = 'free';
+var _billingInterval = 'monthly';
+var _billingPortalUrl = null;
+var PRICES = { plus:{monthly:'',yearly:''}, pro:{monthly:'',yearly:''} };
+var TIER_RANK = { free:0, plus:1, pro:2 };
+window.STRIPE_PRICE_PLUS_MONTHLY = window.STRIPE_PRICE_PLUS_MONTHLY||'';
+window.STRIPE_PRICE_PLUS_YEARLY  = window.STRIPE_PRICE_PLUS_YEARLY ||'';
+window.STRIPE_PRICE_PRO_MONTHLY  = window.STRIPE_PRICE_PRO_MONTHLY ||'';
+window.STRIPE_PRICE_PRO_YEARLY   = window.STRIPE_PRICE_PRO_YEARLY  ||'';
+
 function hasTier(req) { return TIER_RANK[_userTier] >= TIER_RANK[req]; }
 
 async function loadUserTier() {
@@ -7192,10 +7176,10 @@ async function loadUserTier() {
       const d = await res.json();
       _userTier = d.tier || 'free';
       _billingPortalUrl = d.portalUrl || null;
-      PRICES.plus.monthly = window.STRIPE_PRICE_PLUS_MONTHLY || '';
-      PRICES.plus.yearly  = window.STRIPE_PRICE_PLUS_YEARLY  || '';
-      PRICES.pro.monthly  = window.STRIPE_PRICE_PRO_MONTHLY  || '';
-      PRICES.pro.yearly   = window.STRIPE_PRICE_PRO_YEARLY   || '';
+      PRICES.plus.monthly = window.STRIPE_PRICE_PLUS_MONTHLY;
+      PRICES.plus.yearly  = window.STRIPE_PRICE_PLUS_YEARLY;
+      PRICES.pro.monthly  = window.STRIPE_PRICE_PRO_MONTHLY;
+      PRICES.pro.yearly   = window.STRIPE_PRICE_PRO_YEARLY;
       renderTierBadge();
       renderAuthBadge();
     }
@@ -7205,16 +7189,15 @@ async function loadUserTier() {
 function renderTierBadge() {
   const b = document.getElementById('tierBadge');
   if (!b) return;
-  const labels = { free:'Free', plus:'Plus ✦', pro:'Pro ✦' };
   b.className = 'tier-badge ' + _userTier;
-  b.textContent = labels[_userTier] || 'Free';
+  b.textContent = {free:'Free', plus:'Plus ✦', pro:'Pro ✦'}[_userTier] || 'Free';
 }
 
 function openUpgradeModal(reason) {
-  PRICES.plus.monthly = window.STRIPE_PRICE_PLUS_MONTHLY || '';
-  PRICES.plus.yearly  = window.STRIPE_PRICE_PLUS_YEARLY  || '';
-  PRICES.pro.monthly  = window.STRIPE_PRICE_PRO_MONTHLY  || '';
-  PRICES.pro.yearly   = window.STRIPE_PRICE_PRO_YEARLY   || '';
+  PRICES.plus.monthly = window.STRIPE_PRICE_PLUS_MONTHLY;
+  PRICES.plus.yearly  = window.STRIPE_PRICE_PLUS_YEARLY;
+  PRICES.pro.monthly  = window.STRIPE_PRICE_PRO_MONTHLY;
+  PRICES.pro.yearly   = window.STRIPE_PRICE_PRO_YEARLY;
   const m = document.getElementById('upgradeModal');
   if (!m) return;
   if (reason) { const el = document.getElementById('upgradeModalReason'); if (el) el.textContent = reason; }
@@ -7226,19 +7209,19 @@ function setBillingInterval(interval) {
   _billingInterval = interval;
   document.getElementById('billingMonthly')?.classList.toggle('active', interval==='monthly');
   document.getElementById('billingYearly')?.classList.toggle('active', interval==='yearly');
-  const yearly = interval === 'yearly';
-  if (document.getElementById('plusPrice')) document.getElementById('plusPrice').textContent = yearly ? '$4' : '$7';
-  if (document.getElementById('plusPriceSub')) document.getElementById('plusPriceSub').textContent = yearly ? 'per month, billed $49/yr' : 'per month';
-  if (document.getElementById('proPrice')) document.getElementById('proPrice').textContent = yearly ? '$7' : '$13';
-  if (document.getElementById('proPriceSub')) document.getElementById('proPriceSub').textContent = yearly ? 'per month, billed $89/yr' : 'per month';
+  const y = interval==='yearly';
+  document.getElementById('plusPrice').textContent = y?'$4':'$7';
+  document.getElementById('plusPriceSub').textContent = y?'per month, billed $49/yr':'per month';
+  document.getElementById('proPrice').textContent = y?'$7':'$13';
+  document.getElementById('proPriceSub').textContent = y?'per month, billed $89/yr':'per month';
 }
 
 async function startCheckout(plan) {
   if (!currentUser) { closeUpgradeModal(); openAuthModal(); return; }
   const priceId = PRICES[plan]?.[_billingInterval];
   if (!priceId) { showToast('Payments coming soon — check back shortly'); return; }
+  showToast('Opening checkout…');
   try {
-    showToast('Opening checkout…');
     const token = (await sbClient.auth.getSession())?.data?.session?.access_token;
     const res = await fetch('/api/create-checkout', {
       method: 'POST',
@@ -7247,11 +7230,12 @@ async function startCheckout(plan) {
     });
     if (!res.ok) {
       const e = await res.json().catch(()=>({error:res.status}));
-      showToast('Checkout error: ' + (e.error || res.status));
+      showToast('Checkout error: ' + (e.error||res.status));
       return;
     }
     const { url } = await res.json();
-    if (url) window.location.href = url;
+    if (url) { window.location.href = url; }
+    else showToast('Could not open checkout — please try again');
   } catch(e) { console.error('startCheckout:', e); showToast('Something went wrong'); }
 }
 
@@ -7266,7 +7250,7 @@ async function openBillingPortal() {
 function checkUpgradeRedirect() {
   const p = new URLSearchParams(window.location.search);
   if (p.get('upgraded') === '1') {
-    showToast('✨ Welcome to Lunations Plus!');
+    showToast('✨ Welcome to Lunations Plus! Your account has been upgraded.');
     loadUserTier();
     window.history.replaceState({}, '', '/app');
   }
@@ -7278,13 +7262,16 @@ function requireTier(tier, reason) {
   return false;
 }
 
-// ── Welcome modal ─────────────────────────────────────────────────────────
 const WELCOME_KEY = 'lunations_welcomed_v1';
 
 function showWelcomeModal() {
   if (localStorage.getItem(WELCOME_KEY)) return;
-  const m = document.getElementById('welcomeModal');
-  if (m) m.classList.add('open');
+  // Don't show for users who already have entries (returning users who cleared storage)
+  if (Object.keys(loadEntries()).length > 0) {
+    localStorage.setItem(WELCOME_KEY, '1');
+    return;
+  }
+  document.getElementById('welcomeModal')?.classList.add('open');
 }
 
 function closeWelcomeModal() {
@@ -7295,7 +7282,6 @@ function closeWelcomeModal() {
     m.style.opacity = '0';
     setTimeout(() => { m.classList.remove('open'); m.style.opacity = ''; }, 400);
   }
-  // Nudge toward birth profile if not set
   const p = loadProfile();
   if (!p?.dob) setTimeout(() => showToast('✦ Add your birth date in Settings for personalized readings'), 2000);
 }
@@ -7429,32 +7415,22 @@ function closeWelcomeModal() {
       </div>
     </div>
     <div style="text-align:center;font-size:12px;color:rgba(245,240,232,.2);font-style:italic;">
-      Cancel anytime. Secure checkout via Stripe.<br>
+      Cancel anytime · Secure checkout via Stripe<br>
       <a href="/privacy" target="_blank" style="color:rgba(201,168,76,.3);text-decoration:none;">Privacy</a> &nbsp;·&nbsp;
       <a href="/terms" target="_blank" style="color:rgba(201,168,76,.3);text-decoration:none;">Terms</a>
     </div>
   </div>
 </div>
-
-<!-- WELCOME MODAL — shown once on first sign-up -->
+<!-- WELCOME MODAL -->
 <div class="welcome-overlay" id="welcomeModal">
   <div class="welcome-modal">
     <span class="welcome-moon">🌙</span>
     <div class="welcome-title">Your record begins</div>
-    <p class="welcome-sub">You've joined the practice. The sky is already tracking — now you track yourself alongside it.</p>
+    <p class="welcome-sub">The sky is already tracking. Now you track yourself alongside it.</p>
     <div class="welcome-facts">
-      <div class="welcome-fact">
-        <span class="welcome-fact-icon">📝</span>
-        <div class="welcome-fact-text"><strong>Log your first entry today.</strong> Energy, mood, clarity, creativity — four numbers and a reflection. Takes 60 seconds.</div>
-      </div>
-      <div class="welcome-fact">
-        <span class="welcome-fact-icon">✦</span>
-        <div class="welcome-fact-text"><strong>Add your birth date</strong> in Settings → Birth Profile to personalize your daily readings with your natal chart.</div>
-      </div>
-      <div class="welcome-fact">
-        <span class="welcome-fact-icon">🌑</span>
-        <div class="welcome-fact-text"><strong>After 2–3 cycles,</strong> your patterns emerge. You'll know which moon phases are your peak days.</div>
-      </div>
+      <div class="welcome-fact"><span class="welcome-fact-icon">📝</span><div class="welcome-fact-text"><strong>Log your first entry today.</strong> Energy, mood, clarity, creativity. 60 seconds.</div></div>
+      <div class="welcome-fact"><span class="welcome-fact-icon">✦</span><div class="welcome-fact-text"><strong>Add your birth date</strong> in Settings → Birth Profile for personalized readings.</div></div>
+      <div class="welcome-fact"><span class="welcome-fact-icon">🌑</span><div class="welcome-fact-text"><strong>After 2–3 cycles,</strong> your patterns emerge. You'll know which moon phases are your peak days.</div></div>
     </div>
     <button class="welcome-cta" onclick="closeWelcomeModal()">Begin the Record ✦</button>
   </div>
