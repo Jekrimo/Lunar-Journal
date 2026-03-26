@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const stripe = require('../lib/stripe-client');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -6,18 +7,15 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (!process.env.STRIPE_SECRET_KEY) return res.status(500).json({ error: 'Stripe not configured - check STRIPE_SECRET_KEY env var' });
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) return res.status(500).json({ error: 'Database not configured' });
-
-  let stripe;
-  try { stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); }
-  catch(e) { return res.status(500).json({ error: 'stripe package missing - run npm install stripe: ' + e.message }); }
-
-  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  const SK = process.env.STRIPE_SECRET_KEY;
+  if (!SK) return res.status(500).json({ error: 'Stripe not configured' });
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY)
+    return res.status(500).json({ error: 'Database not configured' });
 
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'No auth token' });
 
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
   const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
   if (authErr || !user) return res.status(401).json({ error: 'Invalid token' });
 
@@ -37,9 +35,10 @@ module.exports = async (req, res) => {
     let customerId = profile?.stripe_customer_id;
     if (!customerId) {
       const customer = await stripe.customers.create({
-        email: user.email, name: profile?.name || '',
+        email: user.email,
+        name: profile?.name || '',
         metadata: { supabase_user_id: user.id }
-      });
+      }, SK);
       customerId = customer.id;
       await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id);
     }
@@ -48,12 +47,13 @@ module.exports = async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [{ price: priceId, quantity: 1 }],
+      'payment_method_types[0]': 'card',
+      'line_items[0][price]': priceId,
+      'line_items[0][quantity]': '1',
       success_url: baseUrl + '/app?upgraded=1',
-      cancel_url:  baseUrl + '/app',
-      allow_promotion_codes: true,
-    });
+      cancel_url: baseUrl + '/app',
+      allow_promotion_codes: 'true',
+    }, SK);
 
     return res.json({ url: session.url });
   } catch(e) {
