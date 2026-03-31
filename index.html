@@ -2613,7 +2613,7 @@ function saveEntry(){
   var snaps=entries[key].snapshots||[];
   snaps.push({type:'morning',time:now.toISOString(),energy:entries[key].energy,mood:entries[key].mood,clarity:entries[key].clarity,creativity:entries[key].creativity});
   entries[key].snapshots=snaps;
-  saveEntries(entries);
+  try{ saveEntries(entries); }catch(e){ console.error('Save failed:', e); showToast('Storage full — entry saved to cloud only'); }
   pushEntryToCloud(key, entries[key]);
   showSubmittedCard(entries[key]);
   setTimeout(function(){setLogMode('daylog');},150);
@@ -3766,7 +3766,7 @@ async function onSignedIn(user, isNew){
   }
   // Always pull profile from cloud first — this is the source of truth
   const profileLoaded = await pullCloudProfile();
-  pullEntriesFromCloud();
+  await pullEntriesFromCloud();
   if(!profileLoaded && !loadProfile()){
     // No profile anywhere — prompt once after a short delay
     setTimeout(openOnboarding, 1000);
@@ -3864,7 +3864,7 @@ async function pushEntryToCloud(date, entry) {
   if (!currentUser || !sbClient) return;
   try {
     var token = getAccessToken();
-    if (!token) return;
+    if (!token){ console.warn('pushEntryToCloud: no token — entry saved locally only'); return; }
     var res = await fetch('/api/sync', {method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({entries:{[date]:entry}})});
     if (!res.ok) console.error('pushEntryToCloud FAILED', res.status);
   } catch(e) { console.error('pushEntryToCloud:', e.message); }
@@ -3892,7 +3892,12 @@ async function syncEntriesFromCloud(){
         var lv=local[k]; if(!lv){merged[k]=cv;return;}
         var ct=cv.timestamp?new Date(cv.timestamp).getTime():0;
         var lt=lv.timestamp?new Date(lv.timestamp).getTime():0;
-        if(ct>=lt) merged[k]=cv;
+        if(ct>=lt){
+          // Keep whichever has more snapshots
+          var localSnaps=(lv.snapshots||[]);var cloudSnaps=(cv.snapshots||[]);
+          merged[k]=cv;
+          if(localSnaps.length>cloudSnaps.length)merged[k].snapshots=localSnaps;
+        }
       });
       saveEntries(merged);
       console.log('syncEntriesFromCloud: merged', localCount, 'local +', count, 'cloud =', Object.keys(merged).length);
@@ -5950,7 +5955,7 @@ function saveQuickLog(){
   snaps.push({type:'quick',time:now.toISOString(),energy:entries[key].energy,mood:entries[key].mood,clarity:entries[key].clarity,creativity:entries[key].creativity,note:qNote||''});
   entries[key].snapshots=snaps;
 
-  saveEntries(entries);
+  try{ saveEntries(entries); }catch(e){ console.error('Save failed:', e); showToast('Storage full — entry saved to cloud only'); }
   pushEntryToCloud(key, entries[key]);
   var _qn=document.getElementById('qNote');if(_qn)_qn.value='';
   showToast('✦ Quick log saved');
@@ -8441,7 +8446,7 @@ async function pullEntriesFromCloud() {
       if(!lv){merged[k]=cv;return;}
       var ct=cv.timestamp?new Date(cv.timestamp).getTime():0;
       var lt=lv.timestamp?new Date(lv.timestamp).getTime():0;
-      if(ct>=lt) merged[k]=cv;
+      if(ct>=lt){var ls=(lv.snapshots||[]),cs=(cv.snapshots||[]);merged[k]=cv;if(ls.length>cs.length)merged[k].snapshots=ls;}
     });
     saveEntries(merged);
     console.log('Pulled', data.length, 'entries from cloud, merged to', Object.keys(merged).length);
