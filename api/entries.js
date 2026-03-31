@@ -62,6 +62,13 @@ module.exports = async function handler(req, res) {
           vara: row.vara,
           planets: row.planets || [],
           activeTransits: row.active_transits || [],
+          eveEnergy: row.eve_energy,
+          eveMood: row.eve_mood,
+          eveClarity: row.eve_clarity,
+          eveCreativity: row.eve_creativity,
+          eveText: row.eve_text || '',
+          eveTimestamp: row.eve_timestamp,
+          snapshots: row.snapshots || [],
           timestamp: row.created_at,
         };
       });
@@ -74,30 +81,40 @@ module.exports = async function handler(req, res) {
       const { date, entry } = req.body;
       if (!date || !entry) return res.status(400).json({ error: 'Missing date or entry' });
 
+      const _toI = v => { const n = parseInt(v); return isNaN(n) ? null : n; };
+      const _toS = (v, max) => v ? String(v).slice(0, max) : null;
+      const _clamp = (v, lo, hi) => { const n = _toI(v); return n === null ? null : Math.max(lo, Math.min(hi, n)); };
       const row = {
         user_id: user.id,
         entry_date: date,
-        energy: entry.energy,
-        mood: entry.mood,
-        clarity: entry.clarity,
-        creativity: entry.creativity,
+        energy: _clamp(entry.energy, 1, 10),
+        mood: _clamp(entry.mood, 1, 10),
+        clarity: _clamp(entry.clarity, 1, 10),
+        creativity: _clamp(entry.creativity, 1, 10),
         qualities: entry.qualities || [],
-        text: entry.text || '',
-        dream: entry.dream || '',
-        intention: entry.intention || '',
-        sadhana: entry.sadhana || '',
+        text: _toS(entry.text, 10000) || '',
+        dream: _toS(entry.dream, 5000) || '',
+        intention: _toS(entry.intention, 2000) || '',
+        sadhana: _toS(entry.sadhana, 2000) || '',
         phase: entry.phase,
-        phase_age: entry.phaseAge,
-        phase_pct: entry.phasePct,
+        phase_age: _toI(entry.phaseAge),
+        phase_pct: _toI(entry.phasePct),
         moon_sign: entry.moonSign,
         sun_sign: entry.sunSign,
         tithi: entry.tithi,
         tithi_quality: entry.tithiQuality,
         nakshatra: entry.nakshatra,
-        nakshatra_pada: entry.nakshatraPada,
+        nakshatra_pada: _clamp(entry.nakshatraPada, 1, 4),
         vara: entry.vara,
         planets: entry.planets || [],
         active_transits: entry.activeTransits || [],
+        eve_energy: _clamp(entry.eveEnergy, 1, 10),
+        eve_mood: _clamp(entry.eveMood, 1, 10),
+        eve_clarity: _clamp(entry.eveClarity, 1, 10),
+        eve_creativity: _clamp(entry.eveCreativity, 1, 10),
+        eve_text: _toS(entry.eveText, 5000),
+        eve_timestamp: entry.eveTimestamp ? new Date(entry.eveTimestamp).toISOString() : null,
+        snapshots: Array.isArray(entry.snapshots) ? entry.snapshots : [],
       };
 
       const { data, error } = await supabase

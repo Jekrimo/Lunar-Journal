@@ -28,29 +28,51 @@ module.exports = async function handler(req, res) {
 
     const toInt = v => { const n = parseInt(v); return isNaN(n) ? null : n; };
     const toSmall = (v, min=1, max=10) => { const n = toInt(v); return n===null?null:Math.max(min,Math.min(max,n)); };
+    const toStr = (v, max=10000) => v ? String(v).slice(0, max) : null;
+
     const rows = Object.entries(entries).map(([date, entry]) => ({
       user_id: user.id,
       entry_date: date,
-      energy: toSmall(entry.energy),
-      mood: toSmall(entry.mood),
-      clarity: toSmall(entry.clarity),
+
+      // Core metrics
+      energy:     toSmall(entry.energy),
+      mood:       toSmall(entry.mood),
+      clarity:    toSmall(entry.clarity),
       creativity: toSmall(entry.creativity),
-      qualities: Array.isArray(entry.qualities) ? entry.qualities : [],
-      text: String(entry.text || '').slice(0, 10000),
-      dream: String(entry.dream || '').slice(0, 5000),
-      intention: String(entry.intention || '').slice(0, 2000),
-      phase: entry.phase ? String(entry.phase).slice(0,50) : null,
-      phase_age: toInt(entry.phaseAge),
-      phase_pct: toInt(entry.phasePct),
-      moon_sign: entry.moonSign ? String(entry.moonSign).slice(0,20) : null,
-      sun_sign: entry.sunSign ? String(entry.sunSign).slice(0,20) : null,
-      tithi: entry.tithi ? String(entry.tithi).slice(0,100) : null,
-      tithi_quality: entry.tithiQuality ? String(entry.tithiQuality).slice(0,50) : null,
-      nakshatra: entry.nakshatra ? String(entry.nakshatra).slice(0,50) : null,
+
+      // Tags and text
+      qualities:  Array.isArray(entry.qualities) ? entry.qualities : [],
+      text:       toStr(entry.text, 10000),
+      dream:      toStr(entry.dream, 5000),
+      intention:  toStr(entry.intention, 2000),
+      sadhana:    toStr(entry.sadhana, 2000),
+
+      // Lunar data
+      phase:          toStr(entry.phase, 50),
+      phase_age:      toInt(entry.phaseAge),
+      phase_pct:      toInt(entry.phasePct),
+      moon_sign:      toStr(entry.moonSign, 20),
+      sun_sign:       toStr(entry.sunSign, 20),
+
+      // Vedic
+      tithi:          toStr(entry.tithi, 100),
+      tithi_quality:  toStr(entry.tithiQuality, 50),
+      nakshatra:      toStr(entry.nakshatra, 50),
       nakshatra_pada: toSmall(entry.nakshatraPada, 1, 4),
-      vara: entry.vara ? String(entry.vara).slice(0,30) : null,
-      planets: Array.isArray(entry.planets) ? entry.planets : [],
-      active_transits: Array.isArray(entry.activeTransits) ? entry.activeTransits : [],
+      vara:           toStr(entry.vara, 30),
+
+      // Planetary
+      planets:          Array.isArray(entry.planets) ? entry.planets : [],
+      active_transits:  Array.isArray(entry.activeTransits) ? entry.activeTransits : [],
+
+      // Evening check-in
+      eve_energy:     toSmall(entry.eveEnergy),
+      eve_mood:       toSmall(entry.eveMood),
+      eve_clarity:    toSmall(entry.eveClarity),
+      eve_creativity: toSmall(entry.eveCreativity),
+      eve_text:       toStr(entry.eveText, 5000),
+      eve_timestamp:  entry.eveTimestamp ? new Date(entry.eveTimestamp).toISOString() : null,
+      snapshots:      Array.isArray(entry.snapshots) ? entry.snapshots : [],
     }));
 
     if (rows.length === 0) {
@@ -75,4 +97,4 @@ module.exports = async function handler(req, res) {
     console.error('Sync API error:', err);
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
-}
+};

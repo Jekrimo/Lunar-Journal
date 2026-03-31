@@ -18,12 +18,43 @@ module.exports = async (req, res) => {
 
   try {
     const { data: profile } = await supabase.from('profiles')
-      .select('tier, stripe_customer_id').eq('id', user.id).single();
+      .select('tier, stripe_customer_id, stripe_subscription_id').eq('id', user.id).single();
 
-    const tier = profile?.tier || 'free';
+    let tier = profile?.tier || 'free';
     let portalUrl = null;
 
     if (process.env.STRIPE_SECRET_KEY && profile?.stripe_customer_id) {
+      try {
+        // Verify tier against Stripe — try direct sub retrieval first, then list
+        let priceId = null;
+        if (profile.stripe_subscription_id) {
+          try {
+            const sub = await stripe.subscriptions.retrieve(profile.stripe_subscription_id, process.env.STRIPE_SECRET_KEY);
+            if (sub.status === 'active' || sub.status === 'trialing') {
+              priceId = sub.items?.data?.[0]?.price?.id;
+            }
+          } catch(e) { console.warn('Sub retrieve:', e.message); }
+        }
+        if (!priceId) {
+          const subs = await stripe.subscriptions.list({
+            customer: profile.stripe_customer_id, status: 'active', limit: 1
+          }, process.env.STRIPE_SECRET_KEY);
+          if (subs.data && subs.data.length > 0) {
+            priceId = subs.data[0].items?.data?.[0]?.price?.id;
+          }
+        }
+        if (priceId) {
+          const plus = [process.env.STRIPE_PRICE_PLUS_MONTHLY, process.env.STRIPE_PRICE_PLUS_YEARLY];
+          const pro  = [process.env.STRIPE_PRICE_PRO_MONTHLY,  process.env.STRIPE_PRICE_PRO_YEARLY];
+          const stripeTier = pro.includes(priceId) ? 'pro' : plus.includes(priceId) ? 'plus' : 'free';
+          if (stripeTier !== tier) {
+            console.log(`Tier mismatch: db=${tier} stripe=${stripeTier} for ${profile.stripe_customer_id} — correcting`);
+            await supabase.from('profiles').update({ tier: stripeTier }).eq('id', user.id);
+            tier = stripeTier;
+          }
+        }
+      } catch(e) { console.warn('Stripe tier verify:', e.message); }
+
       try {
         const baseUrl = req.headers.origin || 'https://lunations.app';
         const session = await stripe.billingPortal.sessions.create({

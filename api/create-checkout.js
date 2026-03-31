@@ -43,21 +43,36 @@ module.exports = async (req, res) => {
       await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id);
     }
 
-    const baseUrl = req.headers.origin || 'https://lunations.app';
+    // Bulletproof baseUrl: origin header → VERCEL_PROJECT_PRODUCTION_URL → VERCEL_URL → hardcoded.
+    // req.headers.origin can be undefined on certain Vercel edge cases.
+    const baseUrl =
+      req.headers.origin ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? 'https://' + process.env.VERCEL_PROJECT_PRODUCTION_URL
+        : null) ||
+      (process.env.VERCEL_URL
+        ? 'https://' + process.env.VERCEL_URL
+        : null) ||
+      'https://lunations.app';
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
       'payment_method_types[0]': 'card',
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
+      // ?upgraded=1 triggers checkUpgradeRedirect() in the frontend poll
       success_url: baseUrl + '/app?upgraded=1',
-      cancel_url: baseUrl + '/app',
+      cancel_url:  baseUrl + '/app',
       allow_promotion_codes: 'true',
+      // Pass supabase_user_id in subscription metadata so the webhook can
+      // find the right profile row even if customer lookup fails
+      'subscription_data[metadata][supabase_user_id]': user.id,
     }, SK);
 
+    console.log('checkout session created:', session.id, '| user:', user.id, '| price:', priceId);
     return res.json({ url: session.url });
   } catch(e) {
-    console.error('create-checkout error:', e.message);
+    console.error('create-checkout error:', e.message, '| user:', user?.id, '| price:', priceId);
     return res.status(500).json({ error: e.message });
   }
 };

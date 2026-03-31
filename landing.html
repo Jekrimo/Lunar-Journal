@@ -3,763 +3,987 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lunations — the sky remembers who you are</title>
-<meta name="description" content="A lunar journal with personalized AI readings, Vedic astrology, and pattern tracking across 13 cycles a year. Track your inner weather alongside the sky.">
-<meta property="og:title" content="Lunations — the sky remembers who you are">
-<meta property="og:description" content="Track your energy, mood, and patterns across every lunar cycle. Daily AI readings from your natal chart. 13 cycles a year.">
-<meta property="og:url" content="https://lunations.app">
-<meta name="theme-color" content="#080604">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Ccircle cx='14' cy='16' r='13' fill='white'/%3E%3Ccircle cx='19' cy='13' r='11' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='32' height='32' fill='%230f0c09'/%3E%3Ccircle cx='14' cy='16' r='13' fill='%23c9a84c' mask='url(%23m)'/%3E%3C/svg%3E">
+<title>Lunations — Track yourself across the sky</title>
+<meta name="description" content="A lunar journal that tracks your energy, mood, and patterns across every cycle of the year. Personalized AI readings, Vedic astrology, space weather, and 13-cycle pattern tracking.">
+<meta property="og:title" content="Lunations — Track yourself across the sky">
+<meta property="og:description" content="A lunar journal that tracks your energy, mood, and patterns across every cycle of the year.">
+<meta property="og:image" content="https://lunations.app/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --gold: #c9a84c;
-  --gold-pale: #e8d49a;
-  --gold-deep: #9b7a28;
-  --bg: #080604;
-  --bg2: #0f0c09;
-  --bg3: #141009;
-  --text: rgba(245,240,232,.85);
-  --text-dim: rgba(245,240,232,.45);
-  --text-faint: rgba(245,240,232,.2);
-  --border: rgba(201,168,76,.15);
-  --border-bright: rgba(201,168,76,.35);
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;overflow-x:hidden;min-height:100vh;}
+  :root {
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,.5);
+    --gold-faint: rgba(201,168,76,.12);
+    --cream: rgba(245,240,232,1);
+    --cream-dim: rgba(245,240,232,.7);
+    --cream-faint: rgba(245,240,232,.25);
+    --cream-ghost: rgba(245,240,232,.08);
+    --bg: #080604;
+    --bg-mid: #0f0c09;
+    --bg-card: rgba(245,240,232,.025);
+    --border: rgba(201,168,76,.15);
+    --border-faint: rgba(245,240,232,.07);
+    --purple: rgba(180,140,220,.7);
+    --purple-faint: rgba(180,140,220,.12);
+  }
 
-/* ── STARS ─────────────────────────────────────────────────────────────── */
-.stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
-.stars::before,.stars::after{
-  content:'';position:absolute;inset:0;
-  background-image:
-    radial-gradient(1px 1px at 12% 8%, rgba(255,240,200,.8) 0%,transparent 100%),
-    radial-gradient(1px 1px at 28% 22%, rgba(255,240,200,.5) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 52% 6%, rgba(255,240,200,.9) 0%,transparent 100%),
-    radial-gradient(1px 1px at 71% 18%, rgba(255,240,200,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 88% 33%, rgba(255,240,200,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 8%  55%, rgba(255,240,200,.5) 0%,transparent 100%),
-    radial-gradient(1px 1px at 93% 71%, rgba(255,240,200,.3) 0%,transparent 100%),
-    radial-gradient(1px 1px at 44% 82%, rgba(255,240,200,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 22% 64%, rgba(255,240,200,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 63% 47%, rgba(255,240,200,.5) 0%,transparent 100%),
-    radial-gradient(1px 1px at 37% 91%, rgba(255,240,200,.3) 0%,transparent 100%),
-    radial-gradient(1px 1px at 79% 59%, rgba(255,240,200,.4) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 5% 38%, rgba(255,240,200,.7) 0%,transparent 100%),
-    radial-gradient(1px 1px at 96% 12%, rgba(255,240,200,.5) 0%,transparent 100%),
-    radial-gradient(1px 1px at 58% 75%, rgba(255,240,200,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 17% 88%, rgba(255,240,200,.6) 0%,transparent 100%),
-    radial-gradient(1px 1px at 84% 44%, rgba(255,240,200,.3) 0%,transparent 100%),
-    radial-gradient(1px 1px at 41% 31%, rgba(255,240,200,.5) 0%,transparent 100%);
-}
-.stars::after{
-  transform:rotate(37deg) scale(1.4);
-  opacity:.5;
-}
+  html { scroll-behavior: smooth; }
 
-/* ── LAYOUT ─────────────────────────────────────────────────────────────── */
-.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 24px;}
+  body {
+    font-family: 'EB Garamond', Georgia, serif;
+    background: var(--bg);
+    color: var(--cream-dim);
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
 
-/* ── NAV ─────────────────────────────────────────────────────────────────  */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  padding:20px 40px;
-  display:flex;align-items:center;justify-content:space-between;
-  transition:background .4s,border-color .4s;
-}
-nav.scrolled{
-  background:rgba(8,6,4,.9);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(12px);
-}
-.nav-logo{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.2em;color:var(--gold);text-decoration:none;text-transform:uppercase;}
-.nav-right{display:flex;align-items:center;gap:20px;}
-.nav-link{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--text-dim);text-decoration:none;text-transform:uppercase;transition:color .2s;}
-.nav-link:hover{color:var(--gold);}
-.nav-cta{
-  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;
-  padding:8px 20px;background:rgba(201,168,76,.1);border:1px solid var(--border-bright);
-  border-radius:3px;color:var(--gold);text-decoration:none;transition:all .2s;
-}
-.nav-cta:hover{background:rgba(201,168,76,.2);}
+  /* ── STARFIELD ─────────────────────────────────────────────── */
+  .starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 20% 20%, #150f25 0%, #080604 50%, #030201 100%);
+  }
+  .stars {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(245,240,232,.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(245,240,232,.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 10%, rgba(245,240,232,.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 30%, rgba(245,240,232,.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 60%, rgba(245,240,232,.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 82% 20%, rgba(201,168,76,.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 45%, rgba(245,240,232,.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 70%, rgba(245,240,232,.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 80%, rgba(245,240,232,.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 85%, rgba(245,240,232,.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 90%, rgba(245,240,232,.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 55%, rgba(245,240,232,.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 48% 65%, rgba(180,140,220,.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 75%, rgba(245,240,232,.3) 0%, transparent 100%);
+  }
 
-/* ── HERO ─────────────────────────────────────────────────────────────────  */
-.hero{
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:120px 24px 80px;position:relative;
-}
-.hero-eyebrow{
-  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;color:var(--gold-deep);
-  text-transform:uppercase;margin-bottom:36px;
-  opacity:0;animation:fadeUp .8s ease .2s forwards;
-}
-.hero-moon{
-  font-size:72px;margin-bottom:28px;display:block;
-  filter:drop-shadow(0 0 40px rgba(201,168,76,.5));
-  animation:moonPulse 4s ease-in-out infinite, fadeUp .8s ease .1s both;
-}
-@keyframes moonPulse{0%,100%{filter:drop-shadow(0 0 30px rgba(201,168,76,.4))}50%{filter:drop-shadow(0 0 60px rgba(201,168,76,.7))}}
-.hero-title{
-  font-family:'Cinzel',serif;font-size:clamp(42px,7vw,84px);
-  color:var(--gold);letter-spacing:.15em;text-transform:uppercase;line-height:.95;
-  text-shadow:0 0 80px rgba(201,168,76,.2);
-  opacity:0;animation:fadeUp .9s ease .3s forwards;
-}
-.hero-sub{
-  font-size:clamp(18px,2.5vw,22px);color:var(--text-dim);font-style:italic;
-  margin-top:16px;letter-spacing:.04em;line-height:1.6;max-width:500px;
-  opacity:0;animation:fadeUp .9s ease .5s forwards;
-}
-.hero-tagline{
-  font-size:clamp(14px,1.8vw,17px);color:var(--text-faint);
-  margin-top:10px;letter-spacing:.06em;
-  opacity:0;animation:fadeUp .9s ease .6s forwards;
-}
-.hero-rule{
-  width:120px;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  margin:32px auto;opacity:0;animation:fadeUp .9s ease .7s forwards;
-}
-.hero-actions{
-  display:flex;flex-direction:column;align-items:center;gap:14px;
-  opacity:0;animation:fadeUp .9s ease .8s forwards;
-}
-.btn-primary{
-  font-family:'Cinzel',serif;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
-  padding:16px 44px;background:rgba(201,168,76,.12);
-  border:1px solid var(--border-bright);border-radius:3px;
-  color:var(--gold);text-decoration:none;cursor:pointer;
-  transition:all .25s;display:inline-block;
-  box-shadow:0 0 40px rgba(201,168,76,.08);
-}
-.btn-primary:hover{background:rgba(201,168,76,.22);box-shadow:0 0 60px rgba(201,168,76,.2);transform:translateY(-1px);}
-.btn-secondary{
-  font-size:13px;color:var(--text-faint);font-style:italic;
-  text-decoration:none;transition:color .2s;
-  display:flex;align-items:center;gap:6px;
-}
-.btn-secondary:hover{color:var(--text-dim);}
-.hero-scroll{
-  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
-  font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:var(--text-faint);
-  text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px;
-  opacity:0;animation:fadeUp 1s ease 1.2s forwards;
-}
-.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold-deep),transparent);}
+  /* ── LAYOUT ────────────────────────────────────────────────── */
+  .wrapper { position: relative; z-index: 1; }
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
 
-/* ── WHAT IS LUNATIONS ─────────────────────────────────────────────────── */
-.section{padding:100px 0;position:relative;z-index:1;}
-.section-label{
-  font-family:'Cinzel',serif;font-size:9px;letter-spacing:.3em;color:var(--gold-deep);
-  text-transform:uppercase;margin-bottom:20px;display:block;
-}
-.section-title{
-  font-family:'Cinzel',serif;font-size:clamp(26px,4vw,42px);
-  color:var(--gold-pale);letter-spacing:.08em;line-height:1.2;
-  margin-bottom:20px;
-}
-.section-body{
-  font-size:clamp(17px,2vw,20px);color:var(--text-dim);line-height:1.9;
-  max-width:600px;
-}
-.section-body strong{color:var(--text);font-style:italic;font-weight:400;}
+  /* ── NAV ───────────────────────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(8,6,4,.9) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+  }
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--cream-faint);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gold) !important;
+    border: 1px solid var(--border);
+    padding: 8px 20px;
+    border-radius: 2px;
+    transition: all .2s !important;
+  }
+  .nav-cta:hover { background: var(--gold-faint) !important; border-color: var(--gold-dim) !important; }
 
-.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
-@media(max-width:680px){.intro-grid{grid-template-columns:1fr;gap:40px;}}
-.intro-visual{
-  aspect-ratio:1;background:radial-gradient(circle at 40% 40%, rgba(201,168,76,.06) 0%, transparent 70%);
-  border:1px solid var(--border);border-radius:4px;
-  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
-}
-.intro-visual::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 50%, rgba(201,168,76,.03) 0%, transparent 60%);
-}
-.cycle-diagram{font-size:80px;line-height:1;text-align:center;}
-.cycle-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;color:var(--gold-deep);text-transform:uppercase;margin-top:12px;text-align:center;}
-.cycle-sub{font-size:13px;color:var(--text-faint);text-align:center;font-style:italic;margin-top:4px;}
+  /* ── HERO ──────────────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+  }
 
-/* ── DIVIDER ─────────────────────────────────────────────────────────────  */
-.divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0;}
+  .hero-moon {
+    font-size: 72px;
+    margin-bottom: 32px;
+    animation: float 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 40px rgba(201,168,76,.3));
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
 
-/* ── FEATURES ────────────────────────────────────────────────────────────  */
-.features-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
-  border:1px solid var(--border);
-}
-@media(max-width:720px){.features-grid{grid-template-columns:1fr;}}
-.feature-cell{
-  padding:36px 28px;border:1px solid transparent;
-  transition:all .25s;background:rgba(245,240,232,.01);
-  position:relative;overflow:hidden;
-}
-.feature-cell::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent);
-  opacity:0;transition:opacity .3s;
-}
-.feature-cell:hover{background:rgba(201,168,76,.03);}
-.feature-cell:hover::before{opacity:1;}
-.feature-icon{font-size:24px;margin-bottom:14px;display:block;}
-.feature-name{
-  font-family:'Cinzel',serif;font-size:12px;letter-spacing:.12em;
-  color:var(--gold-pale);text-transform:uppercase;margin-bottom:10px;
-}
-.feature-desc{font-size:14px;color:var(--text-dim);line-height:1.75;}
+  .hero-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 24px;
+    animation: fadeUp .8s ease both;
+  }
 
-/* ── READING PREVIEW ─────────────────────────────────────────────────────  */
-.reading-preview{
-  background:rgba(245,240,232,.02);border:1px solid var(--border);
-  border-radius:4px;padding:40px;position:relative;overflow:hidden;
-  margin:60px 0;
-}
-.reading-preview::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  opacity:.5;
-}
-.reading-badge{
-  font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;
-  color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:20px;
-  display:flex;align-items:center;gap:10px;
-}
-.reading-badge::after{content:'';flex:1;height:1px;background:var(--border);}
-.reading-text{
-  font-size:clamp(16px,2vw,19px);color:var(--text);line-height:2;
-  font-style:italic;
-}
-.reading-attribution{
-  margin-top:20px;font-family:'Cinzel',serif;font-size:10px;
-  letter-spacing:.15em;color:var(--text-faint);text-transform:uppercase;
-}
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.15;
+    letter-spacing: .04em;
+    margin-bottom: 24px;
+    animation: fadeUp .8s .1s ease both;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+    font-family: 'EB Garamond', serif;
+  }
 
-/* ── TRADITIONS ──────────────────────────────────────────────────────────  */
-.traditions-grid{
-  display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;
-}
-.tradition-pill{
-  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
-  padding:8px 18px;border:1px solid var(--border);border-radius:20px;
-  color:var(--text-dim);transition:all .2s;cursor:default;
-}
-.tradition-pill:hover{border-color:var(--border-bright);color:var(--gold-pale);}
+  .hero-sub {
+    font-size: 20px;
+    color: var(--cream-faint);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    font-style: italic;
+    animation: fadeUp .8s .2s ease both;
+  }
 
-/* ── PATTERNS VISUAL ─────────────────────────────────────────────────────  */
-.patterns-preview{
-  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:32px;
-}
-.day-dot{
-  aspect-ratio:1;border-radius:2px;position:relative;
-  display:flex;align-items:center;justify-content:center;
-}
-.day-dot-inner{width:60%;height:60%;border-radius:50%;}
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp .8s .3s ease both;
+  }
 
-/* ── PRICING ─────────────────────────────────────────────────────────────  */
-.pricing-intro{text-align:center;margin-bottom:60px;}
-.pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;}
-@media(max-width:760px){.pricing-grid{grid-template-columns:1fr;}}
-.pricing-card{
-  border:1px solid var(--border);padding:40px 32px;position:relative;
-  transition:all .25s;
-}
-.pricing-card:nth-child(2){
-  border-color:var(--border-bright);
-  background:rgba(201,168,76,.025);
-  transform:scaleY(1.02);z-index:1;
-}
-.pricing-card-badge{
-  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
-  font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
-  background:var(--gold-deep);color:var(--bg);padding:4px 14px;border-radius:20px;
-  white-space:nowrap;
-}
-.pricing-tier{
-  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;
-  color:var(--text-faint);text-transform:uppercase;margin-bottom:16px;
-}
-.pricing-price{
-  font-family:'Cinzel',serif;font-size:48px;color:var(--gold);
-  line-height:1;margin-bottom:4px;
-}
-.pricing-price sup{font-size:22px;vertical-align:super;opacity:.7;}
-.pricing-price-sub{font-size:13px;color:var(--text-faint);font-style:italic;margin-bottom:28px;}
-.pricing-features{list-style:none;padding:0;margin:0 0 32px;}
-.pricing-features li{
-  font-size:14px;color:var(--text-dim);padding:7px 0;
-  display:flex;align-items:flex-start;gap:10px;line-height:1.5;
-  border-bottom:1px solid rgba(245,240,232,.04);
-}
-.pricing-features li::before{content:'✦';color:var(--gold-deep);font-size:9px;flex-shrink:0;margin-top:4px;}
-.pricing-cta{
-  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  width:100%;padding:13px;text-align:center;text-decoration:none;display:block;
-  background:rgba(201,168,76,.08);border:1px solid var(--border-bright);
-  color:var(--gold);transition:all .2s;border-radius:2px;
-}
-.pricing-cta:hover{background:rgba(201,168,76,.18);}
-.pricing-cta.primary{background:rgba(201,168,76,.15);border-color:var(--gold);}
-.pricing-cta.primary:hover{background:rgba(201,168,76,.25);}
-.pricing-note{
-  text-align:center;font-size:13px;color:var(--text-faint);
-  font-style:italic;margin-top:24px;
-}
-.pricing-toggle{
-  display:flex;align-items:center;justify-content:center;gap:12px;
-  margin-bottom:40px;font-size:14px;color:var(--text-dim);
-}
-.toggle-track{
-  width:44px;height:24px;background:rgba(201,168,76,.15);
-  border:1px solid var(--border-bright);border-radius:12px;
-  position:relative;cursor:pointer;transition:background .2s;
-}
-.toggle-track.yearly{background:rgba(201,168,76,.3);}
-.toggle-thumb{
-  position:absolute;top:3px;left:3px;
-  width:16px;height:16px;border-radius:50%;
-  background:var(--gold);transition:transform .2s;
-}
-.toggle-track.yearly .toggle-thumb{transform:translateX(20px);}
-.save-pill{
-  background:rgba(60,140,80,.15);border:1px solid rgba(60,140,80,.3);
-  color:#7acc8a;font-size:11px;padding:2px 10px;border-radius:20px;
-  font-family:'Cinzel',serif;letter-spacing:.05em;
-}
+  .btn-primary {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    padding: 16px 36px;
+    background: var(--gold-faint);
+    border: 1px solid var(--gold);
+    border-radius: 2px;
+    color: var(--gold);
+    text-decoration: none;
+    transition: all .25s;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background: rgba(201,168,76,.2);
+    box-shadow: 0 0 40px rgba(201,168,76,.15);
+  }
+  .btn-secondary {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    padding: 16px 36px;
+    background: transparent;
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+    color: var(--cream-faint);
+    text-decoration: none;
+    transition: all .25s;
+  }
+  .btn-secondary:hover {
+    border-color: var(--cream-faint);
+    color: var(--cream-dim);
+  }
 
-/* ── TESTIMONIALS / PULL QUOTES ──────────────────────────────────────────  */
-.quotes-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;}
-@media(max-width:640px){.quotes-grid{grid-template-columns:1fr;}}
-.quote-card{
-  background:rgba(245,240,232,.02);border:1px solid var(--border);
-  border-radius:4px;padding:28px;position:relative;
-}
-.quote-mark{
-  font-family:'EB Garamond',serif;font-size:60px;color:var(--gold-deep);
-  line-height:.5;margin-bottom:12px;display:block;opacity:.4;
-}
-.quote-text{font-size:15px;color:var(--text-dim);line-height:1.8;font-style:italic;}
-.quote-attr{
-  margin-top:16px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;
-  color:var(--text-faint);text-transform:uppercase;
-}
+  .hero-scroll {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: fadeIn 1s 1s ease both;
+  }
+  .hero-scroll span {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,.15);
+  }
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, rgba(201,168,76,.4), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: .3; }
+    50% { opacity: 1; }
+  }
 
-/* ── FINAL CTA ────────────────────────────────────────────────────────────  */
-.final-cta{
-  text-align:center;padding:120px 24px;position:relative;
-}
-.final-cta::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 50%, rgba(201,168,76,.04) 0%, transparent 70%);
-}
-.final-cta-title{
-  font-family:'Cinzel',serif;font-size:clamp(28px,5vw,52px);
-  color:var(--gold-pale);letter-spacing:.1em;line-height:1.2;
-  margin-bottom:16px;position:relative;
-}
-.final-cta-sub{
-  font-size:clamp(16px,2vw,20px);color:var(--text-dim);
-  font-style:italic;margin-bottom:40px;max-width:480px;margin-left:auto;margin-right:auto;
-  position:relative;
-}
-.final-actions{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;}
-.trust-items{
-  display:flex;flex-wrap:wrap;justify-content:center;gap:24px;
-  margin-top:40px;position:relative;
-}
-.trust-item{
-  font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--text-faint);display:flex;align-items:center;gap:7px;
-}
-.trust-item::before{content:'✦';color:var(--gold-deep);font-size:8px;}
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-/* ── FOOTER ──────────────────────────────────────────────────────────────  */
-footer{
-  border-top:1px solid var(--border);padding:32px 40px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:16px;position:relative;z-index:1;
-}
-.footer-logo{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.2em;color:var(--gold-deep);text-transform:uppercase;}
-.footer-links{display:flex;gap:24px;}
-.footer-link{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;color:var(--text-faint);text-decoration:none;text-transform:uppercase;transition:color .2s;}
-.footer-link:hover{color:var(--text-dim);}
-.footer-copy{font-size:12px;color:var(--text-faint);font-style:italic;}
+  /* ── DIVIDER ───────────────────────────────────────────────── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 0 auto 80px;
+    max-width: 400px;
+    padding: 0 24px;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .divider-glyph {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--gold-dim);
+    letter-spacing: .2em;
+  }
 
-/* ── SCROLL ANIMATIONS ───────────────────────────────────────────────────  */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease, transform .8s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
-.reveal-delay-1{transition-delay:.1s;}
-.reveal-delay-2{transition-delay:.2s;}
-.reveal-delay-3{transition-delay:.3s;}
+  /* ── FEATURES ──────────────────────────────────────────────── */
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: center;
+    margin-bottom: 16px;
+  }
 
-/* ── MOBILE ──────────────────────────────────────────────────────────────  */
-@media(max-width:600px){
-  nav{padding:16px 20px;}
-  .nav-right .nav-link{display:none;}
-  .intro-grid{gap:32px;}
-  .features-grid{border:none;gap:1px;}
-  .feature-cell{border:1px solid var(--border);}
-  .pricing-card:nth-child(2){transform:none;}
-}
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 400;
+    color: var(--cream);
+    text-align: center;
+    letter-spacing: .04em;
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 18px;
+    color: var(--cream-faint);
+    text-align: center;
+    max-width: 520px;
+    margin: 0 auto 64px;
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border-faint);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 80px;
+  }
+
+  .feature-card {
+    background: var(--bg-mid);
+    padding: 36px 32px;
+    position: relative;
+    transition: background .2s;
+  }
+  .feature-card:hover { background: rgba(15,12,9,.8); }
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,.2), transparent);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .feature-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: .08em;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .feature-desc {
+    font-size: 15px;
+    color: rgba(245,240,232,.4);
+    line-height: 1.7;
+  }
+  .feature-tag {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    border: 1px solid rgba(201,168,76,.2);
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+  .feature-tag.purple {
+    color: var(--purple);
+    border-color: rgba(180,140,220,.25);
+  }
+
+  /* ── HOW IT WORKS ──────────────────────────────────────────── */
+  .how-section {
+    padding: 80px 0;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 48px;
+    margin-bottom: 80px;
+  }
+
+  .step {
+    text-align: center;
+    position: relative;
+  }
+  .step-num {
+    font-family: 'Cinzel', serif;
+    font-size: 48px;
+    color: rgba(201,168,76,.08);
+    line-height: 1;
+    margin-bottom: 16px;
+    letter-spacing: .05em;
+  }
+  .step-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: .1em;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .step-desc {
+    font-size: 15px;
+    color: rgba(245,240,232,.4);
+    line-height: 1.7;
+  }
+
+  /* ── TRADITIONS ────────────────────────────────────────────── */
+  .traditions {
+    background: var(--bg-card);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 48px;
+    text-align: center;
+    margin-bottom: 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .traditions::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .tradition-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+  }
+  .tradition-pill {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--cream-faint);
+    background: var(--cream-ghost);
+  }
+
+  /* ── PRICING ───────────────────────────────────────────────── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border-faint);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 80px;
+  }
+
+  .price-card {
+    background: var(--bg-mid);
+    padding: 40px 36px;
+    position: relative;
+  }
+  .price-card.featured {
+    background: linear-gradient(135deg, rgba(201,168,76,.06) 0%, rgba(15,12,9,1) 60%);
+  }
+  .price-card.featured::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .price-tier {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 20px;
+  }
+  .price-amount {
+    font-family: 'Cinzel', serif;
+    font-size: 40px;
+    color: var(--cream);
+    letter-spacing: .02em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .price-amount sup { font-size: 20px; vertical-align: super; }
+  .price-period {
+    font-size: 14px;
+    color: rgba(245,240,232,.3);
+    margin-bottom: 28px;
+  }
+  .price-features {
+    list-style: none;
+    margin-bottom: 32px;
+  }
+  .price-features li {
+    font-size: 15px;
+    color: rgba(245,240,232,.5);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-faint);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .price-features li::before {
+    content: '✦';
+    font-size: 9px;
+    color: var(--gold-dim);
+    flex-shrink: 0;
+  }
+  .price-btn {
+    display: block;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    padding: 13px 24px;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all .2s;
+  }
+  .price-btn-outline {
+    border: 1px solid var(--border);
+    color: var(--cream-faint);
+  }
+  .price-btn-outline:hover { border-color: var(--cream-faint); color: var(--cream-dim); }
+  .price-btn-gold {
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    background: var(--gold-faint);
+  }
+  .price-btn-gold:hover { background: rgba(201,168,76,.18); }
+
+  /* ── QUOTE ─────────────────────────────────────────────────── */
+  .quote-section {
+    padding: 80px 0;
+    text-align: center;
+  }
+  .quote-text {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(22px, 3.5vw, 36px);
+    font-style: italic;
+    color: rgba(245,240,232,.5);
+    line-height: 1.6;
+    max-width: 680px;
+    margin: 0 auto 24px;
+  }
+  .quote-attr {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  /* ── SIGNS ─────────────────────────────────────────────────── */
+  .signs-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 56px 48px;
+    margin-bottom: 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .signs-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(180,140,220,.4), transparent);
+  }
+  .signs-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 16px;
+  }
+  .signs-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(20px, 3vw, 32px);
+    color: var(--cream);
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+  .signs-desc {
+    font-size: 16px;
+    color: rgba(245,240,232,.45);
+    line-height: 1.75;
+    margin-bottom: 24px;
+  }
+  .signs-demo {
+    background: rgba(180,140,220,.04);
+    border: 1px solid rgba(180,140,220,.15);
+    border-radius: 6px;
+    padding: 20px;
+  }
+  .sign-demo-entry {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(245,240,232,.05);
+    font-size: 14px;
+    color: rgba(245,240,232,.5);
+  }
+  .sign-demo-entry:last-child { border-bottom: none; }
+  .sign-demo-meta {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(180,140,220,.5);
+    margin-bottom: 4px;
+  }
+
+  /* ── FOOTER ────────────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border-faint);
+    padding: 48px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .footer-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+  .footer-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+  .footer-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,.2);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .footer-links a:hover { color: var(--gold-dim); }
+  .footer-copy {
+    font-size: 13px;
+    color: rgba(245,240,232,.15);
+  }
+
+  /* ── FINAL CTA ─────────────────────────────────────────────── */
+  .final-cta {
+    text-align: center;
+    padding: 100px 24px 80px;
+    position: relative;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--border));
+  }
+
+  /* ── MOBILE ────────────────────────────────────────────────── */
+  @media (max-width: 700px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    .hero-moon { font-size: 56px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .signs-section { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; }
+    section { padding: 0 20px; }
+    .traditions { padding: 32px 24px; }
+  }
+
+  /* ── SCROLL ANIMATIONS ─────────────────────────────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 </style>
 </head>
 <body>
 
-<div class="stars"></div>
+<div class="starfield"><div class="stars"></div></div>
 
-<!-- NAV -->
-<nav id="nav">
-  <a href="/" class="nav-logo">Lunations</a>
-  <div class="nav-right">
-    <a href="#features" class="nav-link">Features</a>
-    <a href="#pricing" class="nav-link">Pricing</a>
-    <a href="/app" class="nav-cta">Open App</a>
-  </div>
-</nav>
+<div class="wrapper">
 
-<!-- HERO -->
-<section class="hero">
-  <span class="hero-eyebrow">A lunar journal</span>
-  <span class="hero-moon">🌙</span>
-  <h1 class="hero-title">Lunations</h1>
-  <p class="hero-sub">the sky remembers who you are</p>
-  <p class="hero-tagline">29.5 days. 13 cycles a year. One unbroken record.</p>
-  <div class="hero-rule"></div>
-  <div class="hero-actions">
-    <a href="/app" class="btn-primary">Begin Your Record</a>
-    <a href="#what" class="btn-secondary">
-      <span>learn more</span>
-      <span style="font-size:10px;opacity:.6;">↓</span>
-    </a>
-  </div>
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-  </div>
-</section>
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">Lunations</a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#traditions">Traditions</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="/app" class="nav-cta">Open App →</a></li>
+    </ul>
+  </nav>
 
-<!-- WHAT IS LUNATIONS -->
-<section class="section" id="what">
-  <div class="wrap">
-    <div class="intro-grid reveal">
-      <div>
-        <span class="section-label">What is Lunations</span>
-        <h2 class="section-title">Your inner weather, mapped to the sky</h2>
-        <p class="section-body">
-          A lunation is one complete cycle of the moon — <strong>29.5 days of inner weather.</strong>
-          Most apps show you the sky. Lunations helps you see yourself <em>through</em> the sky.
-        </p>
-        <p class="section-body" style="margin-top:18px;">
-          Log your energy, mood, clarity, and creativity every day. 
-          Get a personalized reading from your natal chart and the actual sky.
-          After a few cycles, <strong>your patterns emerge.</strong> You start to know yourself in a new way.
-        </p>
-      </div>
-      <div class="intro-visual reveal reveal-delay-2">
-        <div>
-          <div class="cycle-diagram">🌑🌒🌓🌔🌕🌖🌗</div>
-          <div class="cycle-label">One Lunation — 29.5 Days</div>
-          <div class="cycle-sub" style="margin-top:16px;font-size:12px;color:rgba(245,240,232,.25);font-family:'Cinzel',serif;letter-spacing:.1em;">13 CYCLES · 365 DAYS</div>
-          <div style="margin-top:24px;display:flex;justify-content:center;gap:6px;" id="cycleDots"></div>
-        </div>
-      </div>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-moon">🌙</div>
+    <p class="hero-eyebrow">A Lunar Journal</p>
+    <h1 class="hero-title">Track yourself<br>across <em>the sky</em></h1>
+    <p class="hero-sub">Your energy, mood, and patterns across every cycle of the year. Mapped against the living sky.</p>
+    <div class="hero-actions">
+      <a href="/app" class="btn-primary">Begin Your Record →</a>
+      <a href="#features" class="btn-secondary">See How It Works</a>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
     </div>
   </div>
-</section>
 
-<div class="divider"></div>
+  <!-- FEATURES -->
+  <div id="features" style="padding: 80px 0 0;">
+    <section>
+      <p class="section-label reveal">What Lunations tracks</p>
+      <h2 class="section-title reveal">The sky and your inner weather,<br>mapped together</h2>
+      <p class="section-sub reveal">Most journaling apps track what you did. Lunations tracks who you are across time — correlated with the living field of the moon, planets, and electromagnetic sky.</p>
 
-<!-- READING PREVIEW -->
-<section class="section" id="reading-preview">
-  <div class="wrap">
-    <span class="section-label reveal">Daily Reading — Example</span>
-    <div class="reading-preview reveal reveal-delay-1">
-      <div class="reading-badge">✦ Mystic · Today's Reading</div>
-      <p class="reading-text">
-        "Your natal waters run deep — Sun and Moon in Pisces — yet today's Gemini Moon 
-        pulls you toward air, toward multiplicity and speech. This is the crescent's quickening, 
-        the threshold where potential begins its articulation. The tension: Mars in Pisces 
-        dissolves into feeling while Mercury in Taurus demands concrete words. You sense more 
-        than you can explain, and explaining will frustrate you. Here's the practice: 
-        write without organizing."
-      </p>
-      <p class="reading-attribution">Generated from natal chart + current transits · Refreshes daily</p>
-    </div>
-    <p class="section-body reveal reveal-delay-2" style="margin-top:0;">
-      Every reading is generated from <strong>your birth data</strong> crossed with the actual sky — 
-      moon phase, sign, active transits, Vedic nakshatra. Not a generic horoscope. 
-      A personalized mirror.
-    </p>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- FEATURES -->
-<section class="section" id="features">
-  <div class="wrap">
-    <span class="section-label reveal">Features</span>
-    <h2 class="section-title reveal">Everything the practice needs</h2>
-    <div style="margin-top:40px;">
       <div class="features-grid reveal">
-        <div class="feature-cell">
-          <span class="feature-icon">📝</span>
-          <div class="feature-name">Daily Entry</div>
-          <p class="feature-desc">Four metrics — energy, mood, clarity, creativity — plus quality tags, dreams, intention, sadhana, and an evening closing entry.</p>
+        <div class="feature-card">
+          <span class="feature-icon">🌑</span>
+          <div class="feature-name">Daily Moon Reading</div>
+          <p class="feature-desc">A personalized AI reading each morning — your natal chart meeting the current sky. Direct and interpretive, never generic.</p>
         </div>
-        <div class="feature-cell">
-          <span class="feature-icon">✦</span>
-          <div class="feature-name">AI Sky Readings</div>
-          <p class="feature-desc">Daily reading from your natal chart, current transits, moon phase, and Vedic nakshatra. Refreshes every day. Choose your tradition.</p>
-        </div>
-        <div class="feature-cell">
-          <span class="feature-icon">📅</span>
-          <div class="feature-name">13-Cycle Calendar</div>
-          <p class="feature-desc">The year as 13 lunar cycles. Navigate your history by cycle, see energy bars for every day, log entries from any date.</p>
-        </div>
-        <div class="feature-cell">
+        <div class="feature-card">
           <span class="feature-icon">◈</span>
-          <div class="feature-name">Pattern Analysis</div>
-          <p class="feature-desc">Which moon phases are your peak periods? Which ones challenge you? Your personal lunar fingerprint emerges over time.</p>
+          <div class="feature-name">Cycle Pattern Tracking</div>
+          <p class="feature-desc">13 cycles per year. See how your energy and mood actually move across each 29-day cycle — not how you think they do.</p>
         </div>
-        <div class="feature-cell">
-          <span class="feature-icon">🌍</span>
+        <div class="feature-card">
+          <span class="feature-icon">✦</span>
+          <div class="feature-name">Vedic + Western Synthesis</div>
+          <p class="feature-desc">Nakshatra, tithi, and vara alongside Western transits. Your birth chart in both systems. Mayan Tzolkin overlays.</p>
+          <span class="feature-tag">Multi-tradition</span>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🌎</span>
           <div class="feature-name">Live Space Weather</div>
-          <p class="feature-desc">Real-time Kp index, solar wind speed, and geomagnetic activity. The electromagnetic field is part of your day.</p>
+          <p class="feature-desc">Kp index, solar wind speed, Bz field, and the Schumann Resonance spectrogram from Tomsk. Earth's electromagnetic field, live.</p>
         </div>
-        <div class="feature-cell">
-          <span class="feature-icon">🕉</span>
-          <div class="feature-name">Six Traditions</div>
-          <p class="feature-desc">Vedic, Goddess, Crystal, Elemental, Nature, or Source. Choose the lens through which the sky speaks to you.</p>
+        <div class="feature-card">
+          <span class="feature-icon">♀</span>
+          <div class="feature-name">Relationship Overlay</div>
+          <p class="feature-desc">How the current moon phase affects you and someone specific. Their natal chart against yours, read by AI for today.</p>
+          <span class="feature-tag purple">Plus</span>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">✶</span>
+          <div class="feature-name">Signs Tracker</div>
+          <p class="feature-desc">Log synchronicities, animals, numbers, visions. The AI finds patterns between your signs and your journal entries over time.</p>
+          <span class="feature-tag purple">Plus</span>
         </div>
       </div>
-    </div>
+    </section>
   </div>
-</section>
 
-<div class="divider"></div>
+  <!-- HOW IT WORKS -->
+  <div class="how-section">
+    <section>
+      <p class="section-label reveal">How it works</p>
+      <h2 class="section-title reveal">A record that grows with you</h2>
+      <p class="section-sub reveal">Takes 90 seconds each morning. Becomes more meaningful after one full cycle.</p>
 
-<!-- TRADITIONS -->
-<section class="section">
-  <div class="wrap">
-    <div class="intro-grid reveal">
+      <div class="steps reveal">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-title">Log your morning</div>
+          <p class="step-desc">Energy, mood, clarity, and what you're noticing. Dreams, intentions, practices. 90 seconds.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-title">Receive the sky</div>
+          <p class="step-desc">A personalized reading draws your natal chart into the current sky. What's actually active today, for you.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-title">See your patterns</div>
+          <p class="step-desc">After a few cycles, the Cycle tab shows you who you actually are — where your energy peaks, where you contract.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-title">Notice the connections</div>
+          <p class="step-desc">Your entries, your signs, the sky — correlated by AI. The patterns that run deeper than your conscious awareness.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- SIGNS TRACKER SPOTLIGHT -->
+  <section>
+    <div class="signs-section reveal">
       <div>
-        <span class="section-label">Your Tradition</span>
-        <h2 class="section-title">Choose your lens</h2>
-        <p class="section-body">
-          The same sky. Six different languages. 
-          Whether you speak in <strong>nakshatras</strong>, <strong>moon goddess archetypes</strong>, 
-          crystal resonance, or raw elemental force — Lunations speaks your dialect.
-        </p>
-        <div class="traditions-grid">
-          <span class="tradition-pill">🕉 Vedic</span>
-          <span class="tradition-pill">🌹 Goddess</span>
-          <span class="tradition-pill">💎 Crystal</span>
-          <span class="tradition-pill">🔥 Elemental</span>
-          <span class="tradition-pill">🌿 Nature</span>
-          <span class="tradition-pill">✦ Source</span>
+        <p class="signs-label">Signs Tracker</p>
+        <h3 class="signs-title">The field speaks. Now you can write it down.</h3>
+        <p class="signs-desc">Log synchronicities, animal appearances, number patterns, body signals — anything that feels like a message. Over time, the AI reads your signs against your journal entries and finds what's actually correlating.</p>
+        <a href="/app" class="btn-primary" style="display:inline-block;">Start Logging →</a>
+      </div>
+      <div class="signs-demo">
+        <div class="sign-demo-entry">
+          <div class="sign-demo-meta">Mar 26 · Synchronicity · Waxing Gibbous · Cancer</div>
+          Three ravens landed outside my window right as I was writing about the project ending
+        </div>
+        <div class="sign-demo-entry">
+          <div class="sign-demo-meta">Mar 24 · Number · Waxing Quarter · Cancer</div>
+          333 again. Woke at 3:03, saw it twice more before noon
+        </div>
+        <div class="sign-demo-entry">
+          <div class="sign-demo-meta">Mar 21 · Animal · New Moon · Pisces</div>
+          Red cardinal at the studio window while I was painting Kurukullā
+        </div>
+        <div class="sign-demo-entry" style="border-bottom:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(201,168,76,.1);">
+          <div class="sign-demo-meta" style="color:rgba(201,168,76,.5);">✦ Pattern Reading</div>
+          <span style="color:rgba(245,240,232,.6);font-style:italic;">Ravens and threshold animals are appearing at points of creative completion — specifically when you're ending one thing before knowing what comes next...</span>
         </div>
       </div>
-      <div>
-        <span class="section-label">Your Pattern</span>
-        <h2 class="section-title">The record speaks</h2>
-        <p class="section-body">
-          After 2–3 cycles, the data starts to mean something. 
-          You discover that <strong>your Waning Gibbous days</strong> are when you write best. 
-          That your energy crests at the Full Moon, not after it. 
-          That Mercury retrograde actually suits you fine.
-        </p>
-        <p class="section-body" style="margin-top:14px;">
-          This is not astrology as belief. It's astrology as <strong>personal data.</strong>
-        </p>
-      </div>
     </div>
+  </section>
+
+  <!-- TRADITIONS -->
+  <div id="traditions" style="padding: 0 0 80px;">
+    <section>
+      <div class="traditions reveal">
+        <p class="section-label">Built for depth</p>
+        <h2 class="section-title" style="margin-bottom:16px;">Every tradition that tracks the sky</h2>
+        <p style="font-size:17px;color:var(--cream-faint);font-style:italic;max-width:500px;margin:0 auto;">Switch between lenses at any time. The same day reads differently through each.</p>
+        <div class="tradition-pills">
+          <div class="tradition-pill">Western Astrology</div>
+          <div class="tradition-pill">Vedic · Sidereal</div>
+          <div class="tradition-pill">Nakshatra · 27 Stars</div>
+          <div class="tradition-pill">Tithi · Lunar Day</div>
+          <div class="tradition-pill">Mayan Tzolkin</div>
+          <div class="tradition-pill">13-Cycle Year</div>
+          <div class="tradition-pill">Schumann Resonance</div>
+          <div class="tradition-pill">Space Weather · Kp Index</div>
+        </div>
+      </div>
+    </section>
   </div>
-</section>
 
-<div class="divider"></div>
-
-<!-- QUOTES -->
-<section class="section">
-  <div class="wrap">
-    <span class="section-label reveal">From the practice</span>
-    <div class="quotes-grid">
-      <div class="quote-card reveal reveal-delay-1">
-        <span class="quote-mark">"</span>
-        <p class="quote-text">I've tried every journal app. This is the only one that feels like it knows the difference between a Scorpio Moon day and a Gemini Moon day. Because it actually does.</p>
-        <p class="quote-attr">Early user · 6 months of entries</p>
-      </div>
-      <div class="quote-card reveal reveal-delay-2">
-        <span class="quote-mark">"</span>
-        <p class="quote-text">The reading this morning was so accurate it was uncomfortable. And I mean that as a compliment.</p>
-        <p class="quote-attr">Early user · Vedic tradition</p>
-      </div>
-      <div class="quote-card reveal reveal-delay-1">
-        <span class="quote-mark">"</span>
-        <p class="quote-text">I now know that I need to rest during Waning Crescent. I used to fight it. Now I plan for it. That alone has been worth everything.</p>
-        <p class="quote-attr">Early user · Pattern analysis user</p>
-      </div>
-      <div class="quote-card reveal reveal-delay-2">
-        <span class="quote-mark">"</span>
-        <p class="quote-text">The space weather section sounds absurd until it's right three days in a row. I don't know what to do with that information but I can't stop looking at it.</p>
-        <p class="quote-attr">Early user · Skeptic turned believer</p>
-      </div>
+  <!-- QUOTE -->
+  <section>
+    <div class="quote-section reveal">
+      <p class="quote-text">"The sky does not change what you feel. It shows you what was already moving."</p>
+      <p class="quote-attr">Lunations · A lunar journal</p>
     </div>
+  </section>
+
+  <!-- PRICING -->
+  <div id="pricing" style="padding: 0 0 80px;">
+    <section>
+      <p class="section-label reveal">Pricing</p>
+      <h2 class="section-title reveal">Begin free.<br>Go deeper when you're ready.</h2>
+      <p class="section-sub reveal">Every tier includes the core journal. Paid tiers unlock AI depth, relationship tools, and pattern correlation.</p>
+
+      <div class="pricing-grid reveal">
+        <div class="price-card">
+          <div class="price-tier">Free</div>
+          <div class="price-amount">$<span>0</span></div>
+          <p class="price-period">forever</p>
+          <ul class="price-features">
+            <li>Daily moon reading (1/day)</li>
+            <li>Full journal with cycle tracking</li>
+            <li>Vedic + Western + Mayan calendar</li>
+            <li>Space weather + Schumann</li>
+            <li>13-cycle year overview</li>
+          </ul>
+          <a href="/app" class="price-btn price-btn-outline">Start for free →</a>
+        </div>
+        <div class="price-card featured">
+          <div class="price-tier">Plus</div>
+          <div class="price-amount"><sup>$</sup>7</div>
+          <p class="price-period">per month · or $49/year</p>
+          <ul class="price-features">
+            <li>Unlimited daily readings</li>
+            <li>AI journal prompts (natal-specific)</li>
+            <li>Follow-up questions on readings</li>
+            <li>Relationship Overlay</li>
+            <li>Signs Tracker + AI correlations</li>
+            <li>People tracking (partners, clients)</li>
+          </ul>
+          <a href="/app" class="price-btn price-btn-gold">Get Plus →</a>
+        </div>
+        <div class="price-card">
+          <div class="price-tier">Pro</div>
+          <div class="price-amount"><sup>$</sup>13</div>
+          <p class="price-period">per month · or $89/year</p>
+          <ul class="price-features">
+            <li>Everything in Plus</li>
+            <li>Multi-person cycle tracking</li>
+            <li>PDF cycle reports</li>
+            <li>Priority AI response</li>
+            <li>Early access to new features</li>
+          </ul>
+          <a href="/app" class="price-btn price-btn-outline">Get Pro →</a>
+        </div>
+      </div>
+    </section>
   </div>
-</section>
 
-<div class="divider"></div>
-
-<!-- PRICING -->
-<section class="section" id="pricing">
-  <div class="wrap">
-    <div class="pricing-intro reveal">
-      <span class="section-label" style="display:block;text-align:center;">Simple pricing</span>
-      <h2 class="section-title" style="text-align:center;">Start free. Go deeper when you're ready.</h2>
-      <p style="font-size:17px;color:var(--text-dim);font-style:italic;text-align:center;max-width:480px;margin:12px auto 0;">The basic practice is free forever. Unlock the full depth with Plus or Pro.</p>
+  <!-- FINAL CTA -->
+  <div class="final-cta">
+    <div class="divider" style="margin-bottom:60px;">
+      <div class="divider-line"></div>
+      <span class="divider-glyph">✦</span>
+      <div class="divider-line"></div>
     </div>
-
-    <div class="pricing-toggle reveal" id="pricingToggle">
-      <span id="toggleLabelMonth" style="color:var(--gold);">Monthly</span>
-      <div class="toggle-track" id="toggleTrack" onclick="toggleBilling()">
-        <div class="toggle-thumb"></div>
-      </div>
-      <span id="toggleLabelYear">Yearly</span>
-      <span class="save-pill" id="savePill" style="opacity:.4;">Save 40%</span>
-    </div>
-
-    <div class="pricing-grid reveal">
-      <!-- FREE -->
-      <div class="pricing-card">
-        <div class="pricing-tier">Free</div>
-        <div class="pricing-price"><sup></sup>$0</div>
-        <div class="pricing-price-sub">forever</div>
-        <ul class="pricing-features">
-          <li>Daily entry — all four metrics</li>
-          <li>Moon phase tracking</li>
-          <li>AI readings (rate limited)</li>
-          <li>13-cycle calendar</li>
-          <li>Local storage — one device</li>
-        </ul>
-        <a href="/app" class="pricing-cta">Begin Free</a>
-      </div>
-      <!-- PLUS -->
-      <div class="pricing-card">
-        <div class="pricing-card-badge">Most popular</div>
-        <div class="pricing-tier">Plus</div>
-        <div class="pricing-price" id="plusPrice"><sup>$</sup>7</div>
-        <div class="pricing-price-sub" id="plusSub">per month</div>
-        <ul class="pricing-features">
-          <li>Unlimited AI readings with natal chart</li>
-          <li>Cloud sync across all devices</li>
-          <li>Full pattern analysis + history</li>
-          <li>Evening entry + all fields</li>
-          <li>PDF cycle reports</li>
-          <li>Priority reading generation</li>
-        </ul>
-        <a href="/app" class="pricing-cta primary" id="plusCta">Begin Plus</a>
-      </div>
-      <!-- PRO -->
-      <div class="pricing-card">
-        <div class="pricing-tier">Pro</div>
-        <div class="pricing-price" id="proPrice"><sup>$</sup>13</div>
-        <div class="pricing-price-sub" id="proSub">per month</div>
-        <ul class="pricing-features">
-          <li>Everything in Plus</li>
-          <li>AI cycle summaries</li>
-          <li>Custom tradition saved to profile</li>
-          <li>Earliest access to new features</li>
-          <li>Direct support channel</li>
-        </ul>
-        <a href="/app" class="pricing-cta" id="proCta">Begin Pro</a>
-      </div>
-    </div>
-    <p class="pricing-note reveal">Cancel anytime. Secure checkout via Stripe. Your data stays yours on any plan.</p>
+    <div class="hero-moon" style="font-size:48px;margin-bottom:24px;">🌑</div>
+    <h2 class="section-title reveal" style="margin-bottom:16px;">The new moon is always<br>a good place to begin</h2>
+    <p class="section-sub reveal" style="margin-bottom:40px;">Your first cycle is free. No card required.</p>
+    <a href="/app" class="btn-primary reveal">Open Lunations →</a>
   </div>
-</section>
 
-<div class="divider"></div>
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Lunations</div>
+    <ul class="footer-links">
+      <li><a href="/app">App</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="/privacy">Privacy</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/wellness">Wellness &amp; AI</a></li>
+      <li><a href="mailto:hello@lunations.app">Contact</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 Lunations</p>
+  </footer>
 
-<!-- FINAL CTA -->
-<section class="final-cta">
-  <h2 class="final-cta-title reveal">The pattern is already there.</h2>
-  <p class="final-cta-sub reveal reveal-delay-1">You just need a mirror that moves with the sky.</p>
-  <div class="final-actions reveal reveal-delay-2">
-    <a href="/app" class="btn-primary">Begin Your Record</a>
-  </div>
-  <div class="trust-items reveal reveal-delay-3">
-    <span class="trust-item">Free to start</span>
-    <span class="trust-item">No credit card required</span>
-    <span class="trust-item">Works on any device</span>
-    <span class="trust-item">Your data stays yours</span>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <span class="footer-logo">Lunations</span>
-  <div class="footer-links">
-    <a href="/app" class="footer-link">App</a>
-    <a href="#pricing" class="footer-link">Pricing</a>
-    <a href="/privacy" class="footer-link">Privacy</a>
-    <a href="/terms" class="footer-link">Terms</a>
-    <a href="mailto:hello@lunations.app" class="footer-link">Contact</a>
-  </div>
-  <span class="footer-copy">Built with devotion · lunations.app</span>
-</footer>
+</div>
 
 <script>
-// ── NAV scroll ──────────────────────────────────────────────────────────
-window.addEventListener('scroll', () => {
-  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
-});
+  // Scroll reveal
+  var reveals = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(function(el) { observer.observe(el); });
 
-// ── Scroll reveal ───────────────────────────────────────────────────────
-const revealEls = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-revealEls.forEach(el => observer.observe(el));
-
-// ── Cycle dots ──────────────────────────────────────────────────────────
-const phases = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘','🌑','🌒','🌓','🌔','🌕'];
-const dotsWrap = document.getElementById('cycleDots');
-if (dotsWrap) {
-  phases.forEach(p => {
-    const d = document.createElement('span');
-    d.style.cssText = 'font-size:14px;opacity:.5;';
-    d.textContent = p;
-    dotsWrap.appendChild(d);
+  // Stagger feature cards
+  document.querySelectorAll('.feature-card').forEach(function(el, i) {
+    el.style.transitionDelay = (i * 0.06) + 's';
   });
-}
-
-// ── Billing toggle ──────────────────────────────────────────────────────
-let isYearly = false;
-function toggleBilling() {
-  isYearly = !isYearly;
-  const track = document.getElementById('toggleTrack');
-  track.classList.toggle('yearly', isYearly);
-  document.getElementById('toggleLabelMonth').style.color = isYearly ? 'var(--text-dim)' : 'var(--gold)';
-  document.getElementById('toggleLabelYear').style.color = isYearly ? 'var(--gold)' : 'var(--text-dim)';
-  document.getElementById('savePill').style.opacity = isYearly ? '1' : '.4';
-
-  if (isYearly) {
-    document.getElementById('plusPrice').innerHTML = '<sup>$</sup>4';
-    document.getElementById('plusSub').textContent = 'per month, billed $49/yr';
-    document.getElementById('proPrice').innerHTML = '<sup>$</sup>7';
-    document.getElementById('proSub').textContent = 'per month, billed $89/yr';
-    document.getElementById('plusCta').href = '/app?plan=plus_yearly';
-    document.getElementById('proCta').href = '/app?plan=pro_yearly';
-  } else {
-    document.getElementById('plusPrice').innerHTML = '<sup>$</sup>7';
-    document.getElementById('plusSub').textContent = 'per month';
-    document.getElementById('proPrice').innerHTML = '<sup>$</sup>13';
-    document.getElementById('proSub').textContent = 'per month';
-    document.getElementById('plusCta').href = '/app';
-    document.getElementById('proCta').href = '/app';
-  }
-}
 </script>
+
 </body>
 </html>
