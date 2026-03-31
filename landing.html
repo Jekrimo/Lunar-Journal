@@ -944,8 +944,8 @@
       <span class="divider-glyph">✦</span>
       <div class="divider-line"></div>
     </div>
-    <div class="hero-moon" style="font-size:48px;margin-bottom:24px;">🌑</div>
-    <h2 class="section-title reveal" style="margin-bottom:16px;">The new moon is always<br>a good place to begin</h2>
+    <div class="hero-moon" id="ctaMoon" style="font-size:48px;margin-bottom:24px;">🌕</div>
+    <h2 class="section-title reveal" id="ctaHeadline" style="margin-bottom:16px;">The sky is speaking right now.<br>Start listening.</h2>
     <p class="section-sub reveal" style="margin-bottom:40px;">Your first cycle is free. No card required.</p>
     <a href="/app" class="btn-primary reveal">Open Lunations →</a>
   </div>
@@ -983,6 +983,28 @@
   document.querySelectorAll('.feature-card').forEach(function(el, i) {
     el.style.transitionDelay = (i * 0.06) + 's';
   });
+
+  // Dynamic moon phase for CTA
+  (function(){
+    var SYN=29.53058867, REF=new Date('2000-01-06T18:14:00Z').getTime();
+    var age=((Date.now()-REF)/86400000)%SYN; if(age<0)age+=SYN;
+    var pct=Math.round((1-Math.cos(age/SYN*2*Math.PI))/2*100);
+    var tbl=[[1.85,'New Moon','🌑'],[7.38,'Waxing Crescent','🌒'],[9.22,'First Quarter','🌓'],[14.77,'Waxing Gibbous','🌔'],[16.61,'Full Moon','🌕'],[22.15,'Waning Gibbous','🌖'],[23.99,'Last Quarter','🌗'],[99,'Waning Crescent','🌘']];
+    var row=tbl.find(function(r){return age<r[0];})||tbl[7];
+    var name=row[1],emoji=row[2];
+    var msgs={
+      'New Moon':'The new moon is always<br>a good place to begin',
+      'Waxing Crescent':'The crescent is building.<br>Set your intention now.',
+      'First Quarter':'Half-lit and rising.<br>A perfect time to commit.',
+      'Waxing Gibbous':'The light is almost full.<br>Trust what you\'ve been building.',
+      'Full Moon':'The full moon sees everything.<br>Step into that clarity.',
+      'Waning Gibbous':'The harvest moon is glowing.<br>Gather what you\'ve learned.',
+      'Last Quarter':'Half the cycle is releasing.<br>Let go of what\'s finished.',
+      'Waning Crescent':'The dark moon approaches.<br>Rest before the next beginning.'
+    };
+    document.getElementById('ctaMoon').textContent=emoji;
+    document.getElementById('ctaHeadline').innerHTML=msgs[name]||msgs['New Moon'];
+  })();
 </script>
 
 </body>
