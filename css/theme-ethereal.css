@@ -1,7 +1,8 @@
-/* ═══ ETHEREAL THEME — Lunations UI Overhaul ═══ */
+/* ═══ ETHEREAL THEME — Warm Amethyst / Golden Mist ═══ */
 
-/* Extended color system */
+/* Extended color system — warmer, deeper than Classic */
 :root {
+  --gold:#d4a84c; --gold-pale:#f0d89a; --gold-deep:#a07828;
   --purple:#b48cdc; --purple-glow:rgba(180,140,220,.06); --purple-border:rgba(180,140,220,.18);
   --blue:#64a0ff; --blue-glow:rgba(100,160,255,.06); --blue-border:rgba(100,160,255,.15);
   --green:#78c8a0; --green-glow:rgba(120,200,160,.06); --green-border:rgba(120,200,160,.15);
@@ -10,6 +11,18 @@
   --surface-1:rgba(245,240,232,.05); --surface-2:rgba(245,240,232,.03); --surface-3:rgba(245,240,232,.015);
   --text-xs:clamp(9px,1.8vw,10px); --text-sm:clamp(12px,2.2vw,13px); --text-base:clamp(14px,2.8vw,16px); --text-lg:clamp(17px,3.2vw,20px); --text-xl:clamp(20px,3.8vw,24px);
 }
+
+/* Deeper warm background */
+body{background:#0c0908!important;}
+.starfield{background:radial-gradient(ellipse at 15% 20%,rgba(35,18,50,.8) 0%,transparent 50%),radial-gradient(ellipse at 80% 65%,rgba(50,25,12,.5) 0%,transparent 45%),radial-gradient(ellipse at 50% 50%,#0c0908 0%,#080604 60%,#040302 100%)!important;}
+
+/* Nav tabs — warmer glass */
+.nav-tabs{background:rgba(12,9,8,.8)!important;}
+.nav-tab.active{background:rgba(212,168,76,.12)!important;box-shadow:0 0 20px rgba(212,168,76,.1)!important;}
+
+/* Cards — warmer tint */
+.astro-card{background:rgba(245,230,210,.055)!important;}
+.reading-card{background:rgba(245,230,210,.05)!important;}
 
 /* Aurora background */
 .starfield{overflow:hidden;}

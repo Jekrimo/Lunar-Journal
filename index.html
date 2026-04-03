@@ -87,7 +87,6 @@
   <nav class="nav-tabs" role="tablist" aria-label="Main navigation" style="flex:1;margin-bottom:0;border-bottom:none;">
     <button class="nav-tab active" role="tab" aria-selected="true" onclick="navTabTap('today',this)">Today</button>
     <button class="nav-tab" role="tab" aria-selected="false" onclick="navTabTap('cycles',this)">Cycles</button>
-    <button class="nav-tab" role="tab" aria-selected="false" onclick="navTabTap('cycle',this)">Calendar</button>
     <button class="nav-tab" role="tab" aria-selected="false" onclick="navTabTap('entries',this)">Journal</button>
     <button class="nav-tab" role="tab" aria-selected="false" onclick="navTabTap('sky',this)">Sky</button>
   </nav>
@@ -171,16 +170,18 @@
 <!-- TODAY -->
 <div id="view-today" class="view active">
 
-  <!-- STREAK + NATAL BADGE -->
-  <div id="natalBadgeWrap"></div>
+  <!-- STREAK + NATAL BADGE (inline row) -->
   <div id="profileNudge"></div>
-  <div class="streak-bar" id="streakBar" style="display:none;">
-    <div class="streak-badge">
-      <span class="streak-flame">🔥</span>
-      <span class="streak-num" id="streakNum">0</span>
-      <span class="streak-label">day streak</span>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+    <div id="natalBadgeWrap" onclick="if(typeof openAccountModal==='function')openAccountModal();" style="cursor:pointer;"></div>
+    <div class="streak-bar" id="streakBar" style="display:none;margin:0;">
+      <div class="streak-badge">
+        <span class="streak-flame">🔥</span>
+        <span class="streak-num" id="streakNum">0</span>
+        <span class="streak-label">day streak</span>
+      </div>
+      <div id="streakMsg" style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;"></div>
     </div>
-    <div id="streakMsg" style="font-size:13px;color:rgba(245,240,232,.3);font-style:italic;"></div>
   </div>
 
   <!-- ══ SECTION 1: NOW ══ -->
@@ -521,8 +522,17 @@
 <div id="view-compare" class="view"></div>
 <div id="view-patterns" class="view"></div>
 
-<!-- CYCLES VIEW (merged: Last Cycle + Patterns + Sky Forecast) -->
+<!-- CYCLES VIEW (merged: Calendar + Last Cycle + Patterns + Sky Forecast) -->
 <div id="view-cycles" class="view">
+
+  <!-- CALENDAR (moved from separate tab) -->
+  <div class="today-section" id="secCalendar">
+    <div class="today-section-header" onclick="toggleTodaySection('secCalendar')">
+      <span class="today-section-label">📅 Calendar</span>
+      <span class="today-section-chevron">&#9662;</span>
+    </div>
+    <div class="today-section-body" id="calendarInCycles"></div>
+  </div>
 
   <div class="today-section" id="secCycleSummary">
     <div class="today-section-header" onclick="toggleTodaySection('secCycleSummary')">
@@ -715,7 +725,6 @@
       <button onclick="nextCycle()">›</button>
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
-      <div style="font-family:'Cinzel',serif;font-size:11px;color:rgba(245,240,232,.3);letter-spacing:.1em;">CYCLE <span id="cycleNum">—</span> OF 13</div>
       <button class="gcal-btn" onclick="exportToGCal()" title="Export to Google Calendar">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         GCal

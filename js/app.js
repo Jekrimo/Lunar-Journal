@@ -257,6 +257,16 @@ function setCalView(view){
   if(view==='greg') renderGregCalendar();
 }
 
+function renderCycleInCycles(){
+  // Move the calendar view content into the Cycles tab container
+  var container = document.getElementById('calendarInCycles');
+  var source = document.getElementById('view-cycle');
+  if(container && source && !container.hasChildNodes()){
+    // Move all children from view-cycle into the container
+    while(source.firstChild) container.appendChild(source.firstChild);
+  }
+  renderCycle();
+}
 function renderCycle(){
   const nm=getCycleStart(cycleOffset),entries=loadEntries(),todayKey=entryKey(new Date()),ms=moonSignApprox(nm);
   document.getElementById('cycleLabel').textContent=`${ms.symbol} ${ms.name} Cycle`;
@@ -1366,7 +1376,7 @@ function switchView(name,btn){
     viewEl.classList.add('active');
     if(btn)btn.classList.add('active');
   }
-  if(name==='cycles'){renderComparison();renderPatterns();renderSkyForecast();}
+  if(name==='cycles'){renderCycleInCycles();renderComparison();renderPatterns();renderSkyForecast();}
   if(name==='cycle')renderCycle();
   if(name==='entries')renderEntries();
   if(name==='sky')renderSky();
