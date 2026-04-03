@@ -12,6 +12,9 @@
   --text-xs:clamp(9px,1.8vw,10px); --text-sm:clamp(12px,2.2vw,13px); --text-base:clamp(14px,2.8vw,16px); --text-lg:clamp(17px,3.2vw,20px); --text-xl:clamp(20px,3.8vw,24px);
 }
 
+/* Header — warmer glow */
+.site-header-img{filter:brightness(1.15) contrast(1.05) sepia(.15)!important;opacity:.85!important;}
+
 /* Deeper warm background */
 body{background:#0c0908!important;}
 .starfield{background:radial-gradient(ellipse at 15% 20%,rgba(35,18,50,.8) 0%,transparent 50%),radial-gradient(ellipse at 80% 65%,rgba(50,25,12,.5) 0%,transparent 45%),radial-gradient(ellipse at 50% 50%,#0c0908 0%,#080604 60%,#040302 100%)!important;}
