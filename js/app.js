@@ -1810,6 +1810,12 @@ async function pullCloudProfile(){
         notes: profile.notes||'',
       };
       saveProfileData(localProfile);
+      // Restore tone and tradition from cloud settings
+      if(profile.settings){
+        if(profile.settings.tone){ localStorage.setItem(TONE_KEY,profile.settings.tone); try{updateToneLabel();renderToneGrid();}catch(e){} }
+        if(profile.settings.tradition){ localStorage.setItem(MK,profile.settings.tradition); }
+      }
+      if(profile.tone){ localStorage.setItem(TONE_KEY,profile.tone); try{updateToneLabel();renderToneGrid();}catch(e){} }
       localStorage.setItem('lunations_profile_loaded_v1', '1');
       console.log('Profile loaded from cloud:', localProfile.name);
       return true;
@@ -2831,6 +2837,8 @@ function getCurrentMode(){ return localStorage.getItem(MK) || 'vedic'; }
 function setMode(mode){
   localStorage.setItem(MK, mode);
   localStorage.removeItem(RK);
+  var p=loadProfile();if(p){p.tradition=mode;saveProfileData(p);}
+  pushSettingsToCloud();
   renderToday();
   renderVedicPanel();
   // Refresh modal grids if open
@@ -2845,6 +2853,12 @@ function setMode(mode){
   }
 }
 function getModeData(){ return MODES[getCurrentMode()] || MODES.vedic; }
+function pushSettingsToCloud(){
+  if(!currentUser||!getAccessToken())return;
+  var p=loadProfile();if(!p)return;
+  var payload={name:p.name||'',dob:p.dob||'',time:p.time||'',rising:p.rising||'',birthCity:p.birthCity||'',birthLat:p.birthLat||null,birthLng:p.birthLng||null,birthTz:p.birthTz||'',notes:p.notes||'',settings:{tone:getAITone(),tradition:getCurrentMode()}};
+  fetch('/api/profile',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+getAccessToken()},body:JSON.stringify({profile:payload})}).catch(function(){});
+}
 
 
 // ─── MODE RENDERING ───────────────────────────────────────────────────────────
@@ -3696,28 +3710,23 @@ function renderSharePreview(){
 
 async function shareCardImage(el){
   if(!el){showToast('Nothing to share');return;}
-  showToast('Preparing image…');
+  // Build share text from the card content
+  var title='My Lunations Cycle';
+  var textEl=el.cloneNode(true);
+  var shareText=(textEl.innerText||'').replace(/\n{3,}/g,'\n\n').trim().slice(0,500);
+  var shareData={title:title,text:shareText+'\n\nTrack your lunar cycles at lunations.app',url:'https://lunations.app'};
   try{
-    var canvas=await html2canvas(el,{backgroundColor:null,scale:2,useCORS:true});
-    var blob=await new Promise(function(resolve){canvas.toBlob(resolve,'image/png');});
-    if(!blob){showToast('Could not create image');return;}
-    var file=new File([blob],'lunations-cycle.png',{type:'image/png'});
-    // Try native share with image file
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:'My Lunations Cycle',url:'https://lunations.app'});
+    if(navigator.share){
+      await navigator.share(shareData);
       return;
     }
-    // Fallback: download the image
-    var url=URL.createObjectURL(blob);
-    var a=document.createElement('a');a.href=url;a.download='lunations-cycle.png';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Image saved — share it with lunations.app');
   }catch(e){
-    if(e.name==='AbortError')return; // user cancelled share sheet
-    console.warn('Share image error:',e);
-    navigator.clipboard?.writeText('https://lunations.app').then(function(){showToast('Link copied — share with lunations.app');});
+    if(e.name==='AbortError')return;
   }
+  // Fallback: copy to clipboard
+  var copyText=shareText+'\n\nhttps://lunations.app';
+  try{await navigator.clipboard.writeText(copyText);showToast('Copied to clipboard — paste to share');}
+  catch(e){showToast('Could not share');}
 }
 
 async function shareCard(){
@@ -4287,29 +4296,9 @@ function toggleTodaySection(id){
   const chevron = section.querySelector('.today-section-chevron');
   const isCollapsed = section.classList.contains('today-section-collapsed');
 
-  if(_themeFeatures){
-    if(isCollapsed){
-      body.style.display = 'block';
-      body.style.maxHeight = body.scrollHeight + 'px';
-      body.style.overflow = 'hidden';
-      section.classList.remove('today-section-collapsed');
-      chevron.style.transform = '';
-      setTimeout(() => { body.style.maxHeight = ''; body.style.overflow = ''; }, 400);
-    } else {
-      body.style.maxHeight = body.scrollHeight + 'px';
-      body.style.overflow = 'hidden';
-      requestAnimationFrame(() => {
-        body.style.maxHeight = '0px';
-        section.classList.add('today-section-collapsed');
-        chevron.style.transform = 'rotate(-90deg)';
-      });
-      setTimeout(() => { body.style.display = 'none'; }, 400);
-    }
-  } else {
-    section.classList.toggle('today-section-collapsed');
-    chevron.style.transform = isCollapsed ? '' : 'rotate(-90deg)';
-    body.style.display = isCollapsed ? 'block' : 'none';
-  }
+  section.classList.toggle('today-section-collapsed');
+  chevron.style.transform = isCollapsed ? '' : 'rotate(-90deg)';
+  body.style.display = isCollapsed ? 'block' : 'none';
 
   // Save preference
   const prefs = getSectionPrefs();
@@ -5025,6 +5014,7 @@ function setAITone(id){
   localStorage.removeItem(RK);
   showToast('✦ Tone: '+(AI_TONES.find(t=>t.id===id)?.label||id));
   var p=loadProfile();if(p){p.tone=id;saveProfileData(p);}
+  pushSettingsToCloud();
   // Refresh modal grids if open
   if(document.getElementById('settingsModal')?.classList.contains('open')){
     const smTG = document.getElementById('smToneGrid');
@@ -5742,9 +5732,8 @@ function dismissLoadingScreen(){
 
 function enterApp(){
   localStorage.setItem('lj_entered','1');
+  dismissLoadingScreen();
   var ls=document.getElementById('landingScreen');if(ls)ls.classList.add('hidden');
-  // Only open auth modal if user has never entered before (first visit)
-  // Returning guests or users who dismissed it before can get straight to the app
   if(!localStorage.getItem('lj_auth_seen')){
     localStorage.setItem('lj_auth_seen','1');
     setTimeout(openAuthModal,200);

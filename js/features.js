@@ -1395,7 +1395,7 @@ async function loadSignsCorrelation(force){
   var allKeys=Object.keys(entries).sort();
   var eSum=allKeys.slice(-30).map(function(k){var e=entries[k];return k+': energy '+e.energy+', mood '+e.mood+(e.text?', "'+e.text.slice(0,50)+'"':'');}).join('\n');
   var sSum=recentSigns.map(function(s){return new Date(s.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' ['+(s.categories||[]).join(',')+'] '+s.moon_phase+': '+s.text+(s.context?' (while: '+s.context+')':'');}).join('\n');
-  var prompt='Find 1-2 genuine patterns between these recent signs and the past month of journal entries. Be specific and concise, under 80 words, second person.\n\nJournal (30 days):\n'+(eSum||'No entries')+'\n\nSigns (last 3 days):\n'+sSum;
+  var prompt='Find 1-2 genuine patterns between these recent signs and the past month of journal entries. Be specific and concise. STRICT LIMIT: under 50 words total. Second person.\n\nJournal (30 days):\n'+(eSum||'No entries')+'\n\nSigns (last 3 days):\n'+sSum;
   try{
     var res=await fetch('/api/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
     if(res.status===429){wrap.innerHTML='<div style="font-size:13px;color:rgba(245,240,232,.25);font-style:italic;">Reading limit reached \u2014 try again in a few minutes.</div>';return;}

@@ -11,9 +11,9 @@
   .site-title{font-family:'Cinzel',serif;font-size:clamp(28px,5vw,48px);color:var(--gold);letter-spacing:.12em;text-transform:uppercase;line-height:1;text-shadow:0 0 40px rgba(201,168,76,.3);}
   .site-subtitle{font-family:'EB Garamond',serif;font-style:italic;color:rgba(245,240,232,.5);font-size:16px;margin-top:8px;letter-spacing:.05em;}
   .header-rule{width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px auto 0;}
-  .nav-tabs{display:flex;border-bottom:none;margin-bottom:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;background:rgba(15,12,9,.75);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(245,240,232,.07);border-radius:20px;padding:4px;gap:2px;}
+  .nav-tabs{display:flex;border-bottom:none;margin-bottom:0;overflow:hidden;background:rgba(15,12,9,.75);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(245,240,232,.07);border-radius:20px;padding:4px;gap:1px;}
   .nav-tabs::-webkit-scrollbar{display:none;}
-  .nav-tab{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:rgba(245,240,232,.4);padding:9px 16px;background:none;border:none;border-bottom:none;border-radius:16px;cursor:pointer;transition:all .25s var(--spring);white-space:nowrap;}
+  .nav-tab{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.04em;color:rgba(245,240,232,.4);padding:9px 0;background:none;border:none;border-bottom:none;border-radius:16px;cursor:pointer;transition:all .25s var(--spring);white-space:nowrap;flex:1;text-align:center;min-width:0;}
   .nav-tab:hover{color:rgba(245,240,232,.7);background:rgba(245,240,232,.03);}
   .nav-tab.active{color:var(--gold);background:rgba(201,168,76,.1);box-shadow:0 0 16px rgba(201,168,76,.08);border-bottom-color:transparent;}
   .view{display:none;}.view.active{display:block;}
@@ -875,8 +875,16 @@
   .bc-cell{border-radius:12px!important;}
   .house-cell{border-radius:10px!important;}
 
-  /* ═══ UI OVERHAUL: SPRING CURVES EVERYWHERE ═══ */
-  .today-section-body{transition:max-height .35s var(--spring),padding .35s var(--spring)!important;}
+  /* ═══ UI OVERHAUL ═══ */
   .side-menu-item{transition:all .2s var(--spring)!important;}
   .side-menu-item:active{transform:scale(0.97);}
   .reading-refresh{transition:color .2s var(--spring)!important;}
+
+  /* ═══ MOBILE SCROLL PERFORMANCE ═══ */
+  .starfield{will-change:auto;transform:translateZ(0);}
+  .app-shell{-webkit-overflow-scrolling:touch;}
+  @media(max-width:768px){
+    .astro-card{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+    .nav-tabs{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+    .starfield::after{display:none;}
+  }

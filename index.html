@@ -37,7 +37,13 @@
   </div>
   <div class="loading-text">Lunations</div>
 </div>
-<script>if(!localStorage.getItem('lj_entered'))document.getElementById('loadingScreen').style.display='none';</script>
+<script>
+(function(){
+  var el=document.getElementById('loadingScreen');
+  // Always show loading screen — it covers initial render for all users
+  // Landing screen (z-index 400) will be visible underneath after loading dismisses
+})();
+</script>
 <!-- FIXED BANNERS -->
 <div id="upgradeBanner" class="upgrade-success-banner">✦ Welcome — your upgrade is active</div>
 <div id="pwaBanner" class="pwa-banner">
@@ -908,12 +914,6 @@
   </div>
 
   <div class="astro-card" style="margin-bottom:20px;">
-    <div class="card-label" style="margin-bottom:16px;">App Icon</div>
-    <div style="font-size:14px;color:rgba(245,240,232,.5);font-style:italic;margin-bottom:16px;">Choose your moon glyph — appears in the header and throughout the app.</div>
-    <div id="iconGrid" style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;"></div>
-  </div>
-
-  <div class="astro-card" style="margin-bottom:20px;">
     <div class="card-label" style="margin-bottom:16px;">Display</div>
     <div style="display:flex;flex-direction:column;gap:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -1268,8 +1268,6 @@
             <label class="toggle-wrap"><input type="checkbox" id="smToggleChinese" onchange="saveSetting('showChinese',this.checked);renderToday()"><span class="toggle"></span></label>
           </div>
         </div>
-        <div style="font-size:12px;color:rgba(245,240,232,.3);margin-bottom:8px;">App Icon</div>
-        <div id="smIconGrid" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
       </div>
       <hr class="sm-divider">
 
