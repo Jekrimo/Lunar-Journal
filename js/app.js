@@ -5603,12 +5603,15 @@ restoreFromIDB().then(restored => {
   renderToday();
   setTimeout(restoreLastTab, 100);
   dismissLoadingScreen();
-});
+}).catch(function(){ dismissLoadingScreen(); });
+
+// Safety net: always dismiss loading screen after 5s no matter what
+setTimeout(dismissLoadingScreen, 5000);
 
 function dismissLoadingScreen(){
   var el=document.getElementById('loadingScreen');
-  if(!el) return;
-  // Minimum 1.2s display so the animation is visible
+  if(!el||el.dataset.dismissed) return;
+  el.dataset.dismissed='1';
   var elapsed=performance.now();
   var minMs=1200;
   var delay=Math.max(0,minMs-elapsed);
