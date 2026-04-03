@@ -38,18 +38,22 @@ function applyTheme(themeId){
     localStorage.setItem(THEME_STORAGE_KEY, 'classic');
   }
 
+  var prevTheme = _currentTheme;
   _currentTheme = themeId;
   _themeFeatures = theme.features;
   document.documentElement.setAttribute('data-theme', themeId);
 
-  // Load/unload theme CSS
-  if(_themeStyleEl){ _themeStyleEl.remove(); _themeStyleEl = null; }
-  if(theme.css){
-    _themeStyleEl = document.createElement('link');
-    _themeStyleEl.rel = 'stylesheet';
-    _themeStyleEl.href = theme.css;
-    _themeStyleEl.id = 'theme-css';
-    document.head.appendChild(_themeStyleEl);
+  // Load/unload theme CSS — skip if same theme already loaded
+  var currentHref = _themeStyleEl ? _themeStyleEl.getAttribute('href') : null;
+  if(currentHref !== (theme.css || null)){
+    if(_themeStyleEl){ _themeStyleEl.remove(); _themeStyleEl = null; }
+    if(theme.css){
+      _themeStyleEl = document.createElement('link');
+      _themeStyleEl.rel = 'stylesheet';
+      _themeStyleEl.href = theme.css;
+      _themeStyleEl.id = 'theme-css';
+      document.head.appendChild(_themeStyleEl);
+    }
   }
 
   // Toggle aurora visibility
