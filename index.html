@@ -66,7 +66,7 @@
   <button class="landing-cta" onclick="enterApp()">Begin Your Record</button>
   <button onclick="enterApp();setTimeout(openAuthModal,400);" style="background:none;border:none;color:rgba(245,240,232,.3);font-size:13px;font-style:italic;cursor:pointer;margin-top:12px;font-family:'EB Garamond',serif;">Sign in to existing account →</button>
 </div>
-<div class="starfield"></div>
+<div class="starfield"><div class="aurora"></div></div>
 <div class="app-shell">
 
 <header class="site-header">
@@ -78,13 +78,12 @@
 </header>
 
 <div class="top-bar">
-  <nav class="nav-tabs" style="flex:1;margin-bottom:0;border-bottom:none;">
-    <button class="nav-tab active" onclick="navTabTap('today',this)">Today</button>
-    <button class="nav-tab" onclick="navTabTap('cycles',this)">Cycles</button>
-    <button class="nav-tab" onclick="navTabTap('cycle',this)">Calendar</button>
-    <button class="nav-tab" onclick="navTabTap('entries',this)">Journal</button>
-    <button class="nav-tab" onclick="navTabTap('sky',this)">Sky</button>
-
+  <nav class="nav-tabs" role="tablist" aria-label="Main navigation" style="flex:1;margin-bottom:0;border-bottom:none;">
+    <button class="nav-tab active" role="tab" aria-selected="true" onclick="navTabTap('today',this)">Today</button>
+    <button class="nav-tab" role="tab" aria-selected="false" onclick="navTabTap('cycles',this)">Cycles</button>
+    <button class="nav-tab" role="tab" aria-selected="false" onclick="navTabTap('cycle',this)">Calendar</button>
+    <button class="nav-tab" role="tab" aria-selected="false" onclick="navTabTap('entries',this)">Journal</button>
+    <button class="nav-tab" role="tab" aria-selected="false" onclick="navTabTap('sky',this)">Sky</button>
   </nav>
   <button class="hamburger" id="hamburgerBtn" onclick="toggleSideMenu()" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -1047,7 +1046,7 @@
 <!-- AUTH MODAL -->
 <div class="modal-overlay" id="authModal">
   <div class="modal-box" style="max-width:420px;">
-    <button class="modal-close" onclick="closeAuthModal()">×</button>
+    <button class="modal-close" aria-label="Close" onclick="closeAuthModal()">×</button>
 
     <!-- Sign in / Sign up panel -->
     <div id="authPanel">
@@ -1098,7 +1097,7 @@
 <!-- EDIT ENTRY MODAL -->
 <div class="modal-overlay" id="editModal">
   <div class="modal-box" style="max-width:560px;">
-    <button class="modal-close" onclick="closeEditModal()">×</button>
+    <button class="modal-close" aria-label="Close" onclick="closeEditModal()">×</button>
     <div class="modal-title" id="editModalTitle">Edit Entry</div>
     <input type="hidden" id="editDateKey">
 
@@ -1142,7 +1141,7 @@
 <!-- INTENTION MODAL -->
 <div class="modal-overlay" id="intentionModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeIntentionModal()">×</button>
+    <button class="modal-close" aria-label="Close" onclick="closeIntentionModal()">×</button>
     <div class="modal-title">Cycle Intention</div>
     <p style="font-size:15px;color:rgba(245,240,232,.45);font-style:italic;line-height:1.7;margin-bottom:20px;">Set an intention at the new moon. It will remain visible throughout this 29-day cycle as your thread of continuity.</p>
     <textarea class="journal-text" id="intentionInput" style="min-height:100px;" placeholder="This cycle I intend to…"></textarea>
@@ -1153,7 +1152,7 @@
 <!-- DAY MODAL -->
 <div class="modal-overlay" id="dayModal" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">×</button>
+    <button class="modal-close" aria-label="Close" onclick="closeModal()">×</button>
     <div class="modal-title" id="modalTitle">—</div>
     <div id="modalContent"></div>
   </div>
@@ -1208,7 +1207,7 @@
   <div class="modal-box" style="max-width:480px;max-height:90vh;overflow-y:auto;padding:0;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;position:sticky;top:0;background:rgba(20,17,12,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:1;border-bottom:1px solid rgba(245,240,232,.07);">
       <div style="font-family:'Cinzel',serif;font-size:16px;letter-spacing:.1em;color:rgba(245,240,232,.85);">Account</div>
-      <button class="modal-close" onclick="closeAccountModal()" style="position:static;">&times;</button>
+      <button class="modal-close" aria-label="Close" onclick="closeAccountModal()" style="position:static;">&times;</button>
     </div>
     <div id="accountModalBody" style="padding:20px 24px 28px;">
       <div class="sm-section" id="amAccountContent">
@@ -1223,7 +1222,7 @@
   <div class="modal-box" style="max-width:480px;max-height:90vh;overflow-y:auto;padding:0;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;position:sticky;top:0;background:rgba(20,17,12,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:1;border-bottom:1px solid rgba(245,240,232,.07);">
       <div style="font-family:'Cinzel',serif;font-size:16px;letter-spacing:.1em;color:rgba(245,240,232,.85);">Settings</div>
-      <button class="modal-close" onclick="closeSettingsModal()" style="position:static;">×</button>
+      <button class="modal-close" aria-label="Close" onclick="closeSettingsModal()" style="position:static;">×</button>
     </div>
     <div id="settingsModalBody" style="padding:20px 24px 28px;">
 

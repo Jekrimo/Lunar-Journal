@@ -82,10 +82,7 @@ function saveEveningEditor(){
 
 // ─── QoL: MISC IMPROVEMENTS ──────────────────────────────────────────────────
 
-// 1. Toast queue - prevent toast spam
-let _toastTimer = null;
-const _origShowToast = showToast;
-// Override handled below after showToast is defined
+// 1. Toast queue - now handled in app.js (queued + deduped showToast)
 
 // 2. Confirm before leaving if entry form has unsaved text
 function hasUnsavedEntry(){
@@ -104,6 +101,14 @@ window.addEventListener('beforeunload', e => {
 // 3. Double-tap nav tab to scroll to top of that view
 let _lastNavTap = { view: null, time: 0 };
 function navTabTap(view, btn){
+  // Auto-save draft if leaving Today with unsaved entry
+  if(_lastNavTap.view === 'today' && view !== 'today' && hasUnsavedEntry()){
+    const text = document.getElementById('entryText')?.value?.trim();
+    if(text) {
+      localStorage.setItem('lunations_draft', JSON.stringify({ text, ts: Date.now() }));
+      showToast('Draft saved');
+    }
+  }
   if(view==='sky')setTimeout(renderBirthChart,150);
   if(view==='cycles')setTimeout(function(){generateCycleSummaryAI();},300);
   const now = Date.now();
@@ -111,7 +116,24 @@ function navTabTap(view, btn){
     window.scrollTo({top:0, behavior:'smooth'});
   }
   _lastNavTap = { view, time: now };
+  // Update ARIA tab states
+  document.querySelectorAll('.nav-tab[role="tab"]').forEach(function(t){ t.setAttribute('aria-selected','false'); });
+  if(btn) btn.setAttribute('aria-selected','true');
   switchView(view, btn);
+  // Restore draft when returning to Today
+  if(view === 'today'){
+    const draft = localStorage.getItem('lunations_draft');
+    if(draft){
+      try {
+        const d = JSON.parse(draft);
+        if(Date.now() - d.ts < 3600000){ // within 1 hour
+          const tx = document.getElementById('entryText');
+          if(tx && !tx.value?.trim()){ tx.value = d.text; showToast('Draft restored'); }
+        }
+        localStorage.removeItem('lunations_draft');
+      } catch(e){}
+    }
+  }
 }
 
 // 4. Entry character count feedback
@@ -1861,5 +1883,287 @@ var PLANET_DATA={
   Saturn: {e:'\u2643',skt:'Shani',  exalt:'Libra',    debil:'Aries'}
 };
 function vedicSignIdxFromDate(d,lagDays){var dd=new Date(d);if(lagDays)dd.setDate(dd.getDate()+lagDays);var jd=dateToJD(dd.getFullYear(),dd.getMonth()+1,dd.getDate(),12);return tropToVedic(sunLongitude(jd),lahiriAyanamsha(jd));}
+// ═══════════════════════════════════════════════════════════════════════════════
+// UI OVERHAUL — INTERSECTION OBSERVER, FOCUS TRAP, BOTTOM SHEET, SPARKLINES,
+//               COUNT-UP, PULL-TO-REFRESH, AMBIENT GLOW
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ─── SCROLL-TRIGGERED CARD REVEALS ───
+let _revealObserver = null;
+function initRevealObserver(){
+  if(_revealObserver) return;
+  _revealObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        _revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  observeRevealElements();
+}
+function observeRevealElements(){
+  if(!_revealObserver) return;
+  document.querySelectorAll('.astro-card,.reading-card,.pattern-chart,.today-section,.collective-card,.entry-submitted-card,.people-card,.sw-card,.schumann-card,.baro-card,.fday').forEach(function(el){
+    if(!el.classList.contains('visible') && !el.dataset.revealed){
+      el.classList.add('reveal');
+      _revealObserver.observe(el);
+      el.dataset.revealed = '1';
+    }
+  });
+}
+// Re-observe after dynamic content renders
+function refreshReveals(){ setTimeout(observeRevealElements, 100); }
+
+// ─── MODAL FOCUS TRAP ───
+let _focusTrapState = { previous: null, handler: null, modal: null };
+function trapFocus(modalEl){
+  _focusTrapState.previous = document.activeElement;
+  _focusTrapState.modal = modalEl;
+  const focusable = modalEl.querySelectorAll('button,input,select,textarea,a[href],[tabindex]:not([tabindex="-1"])');
+  if(focusable.length) focusable[0].focus();
+  _focusTrapState.handler = function(e){
+    if(e.key === 'Escape'){
+      const closeBtn = modalEl.querySelector('.modal-close');
+      if(closeBtn) closeBtn.click();
+      return;
+    }
+    if(e.key !== 'Tab') return;
+    const focs = modalEl.querySelectorAll('button,input,select,textarea,a[href],[tabindex]:not([tabindex="-1"])');
+    if(!focs.length) return;
+    const first = focs[0], last = focs[focs.length-1];
+    if(e.shiftKey){ if(document.activeElement === first){ e.preventDefault(); last.focus(); } }
+    else { if(document.activeElement === last){ e.preventDefault(); first.focus(); } }
+  };
+  document.addEventListener('keydown', _focusTrapState.handler);
+}
+function releaseFocus(){
+  if(_focusTrapState.handler) document.removeEventListener('keydown', _focusTrapState.handler);
+  if(_focusTrapState.previous) try { _focusTrapState.previous.focus(); } catch(e){}
+  _focusTrapState = { previous: null, handler: null, modal: null };
+}
+// Auto-attach focus traps to existing modal open/close patterns
+(function(){
+  const origOpen = {};
+  // Observe modal overlays for open class changes
+  const mo = new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      if(m.type !== 'attributes' || m.attributeName !== 'class') return;
+      const el = m.target;
+      if(!el.classList.contains('modal-overlay')) return;
+      if(el.classList.contains('open')){
+        const box = el.querySelector('.modal-box');
+        if(box) trapFocus(box);
+      } else {
+        releaseFocus();
+      }
+    });
+  });
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.modal-overlay').forEach(function(ov){
+      mo.observe(ov, { attributes: true, attributeFilter: ['class'] });
+    });
+  });
+})();
+
+// ─── BOTTOM SHEET SWIPE-TO-DISMISS (MOBILE) ───
+(function(){
+  let startY = 0, currentY = 0, isDragging = false, modalBox = null;
+  function onTouchStart(e){
+    const handle = e.target.closest('.modal-handle');
+    const box = e.target.closest('.modal-box');
+    if(!box || window.innerWidth > 600) return;
+    if(!handle && box.scrollTop > 5) return; // only swipe from top or handle
+    startY = e.touches[0].clientY;
+    currentY = startY;
+    isDragging = true;
+    modalBox = box;
+    modalBox.style.transition = 'none';
+  }
+  function onTouchMove(e){
+    if(!isDragging || !modalBox) return;
+    currentY = e.touches[0].clientY;
+    const dy = currentY - startY;
+    if(dy > 0) {
+      modalBox.style.transform = 'translateY(' + dy + 'px)';
+      e.preventDefault();
+    }
+  }
+  function onTouchEnd(){
+    if(!isDragging || !modalBox) return;
+    const dy = currentY - startY;
+    modalBox.style.transition = '';
+    if(dy > 100){
+      // Close modal
+      const overlay = modalBox.closest('.modal-overlay');
+      if(overlay){
+        const closeBtn = overlay.querySelector('.modal-close');
+        if(closeBtn) closeBtn.click();
+        else overlay.classList.remove('open');
+      }
+    }
+    modalBox.style.transform = '';
+    isDragging = false;
+    modalBox = null;
+  }
+  document.addEventListener('touchstart', onTouchStart, { passive: true });
+  document.addEventListener('touchmove', onTouchMove, { passive: false });
+  document.addEventListener('touchend', onTouchEnd);
+})();
+
+// ─── INJECT MODAL HANDLES ───
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.modal-box').forEach(function(box){
+    if(!box.querySelector('.modal-handle')){
+      var h = document.createElement('div');
+      h.className = 'modal-handle';
+      box.insertBefore(h, box.firstChild);
+    }
+  });
+});
+
+// ─── SPARKLINES ───
+function sparkline(data, color){
+  if(!data || data.length < 2) return '';
+  var w = 60, h = 20, pad = 2;
+  var min = Math.min.apply(null, data), max = Math.max.apply(null, data);
+  var range = max - min || 1;
+  var points = data.map(function(v, i){
+    var x = pad + (i / (data.length - 1)) * (w - pad * 2);
+    var y = h - pad - ((v - min) / range) * (h - pad * 2);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  return '<svg class="sparkline-svg" viewBox="0 0 ' + w + ' ' + h + '" style="width:60px;height:20px;display:inline-block;vertical-align:middle;margin-left:8px;opacity:.5;"><polyline points="' + points + '" fill="none" stroke="' + (color || 'rgba(201,168,76,.6)') + '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+// ─── METRIC COUNT-UP ───
+function countUp(el, target, duration){
+  if(!el || isNaN(target)) return;
+  var start = 0, startTime = null;
+  var isFloat = target % 1 !== 0;
+  function step(ts){
+    if(!startTime) startTime = ts;
+    var progress = Math.min((ts - startTime) / (duration || 800), 1);
+    var ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    var val = start + (target - start) * ease;
+    el.textContent = isFloat ? val.toFixed(1) : Math.round(val);
+    if(progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+// Apply count-up to visible stat values
+function initCountUps(){
+  if(!_revealObserver) return;
+  var countObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        var el = entry.target;
+        var val = parseFloat(el.textContent);
+        if(!isNaN(val) && !el.dataset.counted){
+          el.dataset.counted = '1';
+          countUp(el, val, 900);
+        }
+        countObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.stat-card-val,.compare-metric-val,.entry-submitted-metric-val,.sw-metric-val,.schumann-freq,.baro-value').forEach(function(el){
+    if(!el.dataset.counted) countObserver.observe(el);
+  });
+}
+
+// ─── PULL TO REFRESH (Today view) ───
+(function(){
+  var pullIndicator = null, startY = 0, pulling = false, refreshing = false;
+  function createIndicator(){
+    if(pullIndicator) return pullIndicator;
+    var el = document.createElement('div');
+    el.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-60px);z-index:100;font-size:28px;transition:transform .3s var(--spring);pointer-events:none;filter:drop-shadow(0 0 8px rgba(201,168,76,.4));';
+    el.textContent = '\uD83C\uDF19';
+    document.body.appendChild(el);
+    pullIndicator = el;
+    return el;
+  }
+  document.addEventListener('touchstart', function(e){
+    if(refreshing) return;
+    var view = document.querySelector('.view.active');
+    if(!view || view.id !== 'view-today') return;
+    if(window.scrollY > 5) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e){
+    if(!pulling) return;
+    var dy = e.touches[0].clientY - startY;
+    if(dy < 0){ pulling = false; return; }
+    if(dy > 10){
+      var ind = createIndicator();
+      var offset = Math.min(dy * 0.5, 80);
+      ind.style.transform = 'translateX(-50%) translateY(' + (offset - 60) + 'px) rotate(' + (offset * 4) + 'deg)';
+    }
+  }, { passive: true });
+  document.addEventListener('touchend', function(){
+    if(!pulling) return;
+    pulling = false;
+    if(pullIndicator){
+      var dy = parseInt(pullIndicator.style.transform.match(/translateY\(([^)]+)\)/)?.[1]) || -60;
+      if(dy > 10){
+        refreshing = true;
+        pullIndicator.style.transform = 'translateX(-50%) translateY(20px) rotate(360deg)';
+        // Trigger refresh
+        if(typeof generateReading === 'function') generateReading(true);
+        if(typeof renderToday === 'function') renderToday();
+        showToast('Refreshing...');
+        setTimeout(function(){
+          if(pullIndicator) pullIndicator.style.transform = 'translateX(-50%) translateY(-60px)';
+          refreshing = false;
+        }, 1500);
+      } else {
+        pullIndicator.style.transform = 'translateX(-50%) translateY(-60px)';
+      }
+    }
+  });
+})();
+
+// ─── AMBIENT GLOW INIT ───
+function initAmbientGlow(){
+  var sc = document.getElementById('schumannCard');
+  if(sc) sc.classList.add('glow-blue');
+  var bc = document.getElementById('baroCard');
+  if(bc) bc.classList.add('glow-green');
+  document.querySelectorAll('.people-card').forEach(function(c){ c.classList.add('glow-purple'); });
+}
+
+// ─── INIT ON DOM READY ───
+document.addEventListener('DOMContentLoaded', function(){
+  initRevealObserver();
+  initAmbientGlow();
+  setTimeout(initCountUps, 500);
+  // Add ARIA to modals
+  document.querySelectorAll('.modal-overlay').forEach(function(ov){
+    ov.setAttribute('role','dialog');
+    ov.setAttribute('aria-modal','true');
+  });
+  // Keyboard arrow-key nav for tabs
+  var tabList = document.querySelector('.nav-tabs[role="tablist"]');
+  if(tabList){
+    tabList.addEventListener('keydown', function(e){
+      var tabs = Array.from(tabList.querySelectorAll('.nav-tab'));
+      var idx = tabs.indexOf(document.activeElement);
+      if(idx === -1) return;
+      var next = -1;
+      if(e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % tabs.length;
+      else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + tabs.length) % tabs.length;
+      if(next >= 0){
+        e.preventDefault();
+        tabs[next].focus();
+        tabs[next].click();
+      }
+    });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function renderBirthChart(){var container=document.getElementById('birthChartContent');var subtitle=document.getElementById('bcSubtitle');if(!container)return;var profile=loadProfile();if(!profile||!profile.dob){container.innerHTML='<div style="text-align:center;padding:16px 0 8px;color:rgba(245,240,232,.3);font-size:14px;font-style:italic;">Add your birth date for your Vedic birth chart.<br><button onclick="openOnboarding()" style="margin-top:10px;font-family:Cinzel,serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:7px 18px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:3px;color:var(--gold);cursor:pointer;">Add Birth Profile</button></div>';if(subtitle)subtitle.textContent='Birth date needed';return;}var dobP=profile.dob.split('-');var yr=parseInt(dobP[0]),mo=parseInt(dobP[1]),dy=parseInt(dobP[2]);var hr=12;if(profile.time){try{var tp=profile.time.split(':');hr=parseInt(tp[0])+(parseInt(tp[1])||0)/60;}catch(ex){}}var _tzOff=birthUtcOffset(profile.dob,profile.time,profile.birthTz,parseFloat(profile.birthLng||profile.birth_lng||0));var utHr=hr-_tzOff;var jd=dateToJD(yr,mo,dy,utHr);var ayan=lahiriAyanamsha(jd);var sunT=sunLongitude(jd);var moonT=moonLongitude(jd);var planets=[{name:'Sun',lon:sunT,idx:tropToVedic(sunT,ayan)},{name:'Moon',lon:moonT,idx:tropToVedic(moonT,ayan)},{name:'Mercury',lon:planetLon(jd,'Mercury'),idx:tropToVedic(planetLon(jd,'Mercury'),ayan)},{name:'Venus',lon:planetLon(jd,'Venus'),idx:tropToVedic(planetLon(jd,'Venus'),ayan)},{name:'Mars',lon:planetLon(jd,'Mars'),idx:tropToVedic(planetLon(jd,'Mars'),ayan)},{name:'Jupiter',lon:planetLon(jd,'Jupiter'),idx:tropToVedic(planetLon(jd,'Jupiter'),ayan)},{name:'Saturn',lon:planetLon(jd,'Saturn'),idx:tropToVedic(planetLon(jd,'Saturn'),ayan)},{name:'Rahu',lon:planetLon(jd,'Rahu'),idx:tropToVedic(planetLon(jd,'Rahu'),ayan)}];planets.push({name:'Ketu',lon:0,idx:(planets.find(function(p){return p.name==='Rahu';}).idx+6)%12});var lagnaIdx=null;var lat=parseFloat(profile.birthLat||profile.birth_lat||0);var lng=parseFloat(profile.birthLng||profile.birth_lng||0);if(profile.time&&lat&&lng){lagnaIdx=tropToVedic(calcAscendant(jd,lat,lng),ayan);}var ascIdx=lagnaIdx!==null?lagnaIdx:planets[0].idx;var dobStr=new Date(profile.dob+'T12:00:00').toLocaleDateString('en',{month:'long',day:'numeric',year:'numeric'});var sub=(profile.name||'')+' · '+dobStr;if(lagnaIdx!==null)sub+=' · '+VEDIC_SIGNS[lagnaIdx].name+' Rising';else if(profile.time&&!lat)sub+=' · Add birth city for Rising sign';if(subtitle)subtitle.textContent=sub;function degInSign(lon2){return(norm360(lon2-ayan)%30).toFixed(1);}var pHtml='';for(var i=0;i<planets.length;i++){var p=planets[i],s=VEDIC_SIGNS[p.idx],pd=PLANET_DATA[p.name];var hl=(lagnaIdx!==null&&p.idx===lagnaIdx);var note='';if(pd){if(s.name===pd.exalt)note='<span class="exalt"> exalted</span>';else if(s.name===pd.debil)note='<span class="debil"> debilitated</span>';}var degStr=(p.name!=='Rahu'&&p.name!=='Ketu')?("<span style='font-size:10px;color:rgba(245,240,232,.2);margin-left:3px;'>"+degInSign(p.lon)+'°</span>'):'';pHtml+='<div class="bc-cell'+(hl?' bc-hl':'')+'"><div class="bc-planet">'+(pd?pd.e:p.name[0])+'</div><div class="bc-label">'+(pd?pd.skt:p.name)+'</div><div class="bc-sign">'+s.sym+' '+s.name+degStr+'</div><div class="bc-note">'+s.skt+' · '+s.ruler+note+'</div></div>';}if(lagnaIdx!==null){var ls=VEDIC_SIGNS[lagnaIdx];pHtml+='<div class="bc-cell bc-hl"><div class="bc-planet">☆</div><div class="bc-label">Lagna</div><div class="bc-sign">'+ls.sym+' '+ls.name+'</div><div class="bc-note">'+ls.skt+' Rising</div></div>';}var hHtml='';for(var j=0;j<VEDIC_HOUSES.length;j++){var h=VEDIC_HOUSES[j],sIdx=(ascIdx+j)%12,hs=VEDIC_SIGNS[sIdx];var hPlanets=planets.filter(function(p2){return p2.idx===sIdx;});var pIcons=hPlanets.map(function(p2){return PLANET_DATA[p2.name]?PLANET_DATA[p2.name].e:p2.name[0];}).join(' ');hHtml+='<div class="house-cell"><div class="house-num">H'+h.n+' · '+h.name+'</div><div class="house-sign">'+hs.sym+' '+hs.name+'</div><div class="house-meaning">'+h.key.split(',')[0]+'</div>'+(pIcons?'<div class="house-planets">'+pIcons+'</div>':'')+'</div>';}var disclaimer='Sidereal zodiac · Lahiri ayanamsha · ~1° accuracy';if(!profile.time)disclaimer+=' · <a onclick="openOnboarding()" style="color:rgba(201,168,76,.4);cursor:pointer;">add birth time</a>';if(profile.time&&!lat)disclaimer+=' · <a onclick="openOnboarding()" style="color:rgba(201,168,76,.4);cursor:pointer;">add birth city</a> for Lagna';container.innerHTML='<div style="font-size:11px;color:rgba(245,240,232,.22);font-style:italic;margin-bottom:12px;">'+disclaimer+'</div>'+'<div class="bc-grid">'+pHtml+'</div>'+'<div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,240,232,.2);margin:16px 0 8px;">12 Houses (Bhavas)</div>'+'<div class="houses-grid">'+hHtml+'</div>';if(!profile.birthTz&&lat&&lng&&!_birthTzMigrating){_birthTzMigrating=true;fetchBirthTimezone(lat,lng).then(function(tz){_birthTzMigrating=false;if(tz){profile.birthTz=tz;saveProfileData(profile);renderBirthChart();}});}}
 
