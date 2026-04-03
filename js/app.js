@@ -290,8 +290,12 @@ function renderCycle(){
       else if(dayInC <= 5) cycleMarker = '<span style="position:absolute;top:2px;right:2px;width:5px;height:5px;border-radius:50%;background:rgba(200,100,130,.5);display:block;" title="Menstrual day '+dayInC+'"></span>';
       else if(dayInC >= 13 && dayInC <= 15) cycleMarker = '<span style="position:absolute;top:2px;right:2px;font-size:8px;" title="Ovulation window">✦</span>';
     }
+    // Signs marker
+    let signMarker='';
+    const daySigns=(typeof getSignsLocal==='function')?getSignsLocal().filter(function(s){return s.timestamp&&s.timestamp.slice(0,10)===key;}):[];
+    if(daySigns.length>0) signMarker='<span style="position:absolute;bottom:2px;right:2px;font-size:7px;color:rgba(201,168,76,.6);" title="'+daySigns.length+' sign'+(daySigns.length>1?'s':'')+'">'+'\u2726'.repeat(Math.min(daySigns.length,3))+'</span>';
     cell.style.position = 'relative';
-    cell.innerHTML=`<span class="day-num">${i+1}</span><span class="day-moon">${phase.emoji}</span><span class="day-greg">${gregLabel}</span><div class="day-energy-bar" style="width:${ew}%"></div>${cycleMarker}`;
+    cell.innerHTML=`<span class="day-num">${i+1}</span><span class="day-moon">${phase.emoji}</span><span class="day-greg">${gregLabel}</span><div class="day-energy-bar" style="width:${ew}%"></div>${cycleMarker}${signMarker}`;
     cell.title=`${d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})} · ${phase.name}`;
     cell.onclick=()=>openDayModal(d,entry,phase);
     grid.appendChild(cell);
@@ -326,7 +330,11 @@ function renderGregCalendar(){
     const ew=hasEntry&&entry&&entry.energy?(entry.energy/10)*100:0;
     const cell=document.createElement('div');
     cell.className=`greg-cell ${isToday?'greg-today':''} ${otherMonth?'greg-other-month':''} ${hasEntry?'greg-has-entry':''}`;
-    cell.innerHTML=`<div class="greg-day-moon">${phase.emoji}</div><div class="greg-day-num">${d.getDate()}</div><div class="greg-energy-bar" style="width:${ew}%"></div>`;
+    const gKey=entryKey(d);
+    const gSigns=(typeof getSignsLocal==='function')?getSignsLocal().filter(function(s){return s.timestamp&&s.timestamp.slice(0,10)===gKey;}):[];
+    const gSignMark=gSigns.length>0?'<span style="position:absolute;bottom:1px;right:2px;font-size:6px;color:rgba(201,168,76,.6);">\u2726</span>':'';
+    cell.style.position='relative';
+    cell.innerHTML=`<div class="greg-day-moon">${phase.emoji}</div><div class="greg-day-num">${d.getDate()}</div><div class="greg-energy-bar" style="width:${ew}%"></div>${gSignMark}`;
     cell.title=`${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${phase.name}`;
     cell.onclick=()=>openDayModal(d,entry,phase);
     grid.appendChild(cell);
@@ -439,6 +447,24 @@ function openDayModal(date,entry,phase){
     c += '<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(120,90,160,.15);">' +
       '<button class="save-btn" style="font-size:10px;border-color:rgba(140,100,200,.25);color:rgba(160,120,220,.5);" onclick="closeModal();openEveningEditor(\'' + eveKey + '\')">🌙 Add Evening Entry</button>' +
       '</div>';
+  }
+  // Signs logged on this day
+  const modalDayKey=entryKey(date);
+  const modalSigns=(typeof getSignsLocal==='function')?getSignsLocal().filter(function(s){return s.timestamp&&s.timestamp.slice(0,10)===modalDayKey;}):[];
+  if(modalSigns.length>0){
+    c+='<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(201,168,76,.12);">';
+    c+='<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:.12em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:10px;">\u2726 Signs ('+modalSigns.length+')</div>';
+    modalSigns.forEach(function(s){
+      var t=new Date(s.timestamp);
+      var ts=t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+      var tags=(s.categories||[]).map(function(cat){return'<span style="font-size:10px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:1px 8px;color:rgba(201,168,76,.5);">'+cat+'</span>';}).join(' ');
+      c+='<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(201,168,76,.06);">';
+      c+='<div style="font-size:14px;color:rgba(245,240,232,.65);line-height:1.6;">'+sanitizeAIText(s.text)+'</div>';
+      if(s.context)c+='<div style="font-size:12px;color:rgba(245,240,232,.3);font-style:italic;margin-top:2px;">while: '+sanitizeAIText(s.context)+'</div>';
+      c+='<div style="display:flex;gap:8px;align-items:center;margin-top:4px;flex-wrap:wrap;"><span style="font-size:10px;color:rgba(245,240,232,.2);">'+ts+' \u00b7 '+sanitizeAIText(s.moon_phase||'')+'</span>'+tags+'</div>';
+      c+='</div>';
+    });
+    c+='</div>';
   }
   document.getElementById('modalContent').innerHTML=c;document.getElementById('dayModal').classList.add('open');
 }

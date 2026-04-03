@@ -1356,8 +1356,11 @@ async function loadSignsFromCloud(){
 function loadSignsList(){
   var list=document.getElementById('signsList');if(!list)return;
   var signs=getSignsLocal();
-  if(!signs.length){list.innerHTML='<div class="signs-empty">No signs logged yet.<br>What are you noticing?</div>';return;}
-  list.innerHTML=signs.slice(0,30).map(function(s){
+  // Only show signs from the last 3 days in the modal
+  var cutoff=new Date();cutoff.setDate(cutoff.getDate()-3);cutoff.setHours(0,0,0,0);
+  var recentSigns=signs.filter(function(s){return s.timestamp&&new Date(s.timestamp)>=cutoff;});
+  if(!recentSigns.length){list.innerHTML='<div class="signs-empty">'+(signs.length?'No signs in the last 3 days.<br>Older signs appear on your calendar.':'No signs logged yet.<br>What are you noticing?')+'</div>';return;}
+  list.innerHTML=recentSigns.slice(0,30).map(function(s){
     var d=new Date(s.timestamp);
     var ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
     var tags=(s.categories||[]).map(function(cat){return'<span class="sign-tag">'+cat+'</span>';}).join('');
@@ -1372,20 +1375,30 @@ function deleteSign(id){
   loadSignsList();
   pushSignsToWidget();
 }
+var _signsCorrCache=null;
 async function loadSignsCorrelation(force){
   var wrap=document.getElementById('signsCorrelation');if(!wrap)return;
+  // Use cached result if available and not forced
+  if(!force&&_signsCorrCache){wrap.style.display='block';wrap.innerHTML=_signsCorrCache;return;}
   var signs=getSignsLocal();
   if(signs.length<2){wrap.style.display='none';return;}
+  // Last 3 days of signs
+  var cutoff=new Date();cutoff.setDate(cutoff.getDate()-3);cutoff.setHours(0,0,0,0);
+  var recentSigns=signs.filter(function(s){return s.timestamp&&new Date(s.timestamp)>=cutoff;});
+  if(recentSigns.length<1){wrap.style.display='none';return;}
   wrap.style.display='block';
   wrap.innerHTML='<div style="font-size:13px;color:rgba(245,240,232,.25);font-style:italic;">Finding patterns\u2026</div>';
+  // Last 30 days of journal entries
   var entries=loadEntries();
-  var eSum=Object.keys(entries).sort().slice(-14).map(function(k){var e=entries[k];return k+': energy '+e.energy+', mood '+e.mood+(e.text?', "'+e.text.slice(0,50)+'"':'');}).join('\n');
-  var sSum=signs.slice(0,20).map(function(s){return new Date(s.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' ['+(s.categories||[]).join(',')+'] '+s.moon_phase+': '+s.text+(s.context?' (while: '+s.context+')':'');}).join('\n');
-  var prompt='Find 1-2 genuine patterns between these signs and journal entries. Specific, under 80 words, second person.\n\nJournal (14 days):\n'+(eSum||'No entries')+'\n\nSigns:\n'+sSum;
+  var allKeys=Object.keys(entries).sort();
+  var eSum=allKeys.slice(-30).map(function(k){var e=entries[k];return k+': energy '+e.energy+', mood '+e.mood+(e.text?', "'+e.text.slice(0,50)+'"':'');}).join('\n');
+  var sSum=recentSigns.map(function(s){return new Date(s.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' ['+(s.categories||[]).join(',')+'] '+s.moon_phase+': '+s.text+(s.context?' (while: '+s.context+')':'');}).join('\n');
+  var prompt='Find 1-2 genuine patterns between these recent signs and the past month of journal entries. Be specific and concise, under 80 words, second person.\n\nJournal (30 days):\n'+(eSum||'No entries')+'\n\nSigns (last 3 days):\n'+sSum;
   try{
     var res=await fetch('/api/reading',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    if(res.status===429){wrap.innerHTML='<div style="font-size:13px;color:rgba(245,240,232,.25);font-style:italic;">Reading limit reached \u2014 try again in a few minutes.</div>';return;}
     var data=await res.json();var text=data.text||'';
-    if(text)wrap.innerHTML='<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(201,168,76,.4);margin-bottom:8px;">\u2726 Pattern Reading</div><div class="signs-correlation">'+sanitizeAIText(text)+'</div>';
+    if(text){var html='<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(201,168,76,.4);margin-bottom:8px;">\u2726 Pattern Reading</div><div class="signs-correlation">'+sanitizeAIText(text)+'</div>';_signsCorrCache=html;wrap.innerHTML=html;}
     else wrap.style.display='none';
   }catch(e){wrap.style.display='none';}
 }
