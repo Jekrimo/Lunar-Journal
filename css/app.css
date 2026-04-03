@@ -234,7 +234,7 @@
   
   .save-btn-ready{animation:pulse-gold 2s ease-in-out infinite;}
   @keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,0)}50%{box-shadow:0 0 0 4px rgba(201,168,76,.1)}}
-  @media(max-width:480px){.cycle-grid{grid-template-columns:repeat(4,1fr)}.day-moon{font-size:12px}}
+  @media(max-width:480px){.cycle-grid{gap:3px;}.day-cell{padding:6px 2px 8px;}.day-num{font-size:10px;}.day-moon{font-size:14px;}.day-greg{font-size:7px;}#calendarInCycles{padding:10px 8px 12px!important;}}
   /* SETTINGS MODAL */
   .sm-section{ margin-bottom:4px; }
   .sm-section-label{ font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(201,168,76,.5);margin-bottom:12px; }

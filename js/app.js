@@ -269,9 +269,9 @@ function renderCycleInCycles(){
 }
 function renderCycle(){
   const nm=getCycleStart(cycleOffset),entries=loadEntries(),todayKey=entryKey(new Date()),ms=moonSignApprox(nm);
-  document.getElementById('cycleLabel').textContent=`${ms.symbol} ${ms.name} Cycle`;
-  document.getElementById('cycleNum').textContent=Math.max(1,Math.min(13,getCycleNum(nm)));
-  const grid=document.getElementById('cycleGrid');grid.innerHTML='';
+  var _cl=document.getElementById('cycleLabel');if(_cl)_cl.textContent=`${ms.symbol} ${ms.name} Cycle`;
+  var _cn=document.getElementById('cycleNum');if(_cn)_cn.textContent=Math.max(1,Math.min(13,getCycleNum(nm)));
+  const grid=document.getElementById('cycleGrid');if(!grid)return;grid.innerHTML='';
   const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   // Spacer cells so day 1 aligns with correct weekday column
   const nmDow = new Date(nm).getDay();
@@ -5732,7 +5732,7 @@ function dismissLoadingScreen(){
   if(!el||el.dataset.dismissed) return;
   el.dataset.dismissed='1';
   var elapsed=performance.now();
-  var minMs=1200;
+  var minMs=2000;
   var delay=Math.max(0,minMs-elapsed);
   setTimeout(function(){
     el.classList.add('fade-out');
