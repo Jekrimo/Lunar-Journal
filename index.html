@@ -227,42 +227,7 @@
     </div>
   </div>
 
-  <!-- ══ SECTION 2: READING ══ -->
-  <div class="today-section" id="sectionReading">
-    <div class="today-section-header" onclick="toggleTodaySection('sectionReading')">
-      <span class="today-section-label">✦ Reading</span>
-      <span class="today-section-chevron">▾</span>
-    </div>
-    <div class="today-section-body">
-      <div id="dailyPatternMsg"></div>
-      <div class="reading-card" style="border:none;background:none;padding:0;margin-bottom:0;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div class="card-label" style="font-size:9px;">Daily Reading</div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div id="readingCapLabel" style="display:none;font-size:10px;color:rgba(245,240,232,.2);font-style:italic;"></div>
-        <div id="readingToneLabel" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;color:rgba(201,168,76,.4);cursor:pointer;" onclick="navTabTap('settings',document.querySelector('[onclick*=\'settings\']'))">✦ <span id="readingToneName">Mystic</span></div>
-      </div>
-    </div>
-    <div class="reading-text" id="readingText"><span class="reading-loading">Consulting the sky…</span></div>
-        <div style="font-size:10px;color:rgba(245,240,232,.15);font-style:italic;margin-top:8px;">AI-generated &middot; interpretive, not clinical &middot; <a href="/wellness" style="color:rgba(201,168,76,.25);">learn more</a></div>
-        <div id="readingSigninNote" style="display:none;margin-top:10px;font-size:12px;color:rgba(245,240,232,.25);font-style:italic;">Sign in for personalized AI readings tailored to your natal chart. <button onclick="openAuthModal()" style="background:none;border:none;color:rgba(201,168,76,.5);font-size:12px;cursor:pointer;font-style:italic;text-decoration:underline;">Sign in →</button></div>
-        <button class="reading-refresh" onclick="generateReading(true)">↺ Refresh</button>
-        <!-- FOLLOW-UP QUESTION (Plus) -->
-        <div class="followup-wrap" id="followupWrap" style="display:none;">
-          <button class="followup-toggle" onclick="toggleFollowup()" id="followupToggleBtn">
-            <span>&#43;</span> <span id="followupToggleLabel">Ask a follow-up</span>
-          </button>
-          <div class="followup-input-wrap" id="followupInputWrap">
-            <textarea class="followup-input" id="followupInput" placeholder="What would you like to explore further…" rows="2" maxlength="500" oninput="autoResize(this)"></textarea>
-            <button class="followup-send" id="followupSendBtn" onclick="sendFollowupQuestion()">Ask ↗</button>
-          </div>
-          <div class="followup-history" id="followupHistory"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ SECTION 3: MY DAY ══ -->
+  <!-- ══ SECTION 2: MY DAY ══ -->
   <div class="today-section" id="sectionMyDay">
     <div class="today-section-header" onclick="toggleTodaySection('sectionMyDay')">
       <span class="today-section-label">📝 My Day</span>
@@ -472,6 +437,41 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3: READING ══ -->
+  <div class="today-section" id="sectionReading">
+    <div class="today-section-header" onclick="toggleTodaySection('sectionReading')">
+      <span class="today-section-label">✦ Reading</span>
+      <span class="today-section-chevron">▾</span>
+    </div>
+    <div class="today-section-body">
+      <div id="dailyPatternMsg"></div>
+      <div class="reading-card" style="border:none;background:none;padding:0;margin-bottom:0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div class="card-label" style="font-size:9px;">Daily Reading</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div id="readingCapLabel" style="display:none;font-size:10px;color:rgba(245,240,232,.2);font-style:italic;"></div>
+        <div id="readingToneLabel" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.08em;color:rgba(201,168,76,.4);cursor:pointer;" onclick="navTabTap('settings',document.querySelector('[onclick*=\'settings\']'))">✦ <span id="readingToneName">Mystic</span></div>
+      </div>
+    </div>
+    <div class="reading-text" id="readingText"><span class="reading-loading">Consulting the sky…</span></div>
+        <div style="font-size:10px;color:rgba(245,240,232,.15);font-style:italic;margin-top:8px;">AI-generated &middot; interpretive, not clinical &middot; <a href="/wellness" style="color:rgba(201,168,76,.25);">learn more</a></div>
+        <div id="readingSigninNote" style="display:none;margin-top:10px;font-size:12px;color:rgba(245,240,232,.25);font-style:italic;">Sign in for personalized AI readings tailored to your natal chart. <button onclick="openAuthModal()" style="background:none;border:none;color:rgba(201,168,76,.5);font-size:12px;cursor:pointer;font-style:italic;text-decoration:underline;">Sign in →</button></div>
+        <button class="reading-refresh" onclick="generateReading(true)">↺ Refresh</button>
+        <!-- FOLLOW-UP QUESTION (Plus) -->
+        <div class="followup-wrap" id="followupWrap" style="display:none;">
+          <button class="followup-toggle" onclick="toggleFollowup()" id="followupToggleBtn">
+            <span>&#43;</span> <span id="followupToggleLabel">Ask a follow-up</span>
+          </button>
+          <div class="followup-input-wrap" id="followupInputWrap">
+            <textarea class="followup-input" id="followupInput" placeholder="What would you like to explore further…" rows="2" maxlength="500" oninput="autoResize(this)"></textarea>
+            <button class="followup-send" id="followupSendBtn" onclick="sendFollowupQuestion()">Ask ↗</button>
+          </div>
+          <div class="followup-history" id="followupHistory"></div>
+        </div>
+      </div>
     </div>
   </div>
 

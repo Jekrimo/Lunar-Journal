@@ -1267,37 +1267,46 @@ function toggleSignCategory(btn){var cat=btn.dataset.cat,idx=_signCats.indexOf(c
 function getSignsLocal(){try{return JSON.parse(localStorage.getItem(SIGNS_LOCAL_KEY)||'[]');}catch(e){return[];}}
 function saveSignsLocal(s){try{localStorage.setItem(SIGNS_LOCAL_KEY,JSON.stringify(s));}catch(e){}}
 async function saveSign(){
-  var text=(document.getElementById('signInput')?.value||'').trim();
-  if(!text){showToast('Describe the sign first');return;}
-  var ctx=(document.getElementById('signContext')?.value||'').trim();
-  var now=new Date();var phase=moonPhaseInfo(now),mSign=moonSignApprox(now);
-  var localId='sign_'+Date.now();
-  var sign={id:localId,text:text,context:ctx,categories:_signCats.slice(),moon_phase:phase.name,moon_sign:mSign.name,timestamp:now.toISOString()};
-  var signs=getSignsLocal();signs.unshift(sign);
-  if(signs.length>200)signs=signs.slice(0,200);
-  saveSignsLocal(signs);
-  // UI feedback immediately — don't wait for cloud
-  showToast('\u2726 Sign logged');
-  document.getElementById('signInput').value='';
-  document.getElementById('signContext').value='';
-  _signCats=['synchronicity'];
-  document.querySelectorAll('.sign-category-btn').forEach(function(b){b.classList.toggle('selected',b.dataset.cat==='synchronicity');});
-  var fab=document.getElementById('signsFab');if(fab)fab.style.display='flex';
-  loadSignsList();
-  pushSignsToWidget();
-  // Cloud save in background
-  if(currentUser&&sbClient){
-    try{
-      var r=await sbClient.from('signs').insert({user_id:currentUser.id,text:sign.text,context:sign.context||null,categories:sign.categories,moon_phase:sign.moon_phase,moon_sign:sign.moon_sign,timestamp:sign.timestamp}).select().single();
-      if(r.error){console.warn('Signs cloud:', r.error.message);}
-      else if(r.data){
-        // Update local entry with the real cloud UUID so deletes/dedup work
-        var ls=getSignsLocal();
-        var idx=ls.findIndex(function(s){return s.id===localId;});
-        if(idx>=0){ls[idx].id=r.data.id;saveSignsLocal(ls);}
-        console.log('Sign saved to cloud, id:', r.data.id);
-      }
-    }catch(e){console.warn('Signs cloud:', e.message);}
+  try{
+    var text=(document.getElementById('signInput')?.value||'').trim();
+    if(!text){showToast('Describe the sign first');return;}
+    var ctx=(document.getElementById('signContext')?.value||'').trim();
+    var now=new Date();
+    var phaseName='',mSignName='';
+    try{phaseName=moonPhaseInfo(now).name;mSignName=moonSignApprox(now).name;}catch(e){}
+    var localId='sign_'+Date.now();
+    var sign={id:localId,text:text,context:ctx,categories:_signCats.slice(),moon_phase:phaseName,moon_sign:mSignName,timestamp:now.toISOString()};
+    var signs=getSignsLocal();signs.unshift(sign);
+    if(signs.length>200)signs=signs.slice(0,200);
+    saveSignsLocal(signs);
+    // Verify save actually persisted
+    var check=getSignsLocal();
+    if(!check.length||check[0].id!==localId){showToast('Could not save — storage may be full');return;}
+    // UI feedback immediately — don't wait for cloud
+    showToast('\u2726 Sign logged');
+    document.getElementById('signInput').value='';
+    document.getElementById('signContext').value='';
+    _signCats=['synchronicity'];
+    document.querySelectorAll('.sign-category-btn').forEach(function(b){b.classList.toggle('selected',b.dataset.cat==='synchronicity');});
+    var fab=document.getElementById('signsFab');if(fab)fab.style.display='flex';
+    loadSignsList();
+    if(typeof renderDayLog==='function')renderDayLog();
+    pushSignsToWidget();
+    // Cloud save in background
+    if(currentUser&&sbClient){
+      try{
+        var r=await sbClient.from('signs').insert({user_id:currentUser.id,text:sign.text,context:sign.context||null,categories:sign.categories,moon_phase:sign.moon_phase,moon_sign:sign.moon_sign,timestamp:sign.timestamp}).select().single();
+        if(r.error){console.warn('Signs cloud:', r.error.message);}
+        else if(r.data){
+          var ls=getSignsLocal();
+          var idx=ls.findIndex(function(s){return s.id===localId;});
+          if(idx>=0){ls[idx].id=r.data.id;saveSignsLocal(ls);}
+        }
+      }catch(e){console.warn('Signs cloud:', e.message);}
+    }
+  }catch(e){
+    console.error('saveSign error:', e);
+    showToast('Error saving sign — please try again');
   }
 }
 async function loadSignsFromCloud(){
@@ -1328,7 +1337,7 @@ function loadSignsList(){
   if(!signs.length){list.innerHTML='<div class="signs-empty">No signs logged yet.<br>What are you noticing?</div>';return;}
   list.innerHTML=signs.slice(0,30).map(function(s){
     var d=new Date(s.timestamp);
-    var ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    var ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
     var tags=(s.categories||[]).map(function(cat){return'<span class="sign-tag">'+cat+'</span>';}).join('');
     var sky=s.moon_phase?('<span>'+s.moon_phase+' \u00b7 '+s.moon_sign+'</span>'):'';
     var ctx2=s.context?('<div style="font-size:12px;color:rgba(245,240,232,.35);margin-top:4px;font-style:italic;">\u201c'+s.context+'\u201d</div>'):'';
