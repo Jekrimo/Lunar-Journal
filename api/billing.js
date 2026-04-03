@@ -9,6 +9,28 @@ module.exports = async (req, res) => {
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY)
     return res.status(500).json({ error: 'Database not configured' });
 
+  // ── Admin comp: POST /api/billing?action=comp&email=X&key=SECRET ──
+  if (req.method === 'POST' && req.query?.action === 'comp') {
+    const secret = process.env.COMP_SECRET;
+    if (!secret) return res.status(500).json({ error: 'COMP_SECRET not configured' });
+    const key = req.query?.key || req.body?.key;
+    const email = req.query?.email || req.body?.email;
+    const tier = req.query?.tier || req.body?.tier || 'pro';
+    if (!key || key !== secret) return res.status(403).json({ error: 'Invalid key' });
+    if (!email) return res.status(400).json({ error: 'Missing email' });
+    if (!['plus', 'pro'].includes(tier)) return res.status(400).json({ error: 'Tier must be plus or pro' });
+    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+    try {
+      const { data: { users }, error: listErr } = await supabase.auth.admin.listUsers();
+      if (listErr) throw listErr;
+      const user = users.find(u => u.email === email.toLowerCase().trim());
+      if (!user) return res.status(404).json({ error: 'No account found for ' + email + '. They need to sign up first.' });
+      const { error: updateErr } = await supabase.from('profiles').update({ tier }).eq('id', user.id);
+      if (updateErr) throw updateErr;
+      return res.json({ success: true, message: email + ' is now ' + tier.toUpperCase() + ' (permanent)' });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'No auth token' });
 

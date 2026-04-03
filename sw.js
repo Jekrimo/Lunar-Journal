@@ -1,6 +1,6 @@
 // Lunations Service Worker
-const CACHE = 'lunations-v3';
-const OFFLINE_URLS = ['/app', '/lunationslogo.png'];
+const CACHE = 'lunations-v6';
+const OFFLINE_URLS = ['/app', '/lunationslogo.png', '/css/app.css', '/js/core.js', '/js/app.js', '/js/features.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -30,19 +30,20 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // For the app shell — network first, fallback to cache
-  if (url.pathname === '/app' || url.pathname === '/') {
+  // Network-first for app shell + CSS + JS — always get fresh, cache for offline
+  if (url.pathname === '/app' || url.pathname === '/' ||
+      url.pathname.startsWith('/css/') || url.pathname.startsWith('/js/')) {
     e.respondWith(
       fetch(e.request).then(res => {
         const clone = res.clone();
         caches.open(CACHE).then(cache => cache.put(e.request, clone));
         return res;
-      }).catch(() => caches.match('/app'))
+      }).catch(() => caches.match(e.request))
     );
     return;
   }
 
-  // For everything else — cache first, fallback to network
+  // For everything else (images, fonts) — cache first, fallback to network
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );

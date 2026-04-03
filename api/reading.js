@@ -48,7 +48,8 @@ module.exports = async function handler(req, res) {
   }
 
   const { prompt } = req.body || {};
-  const maxPromptLen = (prompt && prompt.includes('[ORACLE_MODE]')) ? 4000 : 3000;
+  const isPattern = prompt && prompt.includes('[PATTERN_MODE]');
+  const maxPromptLen = isPattern ? 8000 : (prompt && prompt.includes('[ORACLE_MODE]')) ? 6000 : 5000;
   if (!prompt || typeof prompt !== 'string' || prompt.length > maxPromptLen) {
     return res.status(400).json({ error: 'Invalid prompt' });
   }
@@ -119,7 +120,7 @@ YOU MUST STILL:
       },
       {
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: isOracleMode ? 600 : 300,
+        max_tokens: isPattern ? 800 : isOracleMode ? 600 : 300,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: prompt }],
       }

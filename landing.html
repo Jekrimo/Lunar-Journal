@@ -140,14 +140,21 @@
   }
 
   .hero-moon {
-    font-size: 72px;
     margin-bottom: 32px;
     animation: float 6s ease-in-out infinite;
     filter: drop-shadow(0 0 40px rgba(201,168,76,.3));
+    position: relative;
   }
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-12px); }
+  }
+  @keyframes fullmoon-glow {
+    0%, 100% { filter: drop-shadow(0 0 40px rgba(201,168,76,.3)) drop-shadow(0 0 16px rgba(245,240,232,.3)); }
+    50% { filter: drop-shadow(0 0 50px rgba(201,168,76,.5)) drop-shadow(0 0 30px rgba(245,240,232,.45)); }
+  }
+  .hero-moon.full-glow {
+    animation: float 6s ease-in-out infinite, fullmoon-glow 3s ease-in-out infinite;
   }
 
   .hero-eyebrow {
@@ -735,7 +742,7 @@
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-moon">🌙</div>
+    <div class="hero-moon" id="heroMoon"><svg id="heroMoonSVG" width="90" height="90" viewBox="0 0 90 90"></svg></div>
     <p class="hero-eyebrow">A Lunar Journal</p>
     <h1 class="hero-title">Track yourself<br>across <em>the sky</em></h1>
     <p class="hero-sub">Your energy, mood, and patterns across every cycle of the year. Mapped against the living sky.</p>
@@ -785,10 +792,9 @@
           <span class="feature-tag purple">Plus</span>
         </div>
         <div class="feature-card">
-          <span class="feature-icon">✶</span>
-          <div class="feature-name">Signs Tracker</div>
-          <p class="feature-desc">Log synchronicities, animals, numbers, visions. The AI finds patterns between your signs and your journal entries over time.</p>
-          <span class="feature-tag purple">Plus</span>
+          <span class="feature-icon">🌘</span>
+          <div class="feature-name">Shadow Work</div>
+          <p class="feature-desc">The moon illuminates what you carry in the dark. Track where you contract, what recurs, and what the patterns reveal about what's asking to be seen.</p>
         </div>
       </div>
     </section>
@@ -826,31 +832,31 @@
     </section>
   </div>
 
-  <!-- SIGNS TRACKER SPOTLIGHT -->
+  <!-- SHADOW WORK SPOTLIGHT -->
   <section>
     <div class="signs-section reveal">
       <div>
-        <p class="signs-label">Signs Tracker</p>
-        <h3 class="signs-title">The field speaks. Now you can write it down.</h3>
-        <p class="signs-desc">Log synchronicities, animal appearances, number patterns, body signals — anything that feels like a message. Over time, the AI reads your signs against your journal entries and finds what's actually correlating.</p>
-        <a href="/app" class="btn-primary" style="display:inline-block;">Start Logging →</a>
+        <p class="signs-label">Shadow Work</p>
+        <h3 class="signs-title">What you can't see is running the show.</h3>
+        <p class="signs-desc">Jung called it the shadow — the parts of yourself you don't want to look at. They don't disappear. They repeat. Lunations tracks where your energy drops, where your mood contracts, what recurs every cycle. Over time, the patterns surface what your conscious mind won't show you.</p>
+        <a href="/app" class="btn-primary" style="display:inline-block;">Begin Tracking →</a>
       </div>
       <div class="signs-demo">
         <div class="sign-demo-entry">
-          <div class="sign-demo-meta">Mar 26 · Synchronicity · Waxing Gibbous · Cancer</div>
-          Three ravens landed outside my window right as I was writing about the project ending
+          <div class="sign-demo-meta">🌑 New Moon · Cycle pattern</div>
+          Energy drops to 2 every dark moon. Irritability peaks. Same pattern for 4 cycles.
         </div>
         <div class="sign-demo-entry">
-          <div class="sign-demo-meta">Mar 24 · Number · Waxing Quarter · Cancer</div>
-          333 again. Woke at 3:03, saw it twice more before noon
+          <div class="sign-demo-meta">🌕 Full Moon · Recurring theme</div>
+          The need to withdraw shows up every full moon in Scorpio — specifically when others need me most.
         </div>
         <div class="sign-demo-entry">
-          <div class="sign-demo-meta">Mar 21 · Animal · New Moon · Pisces</div>
-          Red cardinal at the studio window while I was painting Kurukullā
+          <div class="sign-demo-meta">◈ 13-cycle overlay</div>
+          Clarity averages 3.1 when Saturn transits your 4th house. Every time.
         </div>
         <div class="sign-demo-entry" style="border-bottom:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(201,168,76,.1);">
           <div class="sign-demo-meta" style="color:rgba(201,168,76,.5);">✦ Pattern Reading</div>
-          <span style="color:rgba(245,240,232,.6);font-style:italic;">Ravens and threshold animals are appearing at points of creative completion — specifically when you're ending one thing before knowing what comes next...</span>
+          <span style="color:rgba(245,240,232,.6);font-style:italic;">Your withdrawal pattern during Scorpio full moons mirrors a protective response — you contract before vulnerability. The shadow here isn't the withdrawal. It's what you're afraid will happen if you stay.</span>
         </div>
       </div>
     </div>
@@ -869,6 +875,7 @@
           <div class="tradition-pill">Nakshatra · 27 Stars</div>
           <div class="tradition-pill">Tithi · Lunar Day</div>
           <div class="tradition-pill">Mayan Tzolkin</div>
+          <div class="tradition-pill">Chinese Lunar Calendar</div>
           <div class="tradition-pill">13-Cycle Year</div>
           <div class="tradition-pill">Schumann Resonance</div>
           <div class="tradition-pill">Space Weather · Kp Index</div>
@@ -982,7 +989,7 @@
       <span class="divider-glyph">✦</span>
       <div class="divider-line"></div>
     </div>
-    <div class="hero-moon" id="ctaMoon" style="font-size:48px;margin-bottom:24px;">🌕</div>
+    <div class="hero-moon" id="ctaMoon" style="margin-bottom:24px;"><svg id="ctaMoonSVG" width="64" height="64" viewBox="0 0 64 64"></svg></div>
     <h2 class="section-title reveal" id="ctaHeadline" style="margin-bottom:16px;">The sky is speaking right now.<br>Start listening.</h2>
     <p class="section-sub reveal" style="margin-bottom:40px;">Your first cycle is free. No card required.</p>
     <a href="/app" class="btn-primary reveal">Open Lunations →</a>
@@ -997,6 +1004,7 @@
       <li><a href="/privacy">Privacy</a></li>
       <li><a href="/terms">Terms</a></li>
       <li><a href="/wellness">Wellness &amp; AI</a></li>
+      <li><a href="/science">Science</a></li>
       <li><a href="mailto:hello@lunations.app">Contact</a></li>
     </ul>
     <p class="footer-copy">© 2026 Lunations</p>
@@ -1022,14 +1030,50 @@
     el.style.transitionDelay = (i * 0.06) + 's';
   });
 
-  // Dynamic moon phase for CTA
+  // ─── Moon SVG drawing (same technique as the app) ───
+  function drawMoon(el, age, size) {
+    var r=size/2-4, cx=size/2, cy=size/2, ph=age/29.53058867;
+    var illum = ph<=0.5 ? ph*2 : (1-ph)*2;
+    var rx = Math.abs(illum*2-1)*r;
+    var sweep = illum>0.5 ? 1 : 0;
+    var d;
+    if(ph<=0.5){
+      d='M'+cx+' '+(cy-r)+'A'+r+' '+r+' 0 0 1 '+cx+' '+(cy+r)+'A'+rx+' '+r+' 0 0 '+sweep+' '+cx+' '+(cy-r)+'Z';
+    } else {
+      d='M'+cx+' '+(cy-r)+'A'+r+' '+r+' 0 0 0 '+cx+' '+(cy+r)+'A'+rx+' '+r+' 0 0 '+(1-sweep)+' '+cx+' '+(cy-r)+'Z';
+    }
+    var isFull = illum > 0.95;
+    var glow = isFull ? '<defs><filter id="fmg'+size+'"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' : '';
+    var pathAttr = isFull ? ' filter="url(#fmg'+size+')"' : '';
+    var strokeCol = isFull ? 'rgba(245,240,232,.5)' : 'rgba(201,168,76,.3)';
+    el.innerHTML = glow+'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#222" stroke="'+strokeCol+'" stroke-width="'+(isFull?1.5:1)+'"/><path d="'+d+'" fill="rgba(245,240,232,.9)"'+pathAttr+'/>';
+  }
+
+  // ─── Dynamic moon phase for hero + CTA ───
   (function(){
     var SYN=29.53058867, REF=new Date('2000-01-06T18:14:00Z').getTime();
     var age=((Date.now()-REF)/86400000)%SYN; if(age<0)age+=SYN;
     var pct=Math.round((1-Math.cos(age/SYN*2*Math.PI))/2*100);
-    var tbl=[[1.85,'New Moon','🌑'],[7.38,'Waxing Crescent','🌒'],[9.22,'First Quarter','🌓'],[14.77,'Waxing Gibbous','🌔'],[16.61,'Full Moon','🌕'],[22.15,'Waning Gibbous','🌖'],[23.99,'Last Quarter','🌗'],[99,'Waning Crescent','🌘']];
-    var row=tbl.find(function(r){return age<r[0];})||tbl[7];
-    var name=row[1],emoji=row[2];
+    var tbl=[[1.85,'New Moon'],[7.38,'Waxing Crescent'],[9.22,'First Quarter'],[14.77,'Waxing Gibbous'],[16.61,'Full Moon'],[22.15,'Waning Gibbous'],[23.99,'Last Quarter'],[99,'Waning Crescent']];
+    // Illumination override: >= 95% is Full Moon
+    var name = pct >= 95 ? 'Full Moon' : (tbl.find(function(r){return age<r[0];})||tbl[7])[1];
+    var isFull = pct >= 95;
+
+    // Draw SVG moons
+    var heroSVG = document.getElementById('heroMoonSVG');
+    if(heroSVG) drawMoon(heroSVG, age, 90);
+    var ctaSVG = document.getElementById('ctaMoonSVG');
+    if(ctaSVG) drawMoon(ctaSVG, age, 64);
+
+    // Add full-moon glow class
+    if(isFull) {
+      var heroEl = document.getElementById('heroMoon');
+      if(heroEl) heroEl.classList.add('full-glow');
+      var ctaEl = document.getElementById('ctaMoon');
+      if(ctaEl) ctaEl.classList.add('full-glow');
+    }
+
+    // CTA headline
     var msgs={
       'New Moon':'The new moon is always<br>a good place to begin',
       'Waxing Crescent':'The crescent is building.<br>Set your intention now.',
@@ -1040,7 +1084,6 @@
       'Last Quarter':'Half the cycle is releasing.<br>Let go of what\'s finished.',
       'Waning Crescent':'The dark moon approaches.<br>Rest before the next beginning.'
     };
-    document.getElementById('ctaMoon').textContent=emoji;
     document.getElementById('ctaHeadline').innerHTML=msgs[name]||msgs['New Moon'];
   })();
 </script>
