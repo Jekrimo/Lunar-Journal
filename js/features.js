@@ -101,12 +101,14 @@ window.addEventListener('beforeunload', e => {
 // 3. Double-tap nav tab to scroll to top of that view
 let _lastNavTap = { view: null, time: 0 };
 function navTabTap(view, btn){
-  // Auto-save draft if leaving Today with unsaved entry
-  if(_lastNavTap.view === 'today' && view !== 'today' && hasUnsavedEntry()){
-    const text = document.getElementById('entryText')?.value?.trim();
-    if(text) {
-      localStorage.setItem('lunations_draft', JSON.stringify({ text, ts: Date.now() }));
-      showToast('Draft saved');
+  if(_themeFeatures){
+    // Auto-save draft if leaving Today with unsaved entry
+    if(_lastNavTap.view === 'today' && view !== 'today' && hasUnsavedEntry()){
+      const text = document.getElementById('entryText')?.value?.trim();
+      if(text) {
+        localStorage.setItem('lunations_draft', JSON.stringify({ text, ts: Date.now() }));
+        showToast('Draft saved');
+      }
     }
   }
   if(view==='sky')setTimeout(renderBirthChart,150);
@@ -116,17 +118,17 @@ function navTabTap(view, btn){
     window.scrollTo({top:0, behavior:'smooth'});
   }
   _lastNavTap = { view, time: now };
-  // Update ARIA tab states
-  document.querySelectorAll('.nav-tab[role="tab"]').forEach(function(t){ t.setAttribute('aria-selected','false'); });
-  if(btn) btn.setAttribute('aria-selected','true');
+  if(_themeFeatures){
+    document.querySelectorAll('.nav-tab[role="tab"]').forEach(function(t){ t.setAttribute('aria-selected','false'); });
+    if(btn) btn.setAttribute('aria-selected','true');
+  }
   switchView(view, btn);
-  // Restore draft when returning to Today
-  if(view === 'today'){
+  if(_themeFeatures && view === 'today'){
     const draft = localStorage.getItem('lunations_draft');
     if(draft){
       try {
         const d = JSON.parse(draft);
-        if(Date.now() - d.ts < 3600000){ // within 1 hour
+        if(Date.now() - d.ts < 3600000){
           const tx = document.getElementById('entryText');
           if(tx && !tx.value?.trim()){ tx.value = d.text; showToast('Draft restored'); }
         }
@@ -1957,6 +1959,7 @@ function releaseFocus(){
 }
 // Auto-attach focus traps to existing modal open/close patterns
 (function(){
+  if(!_themeFeatures) return;
   const origOpen = {};
   // Observe modal overlays for open class changes
   const mo = new MutationObserver(function(muts){
@@ -1981,6 +1984,7 @@ function releaseFocus(){
 
 // ─── BOTTOM SHEET SWIPE-TO-DISMISS (MOBILE) ───
 (function(){
+  if(!_themeFeatures) return;
   let startY = 0, currentY = 0, isDragging = false, modalBox = null;
   function onTouchStart(e){
     const handle = e.target.closest('.modal-handle');
@@ -2026,6 +2030,7 @@ function releaseFocus(){
 
 // ─── INJECT MODAL HANDLES ───
 document.addEventListener('DOMContentLoaded', function(){
+  if(!_themeFeatures) return;
   document.querySelectorAll('.modal-box').forEach(function(box){
     if(!box.querySelector('.modal-handle')){
       var h = document.createElement('div');
@@ -2087,6 +2092,7 @@ function initCountUps(){
 
 // ─── PULL TO REFRESH (Today view) ───
 (function(){
+  if(!_themeFeatures) return;
   var pullIndicator = null, startY = 0, pulling = false, refreshing = false;
   function createIndicator(){
     if(pullIndicator) return pullIndicator;
@@ -2149,6 +2155,7 @@ function initAmbientGlow(){
 
 // ─── INIT ON DOM READY ───
 document.addEventListener('DOMContentLoaded', function(){
+  if(!_themeFeatures) return;
   initRevealObserver();
   initAmbientGlow();
   setTimeout(initCountUps, 500);

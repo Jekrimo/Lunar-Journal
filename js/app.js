@@ -10,7 +10,7 @@ async function generateReading(force=false){
     if(sn) sn.style.display='block';
     return;
   }
-  document.getElementById('readingText').innerHTML='<div class="skeleton skeleton-line" style="width:90%"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div><div class="skeleton skeleton-line" style="width:75%"></div>';
+  document.getElementById('readingText').innerHTML=_themeFeatures?'<div class="skeleton skeleton-line" style="width:90%"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div><div class="skeleton skeleton-line" style="width:75%"></div>':'<span class="reading-loading">Reading the sky for you\u2026</span>';
   const now=new Date(),phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now),planets=allPlanets(now),profile=loadProfile();
   let profileCtx='';
   if(profile?.dob){
@@ -85,7 +85,7 @@ Write the reading. Weave in recent patterns where relevant. One specific tension
     var data=await res.json();
     var text=data.text||buildFallbackReading(phase,mSign,sSign,profile);
     document.getElementById('readingText').textContent=text;
-    var _rc=document.getElementById('readingText')?.closest('.reading-card');if(_rc)_rc.classList.add('glow-gold');
+    if(_themeFeatures){var _rc=document.getElementById('readingText')?.closest('.reading-card');if(_rc)_rc.classList.add('glow-gold');}
     localStorage.setItem(RK,JSON.stringify({date:todayKey,text:text,ts:Date.now()}));
     incrementReadingUsage();
     updateReadingCapLabel();
@@ -1059,7 +1059,7 @@ async function generatePatternInsight(force=false){
   if(keys.length < 7){ card.style.display='none'; return; }
 
   card.style.display='block';
-  textEl.innerHTML='<div class="skeleton skeleton-line" style="width:85%"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div>';
+  textEl.innerHTML=_themeFeatures?'<div class="skeleton skeleton-line" style="width:85%"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div>':'<span class="reading-loading">Reading your patterns\u2026</span>';
 
   const PHASES = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
   var avgFn = function(arr){return arr.length?arr.reduce(function(a,b){return a+b;},0)/arr.length:0;};
@@ -1343,27 +1343,29 @@ const _scrollPositions = {};
 let _currentView = 'today';
 function switchView(name,btn){
   if(name==='settings'){ openSettingsModal(); return; }
-  // Save scroll position for current view
-  _scrollPositions[_currentView] = window.scrollY;
-  // Fade out current active view
-  const currentViewEl = document.querySelector('.view.active');
-  if(currentViewEl && currentViewEl.id !== 'view-'+name){
-    currentViewEl.classList.add('fade-out');
-    setTimeout(() => { currentViewEl.classList.remove('active','fade-out'); }, 150);
-  } else if(currentViewEl){
-    currentViewEl.classList.remove('active');
-  }
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  const viewEl = document.getElementById('view-'+name);
-  if(!viewEl){ console.warn('switchView: no view for', name); return; }
-  // Fade in new view after brief delay
-  setTimeout(() => {
+  if(_themeFeatures){
+    _scrollPositions[_currentView] = window.scrollY;
+    const currentViewEl = document.querySelector('.view.active');
+    if(currentViewEl && currentViewEl.id !== 'view-'+name){
+      currentViewEl.classList.add('fade-out');
+      setTimeout(() => { currentViewEl.classList.remove('active','fade-out'); }, 150);
+    } else if(currentViewEl){ currentViewEl.classList.remove('active'); }
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    const viewEl = document.getElementById('view-'+name);
+    if(!viewEl){ console.warn('switchView: no view for', name); return; }
+    setTimeout(() => {
+      viewEl.classList.add('active');
+      window.scrollTo(0, _scrollPositions[name] || 0);
+    }, currentViewEl && currentViewEl.id !== 'view-'+name ? 150 : 0);
+    if(btn)btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    const viewEl = document.getElementById('view-'+name);
+    if(!viewEl){ console.warn('switchView: no view for', name); return; }
     viewEl.classList.add('active');
-    // Restore scroll position
-    const savedY = _scrollPositions[name] || 0;
-    window.scrollTo(0, savedY);
-  }, currentViewEl && currentViewEl.id !== 'view-'+name ? 150 : 0);
-  if(btn)btn.classList.add('active');
+    if(btn)btn.classList.add('active');
+  }
   if(name==='cycles'){renderComparison();renderPatterns();renderSkyForecast();}
   if(name==='cycle')renderCycle();
   if(name==='entries')renderEntries();
@@ -2205,7 +2207,7 @@ async function syncNow(){
   } catch(e){ showToast('Sync failed — check connection'); }
 }
 
-// ─── TOAST SYSTEM (queued, deduped) ───
+// ─── TOAST SYSTEM (themed: queued/glass OR classic inline) ───
 const _toastState = { container: null, current: null, queue: [], lastMsg: '', lastTime: 0 };
 function _ensureToastContainer(){
   if(!_toastState.container){
@@ -2218,6 +2220,14 @@ function _ensureToastContainer(){
   return _toastState.container;
 }
 function showToast(msg){
+  if(!_themeFeatures){
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a160e;border:1px solid rgba(201,168,76,.3);border-radius:8px;padding:12px 20px;font-size:14px;color:rgba(245,240,232,.7);z-index:500;font-style:italic;white-space:nowrap;';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+    return;
+  }
   const now = Date.now();
   if(msg === _toastState.lastMsg && now - _toastState.lastTime < 2000) return;
   _toastState.lastMsg = msg;
@@ -2697,7 +2707,7 @@ async function generateCollectiveReading(force=false){
     } catch(e){}
   }
 
-  document.getElementById('collectiveText').innerHTML='<div class="skeleton skeleton-line" style="width:80%"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div>';
+  document.getElementById('collectiveText').innerHTML=_themeFeatures?'<div class="skeleton skeleton-line" style="width:80%"></div><div class="skeleton skeleton-line medium"></div><div class="skeleton skeleton-line short"></div>':'<span class="collective-loading">Reading the collective field\u2026</span>';
 
   const now=new Date(),phase=moonPhaseInfo(now),mSign=moonSignApprox(now),sSign=sunSignForDate(now);
   const planets=allPlanets(now).filter(p=>p&&p.sign).slice(0,7).map(p=>p.name+' in '+(p.sign?.name||'')).join(', ');
@@ -4277,24 +4287,28 @@ function toggleTodaySection(id){
   const chevron = section.querySelector('.today-section-chevron');
   const isCollapsed = section.classList.contains('today-section-collapsed');
 
-  if(isCollapsed){
-    // Expand: measure natural height, animate to it
-    body.style.display = 'block';
-    body.style.maxHeight = body.scrollHeight + 'px';
-    body.style.overflow = 'hidden';
-    section.classList.remove('today-section-collapsed');
-    chevron.style.transform = '';
-    setTimeout(() => { body.style.maxHeight = ''; body.style.overflow = ''; }, 400);
+  if(_themeFeatures){
+    if(isCollapsed){
+      body.style.display = 'block';
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.style.overflow = 'hidden';
+      section.classList.remove('today-section-collapsed');
+      chevron.style.transform = '';
+      setTimeout(() => { body.style.maxHeight = ''; body.style.overflow = ''; }, 400);
+    } else {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.style.overflow = 'hidden';
+      requestAnimationFrame(() => {
+        body.style.maxHeight = '0px';
+        section.classList.add('today-section-collapsed');
+        chevron.style.transform = 'rotate(-90deg)';
+      });
+      setTimeout(() => { body.style.display = 'none'; }, 400);
+    }
   } else {
-    // Collapse: set current height, then animate to 0
-    body.style.maxHeight = body.scrollHeight + 'px';
-    body.style.overflow = 'hidden';
-    requestAnimationFrame(() => {
-      body.style.maxHeight = '0px';
-      section.classList.add('today-section-collapsed');
-      chevron.style.transform = 'rotate(-90deg)';
-    });
-    setTimeout(() => { body.style.display = 'none'; }, 400);
+    section.classList.toggle('today-section-collapsed');
+    chevron.style.transform = isCollapsed ? '' : 'rotate(-90deg)';
+    body.style.display = isCollapsed ? 'block' : 'none';
   }
 
   // Save preference
@@ -5393,6 +5407,22 @@ function renderSettingsModal(){
   const profile = loadProfile();
   const entries = loadEntries();
   const entryCount = Object.keys(entries).filter(k => !entries[k].isMockData).length;
+
+  // Theme grid
+  var smThG = document.getElementById('smThemeGrid');
+  if(smThG){
+    smThG.innerHTML = Object.entries(THEMES).map(function(entry){
+      var key=entry[0], t=entry[1], sel=_currentTheme===key;
+      var canUse=t.tier==='free'||(typeof hasTier==='function'&&hasTier(t.tier));
+      var bdr=sel?'rgba(201,168,76,.5)':canUse?'rgba(245,240,232,.08)':'rgba(245,240,232,.04)';
+      var bg=sel?'rgba(201,168,76,.08)':'rgba(245,240,232,.02)';
+      var col=sel?'var(--gold)':canUse?'rgba(245,240,232,.5)':'rgba(245,240,232,.2)';
+      var opacity=canUse?'1':'0.5';
+      var onclick=canUse?"setTheme('"+key+"')":"requireTier('"+t.tier+"','Upgrade to Plus to unlock the "+t.label+" theme.')";
+      var badge=t.tier!=='free'&&!canUse?' <span style="font-size:7px;background:rgba(201,168,76,.15);color:var(--gold);padding:1px 4px;border-radius:3px;vertical-align:middle;">PLUS</span>':'';
+      return '<div onclick="'+onclick+'" style="cursor:pointer;padding:10px;border-radius:8px;border:1px solid '+bdr+';background:'+bg+';text-align:center;opacity:'+opacity+';"><div style="font-size:18px;margin-bottom:4px;">'+t.icon+'</div><div style="font-family:Cinzel,serif;font-size:10px;color:'+col+';">'+t.label+badge+'</div></div>';
+    }).join('');
+  }
 
   // Mode grid
   const smMG = document.getElementById('smModeGrid');

@@ -26,6 +26,8 @@ window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
 // ─── SHARED GLOBALS (hoisted for cross-file access) ──────────────────────────
 var _userTier = 'free';
 var _reflectHistory = [];
+var _currentTheme = 'classic';
+var _themeFeatures = false;
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 const EK='lunations_v1', PK='lunations_profile_v1', RK='lunations_reading_v1';
