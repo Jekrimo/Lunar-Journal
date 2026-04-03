@@ -12,6 +12,8 @@
     { "src": "/terms", "dest": "/terms.html" },
     { "src": "/wellness", "dest": "/wellness.html" },
     { "src": "/science", "dest": "/science.html" },
+    { "src": "/js/(.*)", "dest": "/js/$1" },
+    { "src": "/css/(.*)", "dest": "/css/$1" },
     { "src": "/app", "dest": "/index.html" },
     { "src": "/", "dest": "/landing.html" }
   ]
