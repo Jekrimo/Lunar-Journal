@@ -10,7 +10,7 @@
   --text-primary:rgba(220,235,255,.92); --text-secondary:rgba(200,220,245,.55); --text-tertiary:rgba(180,200,230,.3); --text-faint:rgba(180,200,230,.12);
   --surface-1:rgba(180,210,255,.06); --surface-2:rgba(180,210,255,.035); --surface-3:rgba(180,210,255,.018);
   --text-xs:clamp(9px,1.8vw,10px); --text-sm:clamp(12px,2.2vw,13px); --text-base:clamp(14px,2.8vw,16px); --text-lg:clamp(17px,3.2vw,20px); --text-xl:clamp(20px,3.8vw,24px);
-}
+} 
 
 /* Deep space background */
 body{background:#060810!important;}
