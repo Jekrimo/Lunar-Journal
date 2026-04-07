@@ -58,6 +58,6 @@ module.exports = async (req, res) => {
     res.json({ success: true });
   } catch(e) {
     console.error('delete-account error:', e.message);
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 };

@@ -1,6 +1,6 @@
 // Lunations Service Worker
-const CACHE = 'lunations-v10';
-const OFFLINE_URLS = ['/app', '/lunationsHeader.png', '/lunationslogo.png', '/css/app.css', '/css/theme-ethereal.css', '/css/theme-maximalist.css', '/js/core.js', '/js/theme.js', '/js/app.js', '/js/features.js'];
+const CACHE = 'lunations-v12';
+const OFFLINE_URLS = ['/app', '/lunationsHeaderleft.png', '/lunationslogo.png', '/css/app.css', '/css/theme-ethereal.css', '/css/theme-maximalist.css', '/js/core.js', '/js/theme.js', '/js/app.js', '/js/features.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(

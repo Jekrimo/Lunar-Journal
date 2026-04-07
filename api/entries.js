@@ -113,7 +113,7 @@ module.exports = async function handler(req, res) {
         eve_clarity: _clamp(entry.eveClarity, 1, 10),
         eve_creativity: _clamp(entry.eveCreativity, 1, 10),
         eve_text: _toS(entry.eveText, 5000),
-        eve_timestamp: entry.eveTimestamp ? new Date(entry.eveTimestamp).toISOString() : null,
+        eve_timestamp: entry.eveTimestamp && !isNaN(new Date(entry.eveTimestamp)) ? new Date(entry.eveTimestamp).toISOString() : null,
         snapshots: Array.isArray(entry.snapshots) ? entry.snapshots : [],
       };
 

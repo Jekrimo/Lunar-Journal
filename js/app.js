@@ -138,7 +138,8 @@ function renderToday(){
     if(profile?.name){
       // Signed-in user with profile — show their natal badge
       const ns=sunSignForDate(new Date(profile.dob+'T12:00:00'));
-      bw.innerHTML=`<div class="natal-badge" onclick="openOnboarding()">✦ ${profile.name} · ${ns.symbol} ${ns.name}${profile.rising?' · '+profile.rising+' Rising':''}</div>`;
+      const _esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      bw.innerHTML=`<div class="natal-badge" onclick="openOnboarding()">✦ ${_esc(profile.name)} · ${ns.symbol} ${ns.name}${profile.rising?' · '+_esc(profile.rising)+' Rising':''}</div>`;
     } else if(currentUser && !profile?.name){
       // Signed-in but no profile — show setup pill (profileNudge bar handles guests)
       bw.innerHTML=`<div class="natal-badge" onclick="openOnboarding()">✦ Add your birth profile for personalized readings</div>`;
@@ -1695,7 +1696,7 @@ function setIcon(glyph, el){
   }
   document.querySelectorAll('.icon-option').forEach(e=>e.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('headerMoon').textContent = glyph || moonPhaseInfo(new Date()).emoji;
+  var _hm=document.getElementById('headerMoon'); if(_hm) _hm.textContent = glyph || moonPhaseInfo(new Date()).emoji;
 }
 
 function importEntries(evt){

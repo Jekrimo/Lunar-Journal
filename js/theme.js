@@ -79,10 +79,10 @@ function applyTheme(themeId){
     document.querySelectorAll('.glow-gold,.glow-blue,.glow-green,.glow-purple').forEach(function(el){
       el.classList.remove('glow-gold','glow-blue','glow-green','glow-purple');
     });
-    // Remove toast container
+    // Remove toast container and reset toast state fully
     var tc = document.querySelector('.toast-container');
     if(tc) tc.remove();
-    if(typeof _toastState !== 'undefined') _toastState.container = null;
+    if(typeof _toastState !== 'undefined'){ _toastState.container = null; _toastState.current = null; _toastState.queue = []; }
   }
 }
 

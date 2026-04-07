@@ -79,6 +79,8 @@ See `.env.example`. Key vars: `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_ANO
 
 5. **Use Python `content.replace()` as fallback** — if a `str_replace` fails due to whitespace/encoding, fall back to Python file replacement rather than re-attempting str_replace repeatedly.
 
+6. **Always commit, push, and deploy after changes** — after each set of changes, commit to git, push to GitHub (`git push origin main`), and deploy with `vercel --prod`. If GitHub push fails (e.g. account suspended), still deploy via `vercel --prod` and note the push failure.
+
 ## Known Issues / Active Work
 
 ### people-save bug (`api/people.js`)
