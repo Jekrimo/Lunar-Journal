@@ -5732,6 +5732,26 @@ restoreFromIDB().then(restored => {
   _authReady.then(function(){ dismissLoadingScreen(); });
 }).catch(function(){ _authReady.then(function(){ dismissLoadingScreen(); }); });
 
+// ─── ANDROID BACK BUTTON ───────────────────────────────────────────────────
+// Close open modals/menus on back button instead of leaving the app
+window.addEventListener('popstate', function(){
+  // Side menu
+  var sm=document.getElementById('sideMenu');
+  if(sm && sm.classList.contains('open')){ closeSideMenu(); return; }
+  // Any open modal overlay
+  var openModal=document.querySelector('.modal-overlay.open');
+  if(openModal){
+    var closeBtn=openModal.querySelector('.modal-close');
+    if(closeBtn) closeBtn.click(); else openModal.classList.remove('open');
+    return;
+  }
+  // Settings panel
+  var sv=document.getElementById('view-settings');
+  if(sv && sv.classList.contains('active')){ navTo('today'); return; }
+});
+// Push a state so back button has something to pop before exiting
+if(!history.state || !history.state.app) history.pushState({app:true}, '');
+
 // Safety net: always dismiss loading screen after 8s no matter what
 setTimeout(dismissLoadingScreen, 8000);
 

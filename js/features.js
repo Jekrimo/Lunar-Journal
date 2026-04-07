@@ -1987,6 +1987,9 @@ function releaseFocus(){
   if(!_themeFeatures) return;
   let startY = 0, currentY = 0, isDragging = false, modalBox = null;
   function onTouchStart(e){
+    // Never intercept touches on inputs/textareas — breaks swipe typing on Android
+    const tag = e.target.tagName;
+    if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable) return;
     const handle = e.target.closest('.modal-handle');
     const box = e.target.closest('.modal-box');
     if(!box || window.innerWidth > 600) return;
