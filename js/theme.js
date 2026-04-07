@@ -96,6 +96,10 @@ function setTheme(themeId){
   saveThemePreference(themeId);
   applyTheme(themeId);
   showToast('Theme: ' + theme.label);
+  // Re-render settings grid so active highlight updates
+  if(typeof renderSettingsModal === 'function' && document.getElementById('settingsModal')?.classList.contains('open')){
+    renderSettingsModal();
+  }
 }
 
 // Apply immediately on script parse (before DOMContentLoaded) to prevent FOUC

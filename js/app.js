@@ -1744,11 +1744,13 @@ let sbClient = null;
 let currentUser = null;
 let syncInProgress = false;
 let _cachedAccessToken = null;
+let _authReadyResolve;
+const _authReady = new Promise(r => { _authReadyResolve = r; });
 
 function initSupabase(){
   const url = window.SUPABASE_URL || '';
   const key = window.SUPABASE_ANON_KEY || '';
-  if(!url || !key){ renderAuthBadge(); return; } // guest mode — still show the badge
+  if(!url || !key){ renderAuthBadge(); _authReadyResolve(); return; } // guest mode — still show the badge
 
   // Supabase CDN loads with defer — poll until available
   let attempts = 0;
@@ -1762,23 +1764,27 @@ function initSupabase(){
       } catch(e) {
         console.warn('Supabase init failed:', e);
         renderAuthBadge();
+        _authReadyResolve();
       }
     } else if(attempts > 20) {
       // CDN failed to load after 2s — show guest badge anyway
       clearInterval(tryInit);
       renderAuthBadge();
+      _authReadyResolve();
     }
   }, 100);
 }
 
 async function checkAuthState(){
-  if(!sbClient) return;
-  const { data: { session } } = await sbClient.auth.getSession();
-  if(session?.user){
-    currentUser = session.user;
-    _cachedAccessToken = session.access_token;
-    await onSignedIn(session.user, false);
-  }
+  if(!sbClient){ _authReadyResolve(); return; }
+  try{
+    const { data: { session } } = await sbClient.auth.getSession();
+    if(session?.user){
+      currentUser = session.user;
+      _cachedAccessToken = session.access_token;
+      await onSignedIn(session.user, false);
+    }
+  } finally { _authReadyResolve(); }
   sbClient.auth.onAuthStateChange(async (event, session) => {
     if(event === 'SIGNED_IN' && session?.user){
       currentUser = session.user;
@@ -5721,11 +5727,12 @@ restoreFromIDB().then(restored => {
   try { updateToneLabel(); } catch(e){}
   renderToday();
   setTimeout(restoreLastTab, 100);
-  dismissLoadingScreen();
-}).catch(function(){ dismissLoadingScreen(); });
+  // Wait for auth + cloud data pull before dismissing loading screen
+  _authReady.then(function(){ dismissLoadingScreen(); });
+}).catch(function(){ _authReady.then(function(){ dismissLoadingScreen(); }); });
 
-// Safety net: always dismiss loading screen after 5s no matter what
-setTimeout(dismissLoadingScreen, 5000);
+// Safety net: always dismiss loading screen after 8s no matter what
+setTimeout(dismissLoadingScreen, 8000);
 
 function dismissLoadingScreen(){
   var el=document.getElementById('loadingScreen');

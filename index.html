@@ -76,9 +76,10 @@ if(!localStorage.getItem('lj_entered')){
 <div class="app-shell">
 
 <header class="site-header">
-  <div style="display:flex;align-items:center;justify-content:center;">
-    <img src="/lunationsHeader.png" alt="Lunations" class="site-header-img" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block'">
+  <div class="site-header-split">
+    <img src="/lunationsHeaderleft.png" alt="Lunations" class="site-header-left" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block'">
     <div id="logoFallback" style="display:none;font-family:'Cinzel',serif;font-size:28px;letter-spacing:.15em;color:#c9a84c;">LUNATIONS</div>
+    <img src="/lunationsHeaderright.png" alt="" class="site-header-right" onerror="this.style.display='none'">
   </div>
 </header>
 
@@ -124,7 +125,6 @@ if(!localStorage.getItem('lj_entered')){
     <div class="side-menu-section-label">Navigate</div>
     <button class="side-menu-item" onclick="navTo('today')"><span class="side-menu-item-icon">🌙</span><div><div class="side-menu-item-label">Today</div></div></button>
     <button class="side-menu-item" onclick="navTo('cycles')"><span class="side-menu-item-icon">◈</span><div><div class="side-menu-item-label">Cycles</div><div class="side-menu-item-sub">Last cycle, patterns, forecast</div></div></button>
-    <button class="side-menu-item" onclick="navTo('cycle')"><span class="side-menu-item-icon">📅</span><div><div class="side-menu-item-label">Calendar</div></div></button>
     <button class="side-menu-item" onclick="navTo('entries')"><span class="side-menu-item-icon">📖</span><div><div class="side-menu-item-label">Journal</div></div></button>
     <button class="side-menu-item" onclick="navTo('sky')"><span class="side-menu-item-icon">✦</span><div><div class="side-menu-item-label">Sky</div></div></button>
   </div>
