@@ -798,11 +798,18 @@ function refreshSchumann(force) {
   var img = document.getElementById('schumannImg');
   var meta = document.getElementById('schumannMeta');
   if(!img) return;
-  // 15-min cache bucket so repeated renders don't re-fetch
-  var bucket = force ? Date.now() : (Math.floor(Date.now() / 900000) * 900000);
-  // Direct Tomsk amplitude image — img src bypasses CORS
-  img.src = 'https://sosrff.tsu.ru/new/shm.jpg?t=' + bucket;
-  if(meta) meta.textContent = 'Tomsk UTC+7 · refreshed ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  var wrap = document.getElementById('schumannImgWrap');
+  // Use our proxy API which caches and retries multiple sources
+  var url = '/api/schumann?t=' + (force ? Date.now() : Math.floor(Date.now() / 900000) * 900000);
+  if(force) url += '&force=1';
+  img.onload = function() {
+    if(meta) meta.textContent = 'Tomsk UTC+7 · refreshed ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  };
+  img.onerror = function() {
+    // Proxy failed too — show unavailable message
+    if(typeof handleSchumannError === 'function') handleSchumannError();
+  };
+  img.src = url;
 }
 // Load Schumann when Sky tab is first opened
 (function() {
