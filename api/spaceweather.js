@@ -1,4 +1,4 @@
-// Proxy for NOAA Space Weather data — no API key needed
+// Proxy for NOAA Space Weather data + Schumann spectrogram — no API key needed
 const https = require('https');
 
 function httpsGet(url) {
@@ -12,6 +12,66 @@ function httpsGet(url) {
       });
     }).on('error', reject);
   });
+}
+
+// ── Schumann spectrogram proxy with caching ──
+let cachedImage = null; // { buffer, contentType, timestamp }
+const IMG_CACHE_TTL = 15 * 60 * 1000;
+const IMG_SOURCES = [
+  'https://sosrff.tsu.ru/new/shm.jpg',
+  'https://sosrff.tsu.ru/new/sra.jpg',
+];
+
+function fetchImage(url, timeout) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), timeout);
+    const req = https.get(url, {
+      headers: { 'User-Agent': 'Lunations-App/1.0' },
+      timeout: timeout,
+    }, (r) => {
+      if (r.statusCode !== 200) { clearTimeout(timer); r.resume(); return reject(new Error('HTTP ' + r.statusCode)); }
+      const ct = r.headers['content-type'] || 'image/jpeg';
+      const chunks = [];
+      r.on('data', chunk => chunks.push(chunk));
+      r.on('end', () => {
+        clearTimeout(timer);
+        const buf = Buffer.concat(chunks);
+        if (buf.length < 1024) return reject(new Error('Image too small'));
+        resolve({ buffer: buf, contentType: ct });
+      });
+      r.on('error', (err) => { clearTimeout(timer); reject(err); });
+    });
+    req.on('error', (err) => { clearTimeout(timer); reject(err); });
+    req.on('timeout', () => { req.destroy(); clearTimeout(timer); reject(new Error('timeout')); });
+  });
+}
+
+async function handleSchumann(req, res) {
+  const force = req.query && req.query.force === '1';
+  if (!force && cachedImage && (Date.now() - cachedImage.timestamp < IMG_CACHE_TTL)) {
+    res.setHeader('Content-Type', cachedImage.contentType);
+    res.setHeader('Cache-Control', 'public, max-age=900');
+    res.setHeader('X-Schumann-Source', 'cache');
+    return res.status(200).end(cachedImage.buffer);
+  }
+  for (const url of IMG_SOURCES) {
+    try {
+      const img = await fetchImage(url, 8000);
+      cachedImage = { buffer: img.buffer, contentType: img.contentType, timestamp: Date.now() };
+      res.setHeader('Content-Type', img.contentType);
+      res.setHeader('Cache-Control', 'public, max-age=900');
+      res.setHeader('X-Schumann-Source', url);
+      return res.status(200).end(img.buffer);
+    } catch (e) { /* try next */ }
+  }
+  // Serve stale cache up to 24h
+  if (cachedImage && (Date.now() - cachedImage.timestamp < 24 * 60 * 60 * 1000)) {
+    res.setHeader('Content-Type', cachedImage.contentType);
+    res.setHeader('Cache-Control', 'public, max-age=60');
+    res.setHeader('X-Schumann-Source', 'stale-cache');
+    return res.status(200).end(cachedImage.buffer);
+  }
+  return res.status(503).json({ error: 'Schumann spectrogram unavailable' });
 }
 
 function classifyKp(kp) {
@@ -28,8 +88,14 @@ function classifyKp(kp) {
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Cache-Control', 's-maxage=300');
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // Route to Schumann image proxy if requested
+  if (req.query && req.query.type === 'schumann') {
+    return handleSchumann(req, res);
+  }
+
+  res.setHeader('Cache-Control', 's-maxage=300');
 
   try {
     const [kpRes, windRes] = await Promise.allSettled([

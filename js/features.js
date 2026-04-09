@@ -800,7 +800,8 @@ function refreshSchumann(force) {
   if(!img) return;
   var wrap = document.getElementById('schumannImgWrap');
   // Use our proxy API which caches and retries multiple sources
-  var url = '/api/schumann?t=' + (force ? Date.now() : Math.floor(Date.now() / 900000) * 900000);
+  var bucket = force ? Date.now() : Math.floor(Date.now() / 900000) * 900000;
+  var url = '/api/spaceweather?type=schumann&t=' + bucket;
   if(force) url += '&force=1';
   img.onload = function() {
     if(meta) meta.textContent = 'Tomsk UTC+7 · refreshed ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
