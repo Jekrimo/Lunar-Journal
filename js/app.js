@@ -274,6 +274,10 @@ function renderCycle(){
   var _cn=document.getElementById('cycleNum');if(_cn)_cn.textContent=Math.max(1,Math.min(13,getCycleNum(nm)));
   const grid=document.getElementById('cycleGrid');if(!grid)return;grid.innerHTML='';
   const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Calculate actual cycle length from this new moon to the next
+  const SYN=29.53058867;
+  const nextNm=prevNewMoon(new Date(nm.getTime()+(SYN+1)*86400000));
+  const cycleDays=Math.round((nextNm-nm)/86400000);
   // Spacer cells so day 1 aligns with correct weekday column
   const nmDow = new Date(nm).getDay();
   for(let s=0; s<nmDow; s++){
@@ -282,7 +286,7 @@ function renderCycle(){
     sp.style.cssText='background:none;border-color:transparent;cursor:default;pointer-events:none;';
     grid.appendChild(sp);
   }
-  for(let i=0;i<29;i++){
+  for(let i=0;i<cycleDays;i++){
     const d=new Date(nm);d.setDate(d.getDate()+i);
     const phase=moonPhaseInfo(d),key=entryKey(d),hasEntry=!!entries[key],isToday=key===todayKey,entry=entries[key];
     const ew=hasEntry&&entry.energy?(entry.energy/10)*100:0;
@@ -1060,7 +1064,7 @@ async function generatePatternInsight(force=false){
     try{
       const c = JSON.parse(localStorage.getItem(PKI)||'null');
       if(c && c.key === weekKey && c.months === patternMonths){
-        textEl.innerHTML = c.text; card.style.display='block'; return;
+        textEl.innerHTML = c.text; card.style.display='block'; resetPatternInsightCollapse(); return;
       }
     } catch(e){}
   }
@@ -1188,10 +1192,37 @@ async function generatePatternInsight(force=false){
     if(text){
       textEl.innerHTML = sanitizeAIText(text);
       localStorage.setItem(PKI, JSON.stringify({key:weekKey, months:patternMonths, text:sanitizeAIText(text)}));
+      resetPatternInsightCollapse();
     } else { card.style.display='none'; }
   } catch(e){ card.style.display='none'; }
 }
 
+function resetPatternInsightCollapse(){
+  var wrap=document.getElementById('patternInsightWrap');
+  var btn=document.querySelector('.pattern-insight-toggle');
+  if(!wrap||!btn) return;
+  wrap.classList.add('collapsed');
+  wrap.style.maxHeight='';
+  btn.textContent='Read more \u25BE';
+  // Only show toggle if content overflows
+  requestAnimationFrame(function(){
+    btn.style.display=wrap.scrollHeight>270?'block':'none';
+  });
+}
+
+function togglePatternInsight(){
+  var wrap=document.getElementById('patternInsightWrap');
+  var btn=document.querySelector('.pattern-insight-toggle');
+  if(!wrap||!btn) return;
+  var collapsed=wrap.classList.toggle('collapsed');
+  if(!collapsed){
+    wrap.style.maxHeight=wrap.scrollHeight+'px';
+    btn.textContent='Read less \u25B4';
+  } else {
+    wrap.style.maxHeight='';
+    btn.textContent='Read more \u25BE';
+  }
+}
 
 // ─── FULL SKY ─────────────────────────────────────────────────────────────────
 function renderSky(){
@@ -6086,4 +6117,73 @@ function getJournalNote(tz, nk, moonEvent, tithi) {
   return null;
 }
 
+// ─── Feedback System ───
+let _feedbackType = 'feedback';
+
+function openFeedbackModal() {
+  _feedbackType = 'feedback';
+  document.getElementById('feedbackTypeFeedback').classList.add('active');
+  document.getElementById('feedbackTypeBug').classList.remove('active');
+  document.getElementById('feedbackMessage').value = '';
+  document.getElementById('feedbackStatus').textContent = '';
+  document.getElementById('feedbackSubmitBtn').disabled = false;
+  document.getElementById('feedbackModal').classList.add('open');
+}
+
+function closeFeedbackModal() {
+  document.getElementById('feedbackModal').classList.remove('open');
+}
+
+function setFeedbackType(type) {
+  _feedbackType = type;
+  document.getElementById('feedbackTypeFeedback').classList.toggle('active', type === 'feedback');
+  document.getElementById('feedbackTypeBug').classList.toggle('active', type === 'bug');
+}
+
+async function submitFeedback() {
+  const msg = document.getElementById('feedbackMessage').value.trim();
+  if (!msg) { document.getElementById('feedbackStatus').textContent = 'Please enter a message.'; return; }
+
+  const btn = document.getElementById('feedbackSubmitBtn');
+  const status = document.getElementById('feedbackStatus');
+  btn.disabled = true;
+  status.textContent = 'Sending...';
+
+  const payload = {
+    type: _feedbackType,
+    message: msg,
+    accountId: currentUser ? currentUser.id : null,
+  };
+
+  if (_feedbackType === 'bug') {
+    const phase = moonPhaseInfo(new Date());
+    payload.context = {
+      view: _currentView || 'unknown',
+      moonPhase: phase ? (phase.name + ' (' + phase.pct + '%)') : 'unknown',
+      userAgent: navigator.userAgent,
+    };
+  }
+
+  try {
+    const resp = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) {
+      const d = await resp.json().catch(() => ({}));
+      throw new Error(d.error || 'Failed to send');
+    }
+    status.style.color = 'rgba(140,200,140,.7)';
+    status.textContent = 'Thank you! Your feedback has been sent.';
+    setTimeout(() => {
+      closeFeedbackModal();
+      status.style.color = '';
+    }, 2000);
+  } catch (e) {
+    status.style.color = 'rgba(200,120,120,.7)';
+    status.textContent = e.message || 'Something went wrong. Please try again.';
+    btn.disabled = false;
+  }
+}
 
