@@ -71,7 +71,18 @@ async function handleSchumann(req, res) {
     res.setHeader('X-Schumann-Source', 'stale-cache');
     return res.status(200).end(cachedImage.buffer);
   }
-  return res.status(503).json({ error: 'Schumann spectrogram unavailable' });
+  return res.status(503).json({ error: 'Schumann spectrogram unavailable', status: 'down' });
+}
+
+async function handleSchumannStatus(req, res) {
+  // Lightweight check — try to reach first source with short timeout
+  for (const url of IMG_SOURCES) {
+    try {
+      await fetchImage(url, 5000);
+      return res.status(200).json({ status: 'up', checkedAt: new Date().toISOString() });
+    } catch (e) { /* try next */ }
+  }
+  return res.status(200).json({ status: 'down', checkedAt: new Date().toISOString() });
 }
 
 function classifyKp(kp) {
@@ -93,6 +104,9 @@ module.exports = async function handler(req, res) {
   // Route to Schumann image proxy if requested
   if (req.query && req.query.type === 'schumann') {
     return handleSchumann(req, res);
+  }
+  if (req.query && req.query.type === 'schumann-status') {
+    return handleSchumannStatus(req, res);
   }
 
   res.setHeader('Cache-Control', 's-maxage=300');

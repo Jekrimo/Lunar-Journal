@@ -794,24 +794,81 @@ function applyPrompt(text) {
 // SCHUMANN RESONANCE — Tomsk Space Observatory live spectrogram
 // ═══════════════════════════════════════════════════════════════════
 var _schumannLoaded = false;
+var _schumannRetryTimer = null;
+var _schumannCountdown = null;
+var _schumannIsDown = false;
+var SCHUMANN_RETRY_SECONDS = 300; // 5 minutes
+
 function refreshSchumann(force) {
   var img = document.getElementById('schumannImg');
   var meta = document.getElementById('schumannMeta');
   if(!img) return;
   var wrap = document.getElementById('schumannImgWrap');
+  // Clear any existing retry timer
+  if(_schumannRetryTimer) { clearInterval(_schumannRetryTimer); _schumannRetryTimer = null; }
+  if(_schumannCountdown) { clearInterval(_schumannCountdown); _schumannCountdown = null; }
   // Use our proxy API which caches and retries multiple sources
   var bucket = force ? Date.now() : Math.floor(Date.now() / 900000) * 900000;
   var url = '/api/spaceweather?type=schumann&t=' + bucket;
   if(force) url += '&force=1';
+  // If recovering from down state, restore the img element
+  if(_schumannIsDown) {
+    wrap.innerHTML = '<img id="schumannImg" src="" alt="Schumann resonance spectrogram">';
+    img = document.getElementById('schumannImg');
+  }
   img.onload = function() {
-    if(meta) meta.textContent = 'Tomsk UTC+7 · refreshed ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    _schumannIsDown = false;
+    if(meta) {
+      meta.textContent = 'Tomsk UTC+7 \u00b7 refreshed ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      meta.style.color = '';
+    }
   };
   img.onerror = function() {
-    // Proxy failed too — show unavailable message
-    if(typeof handleSchumannError === 'function') handleSchumannError();
+    handleSchumannError();
   };
   img.src = url;
 }
+
+function handleSchumannError() {
+  _schumannIsDown = true;
+  var wrap = document.getElementById('schumannImgWrap');
+  var meta = document.getElementById('schumannMeta');
+  if(!wrap) return;
+  var remaining = SCHUMANN_RETRY_SECONDS;
+  wrap.innerHTML =
+    '<div style="padding:20px 14px;text-align:center;">' +
+      '<div style="font-size:22px;margin-bottom:8px;opacity:.4;">\uD83C\uDF10</div>' +
+      '<div style="font-size:13px;color:rgba(245,240,232,.35);font-style:italic;margin-bottom:6px;">Tomsk Space Observatory feed is currently offline</div>' +
+      '<div style="font-size:11px;color:rgba(245,240,232,.2);margin-bottom:10px;">The Schumann resonance spectrogram source (sosrff.tsu.ru) is unreachable. This happens periodically with the Siberian observatory feed.</div>' +
+      '<div id="schumannCountdownWrap" style="font-size:11px;color:rgba(201,168,76,.4);letter-spacing:.04em;">Checking again in <span id="schumannCountdownNum">' + formatCountdown(remaining) + '</span></div>' +
+    '</div>';
+  if(meta) {
+    meta.textContent = 'Last checked ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    meta.style.color = 'rgba(245,240,232,.15)';
+  }
+  // Countdown display
+  _schumannCountdown = setInterval(function() {
+    remaining--;
+    var el = document.getElementById('schumannCountdownNum');
+    if(el) el.textContent = formatCountdown(remaining);
+    if(remaining <= 0) {
+      clearInterval(_schumannCountdown);
+      _schumannCountdown = null;
+    }
+  }, 1000);
+  // Auto-retry after countdown
+  _schumannRetryTimer = setTimeout(function() {
+    _schumannRetryTimer = null;
+    refreshSchumann(true);
+  }, SCHUMANN_RETRY_SECONDS * 1000);
+}
+
+function formatCountdown(s) {
+  var m = Math.floor(s / 60);
+  var sec = s % 60;
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
 // Load Schumann when Sky tab is first opened
 (function() {
   var origNavTabTap = null;
@@ -1208,7 +1265,7 @@ async function sendFollowupQuestion() {
 }
 
 
-function handleSchumannError(){var w=document.getElementById('schumannImgWrap');if(w)w.innerHTML='<div style="padding:14px;font-size:12px;color:rgba(245,240,232,.2);text-align:center;font-style:italic;">Spectrogram temporarily unavailable</div>';}
+// handleSchumannError is defined in the Schumann section above
 
 async function pullEntriesFromCloud() {
   if(!currentUser || !sbClient) return;
