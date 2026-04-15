@@ -76,15 +76,17 @@ module.exports = async function handler(req, res) {
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
+    const fromAddr = process.env.FEEDBACK_FROM || 'Lunations <onboarding@resend.dev>';
+    const toAddr = process.env.FEEDBACK_TO || 'hello@lunations.app';
     await resend.emails.send({
-      from: 'Lunations Feedback <onboarding@resend.dev>',
-      to: 'hello@lunations.app',
+      from: fromAddr,
+      to: toAddr,
       subject,
       html: body,
     });
     return res.status(200).json({ success: true });
   } catch (err) {
-    console.error('[feedback] send error:', err);
+    console.error('[feedback] send error:', err.message, err.statusCode, JSON.stringify(err));
     return res.status(500).json({ error: 'Failed to send feedback' });
   }
 };
