@@ -6165,7 +6165,7 @@ async function submitFeedback() {
   }
 
   try {
-    const resp = await fetch('/api/feedback', {
+    const resp = await fetch('/api/health', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
