@@ -791,7 +791,7 @@ function applyPrompt(text) {
 
 
 // ═══════════════════════════════════════════════════════════════════
-// SCHUMANN RESONANCE — Tomsk Space Observatory live spectrogram
+// SCHUMANN RESONANCE — live spectrogram (multi-source with fallback)
 // ═══════════════════════════════════════════════════════════════════
 var _schumannLoaded = false;
 var _schumannRetryTimer = null;
@@ -819,7 +819,7 @@ function refreshSchumann(force) {
   img.onload = function() {
     _schumannIsDown = false;
     if(meta) {
-      meta.textContent = 'Tomsk UTC+7 \u00b7 refreshed ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      meta.textContent = 'Refreshed ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       meta.style.color = '';
     }
   };
@@ -838,8 +838,8 @@ function handleSchumannError() {
   wrap.innerHTML =
     '<div style="padding:20px 14px;text-align:center;">' +
       '<div style="font-size:22px;margin-bottom:8px;opacity:.4;">\uD83C\uDF10</div>' +
-      '<div style="font-size:13px;color:rgba(245,240,232,.35);font-style:italic;margin-bottom:6px;">Tomsk Space Observatory feed is currently offline</div>' +
-      '<div style="font-size:11px;color:rgba(245,240,232,.2);margin-bottom:10px;">The Schumann resonance spectrogram source (sosrff.tsu.ru) is unreachable. This happens periodically with the Siberian observatory feed.</div>' +
+      '<div style="font-size:13px;color:rgba(245,240,232,.35);font-style:italic;margin-bottom:6px;">Schumann spectrogram temporarily unavailable</div>' +
+      '<div style="font-size:11px;color:rgba(245,240,232,.2);margin-bottom:10px;">All observatory sources are currently unreachable. This happens occasionally — will auto-retry shortly.</div>' +
       '<div id="schumannCountdownWrap" style="font-size:11px;color:rgba(201,168,76,.4);letter-spacing:.04em;">Checking again in <span id="schumannCountdownNum">' + formatCountdown(remaining) + '</span></div>' +
     '</div>';
   if(meta) {

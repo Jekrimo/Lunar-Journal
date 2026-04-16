@@ -18,8 +18,10 @@ function httpsGet(url) {
 let cachedImage = null; // { buffer, contentType, timestamp }
 const IMG_CACHE_TTL = 15 * 60 * 1000;
 const IMG_SOURCES = [
+  'https://schumannresonancelive.com/schumann_api.php?action=spectrogram',
+  'https://www.etna-ero.it/live_etna/last-coil_8h.jpg',
+  'https://www.etna-ero.it/live_etna/last-coil_24h.jpg',
   'https://sosrff.tsu.ru/new/shm.jpg',
-  'https://sosrff.tsu.ru/new/sra.jpg',
 ];
 
 function fetchImage(url, timeout) {
@@ -31,6 +33,7 @@ function fetchImage(url, timeout) {
     }, (r) => {
       if (r.statusCode !== 200) { clearTimeout(timer); r.resume(); return reject(new Error('HTTP ' + r.statusCode)); }
       const ct = r.headers['content-type'] || 'image/jpeg';
+      if (!ct.startsWith('image/')) { clearTimeout(timer); r.resume(); return reject(new Error('Not an image: ' + ct)); }
       const chunks = [];
       r.on('data', chunk => chunks.push(chunk));
       r.on('end', () => {

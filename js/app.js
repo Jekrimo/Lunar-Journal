@@ -5999,16 +5999,7 @@ function forecastMoonPhase(d) {
 
 
 function getForecastTithi(d) {
-  const n = (d - new Date(2000, 0, 1)) / 86400000;
-  const sunL = (280.460 + 0.9856474*n) % 360;
-  const sunG = (357.528 + 0.9856003*n) % 360 * Math.PI / 180;
-  const sunLon = (sunL + 1.915*Math.sin(sunG) + 0.020*Math.sin(2*sunG) + 360) % 360;
-  const moonL = (218.316 + 13.176396*n) % 360;
-  const moonM = (134.963 + 13.064993*n) % 360 * Math.PI / 180;
-  const moonF = (93.272  + 13.229350*n) % 360 * Math.PI / 180;
-  const moonLon = ((moonL + 6.289*Math.sin(moonM) - 1.274*Math.sin(2*moonF-moonM) + 0.658*Math.sin(2*moonF)) % 360 + 360) % 360;
-  const diff = (moonLon - sunLon + 360) % 360;
-  return Math.floor(diff / 12) + 1;
+  return getTithi(d).num;
 }
 
 
