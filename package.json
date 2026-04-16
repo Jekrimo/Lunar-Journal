@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "24.x"
+    "node": "20.x"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.0",
@@ -11,7 +11,6 @@
     "@capacitor/core": "^8.3.0",
     "@capacitor/ios": "^8.3.0",
     "@supabase/supabase-js": "^2.100.0",
-    "resend": "^6.11.0",
     "stripe": "^20.4.1"
   },
   "description": "**A lunar journal. Track yourself across cycles.**",

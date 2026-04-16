@@ -1,5 +1,4 @@
 // Health check (GET) + Feedback submission (POST)
-const { Resend } = require('resend');
 
 const rateLimitMap = new Map();
 function isRateLimited(ip) {
@@ -75,18 +74,29 @@ module.exports = async function handler(req, res) {
   body += `<hr><p style="color:#999;font-size:12px;">Sent from Lunations app at ${new Date().toISOString()}</p>`;
 
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
     const fromAddr = process.env.FEEDBACK_FROM || 'Lunations <onboarding@resend.dev>';
     const toAddr = process.env.FEEDBACK_TO || 'hello@lunations.app';
-    await resend.emails.send({
-      from: fromAddr,
-      to: toAddr,
-      subject,
-      html: body,
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromAddr,
+        to: toAddr,
+        subject,
+        html: body,
+      }),
     });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      console.error('[feedback] Resend API error:', response.status, JSON.stringify(errData));
+      return res.status(500).json({ error: 'Failed to send feedback' });
+    }
     return res.status(200).json({ success: true });
   } catch (err) {
-    console.error('[feedback] send error:', err.message, err.statusCode, JSON.stringify(err));
+    console.error('[feedback] send error:', err.message);
     return res.status(500).json({ error: 'Failed to send feedback' });
   }
 };
