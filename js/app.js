@@ -238,10 +238,10 @@ function getCycleStart(offset){
   let nm=prevNewMoon(new Date());
   if(offset<0){
     // Go back: subtract slightly less than one full period to land in previous cycle
-    for(let i=0;i<-offset;i++) nm=prevNewMoon(new Date(nm.getTime()-(SYN-1)*86400000));
+    for(let i=0;i<-offset;i++) nm=prevNewMoon(new Date(nm.getTime()-(SYN-2)*86400000));
   } else {
     // Go forward: add slightly more than one period to land in next cycle
-    for(let i=0;i<offset;i++) nm=prevNewMoon(new Date(nm.getTime()+(SYN+1)*86400000));
+    for(let i=0;i<offset;i++) nm=prevNewMoon(new Date(nm.getTime()+(SYN+2)*86400000));
   }
   return nm;
 }
@@ -276,7 +276,7 @@ function renderCycle(){
   const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   // Calculate actual cycle length from this new moon to the next
   const SYN=29.53058867;
-  const nextNm=prevNewMoon(new Date(nm.getTime()+(SYN+1)*86400000));
+  const nextNm=prevNewMoon(new Date(nm.getTime()+(SYN+2)*86400000));
   const cycleDays=Math.round((nextNm-nm)/86400000);
   // Spacer cells so day 1 aligns with correct weekday column
   const nmDow = new Date(nm).getDay();
@@ -1273,7 +1273,7 @@ function renderSky(){
   // Profile now in Settings tab
   // Year overview
   const ys=new Date(now.getFullYear(),0,1),firstNm=prevNewMoon(ys);let d=new Date(firstNm),cycles=[];
-  for(let i=0;i<13;i++){const nm=prevNewMoon(d),end=new Date(nm.getTime()+29.53*86400000);cycles.push({num:i+1,start:nm,end,sign:moonSignApprox(nm)});d=new Date(end.getTime()+86400000);}
+  for(let i=0;i<13;i++){const nm=prevNewMoon(d),end=prevNewMoon(new Date(nm.getTime()+31.53*86400000));cycles.push({num:i+1,start:nm,end,sign:moonSignApprox(nm)});d=new Date(end.getTime()+2*86400000);}
   var _yo=document.getElementById('yearOverview');if(_yo)_yo.innerHTML=cycles.map(c=>{const cur=now>=c.start&&now<c.end,s1=c.start.toLocaleDateString('en-US',{month:'short',day:'numeric'}),s2=c.end.toLocaleDateString('en-US',{month:'short',day:'numeric'});return`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(245,240,232,.05);${cur?'color:#e8d49a;':'color:rgba(245,240,232,.4);'}"><span style="font-family:Cinzel,serif;font-size:11px;min-width:22px;">${c.num}</span><span style="font-size:13px;">${c.sign?.symbol||''} ${c.sign?.name||''}</span><span style="font-size:12px;margin-left:auto;font-style:italic;">${s1}–${s2}</span>${cur?'<span style="font-family:Cinzel,serif;font-size:9px;color:var(--gold);letter-spacing:.1em;margin-left:6px;">NOW</span>':''}</div>`;}).join('');
 }
 
@@ -1472,10 +1472,14 @@ function getSunLongitude(date) {
   return ((lambda % 360) + 360) % 360;
 }
 
-// Approximate moon longitude
+// Approximate moon longitude (with main perturbations)
 function getMoonLongitude(date) {
   const JD = julianDay(date);
-  const lon = ((JD - 2451545.0) * 13.176396 + 218.316) % 360;
+  const n = JD - 2451545.0;
+  const L = (218.316 + 13.176396 * n) % 360;
+  const M = ((134.963 + 13.064993 * n) % 360) * Math.PI / 180;
+  const F = ((93.272  + 13.229350 * n) % 360) * Math.PI / 180;
+  const lon = L + 6.289*Math.sin(M) - 1.274*Math.sin(2*F - M) + 0.658*Math.sin(2*F);
   return ((lon % 360) + 360) % 360;
 }
 

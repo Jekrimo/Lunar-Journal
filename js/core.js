@@ -145,35 +145,59 @@ function julianDay(date){
   const A=Math.floor((14-m)/12),Y=y+4800-A,M=m+12*A-3;
   return day+Math.floor((153*M+2)/5)+365*Y+Math.floor(Y/4)-Math.floor(Y/100)+Math.floor(Y/400)-32045-0.5+h;
 }
-function moonAge(date){const JD=julianDay(date),s=29.53058867;return((JD-2451549.5)%s+s)%s;}
+function moonAge(date){
+  // Compute actual Sun-Moon elongation instead of fixed-epoch average
+  // (the old method drifted ~1 day over decades)
+  const JD=julianDay(date),n=JD-2451545.0,s=29.53058867;
+  // Sun longitude with equation of center
+  const sunL=(280.460+0.9856474*n)%360;
+  const sunG=((357.528+0.9856003*n)%360)*Math.PI/180;
+  const sunLon=sunL+1.915*Math.sin(sunG)+0.020*Math.sin(2*sunG);
+  // Moon longitude with main perturbations (center, evection, variation)
+  const moonL=(218.316+13.176396*n)%360;
+  const moonM=((134.963+13.064993*n)%360)*Math.PI/180;
+  const moonF=((93.272+13.229350*n)%360)*Math.PI/180;
+  const moonLon=moonL+6.289*Math.sin(moonM)-1.274*Math.sin(2*moonF-moonM)+0.658*Math.sin(2*moonF);
+  const elong=((moonLon-sunLon)%360+360)%360;
+  return elong/360*s;
+}
 function moonPhaseInfo(date){
-  const age=moonAge(date),illum=(1-Math.cos(age/29.53058867*2*Math.PI))/2,pct=Math.round(illum*100);
+  const SYN=29.53058867,age=moonAge(date),illum=(1-Math.cos(age/SYN*2*Math.PI))/2,pct=Math.round(illum*100);
+  // Wrap-around: treat ages within ~12h before conjunction as new moon
+  const effAge=age>SYN-0.5?age-SYN:age;
   const tbl=[[1.85,'New Moon','🌑',0],[7.38,'Waxing Crescent','🌒',1],[9.22,'First Quarter','🌓',2],[14.77,'Waxing Gibbous','🌔',3],[16.61,'Full Moon','🌕',4],[22.15,'Waning Gibbous','🌖',5],[23.99,'Last Quarter','🌗',6],[99,'Waning Crescent','🌘',7]];
   // Override: if illumination >= 95%, it's visually full (~2-3 day window)
   if(pct>=95) return{name:'Full Moon',emoji:'🌕',quarter:4,pct,age};
-  const row=tbl.find(r=>age<r[0])||tbl[tbl.length-1];
+  const row=tbl.find(r=>effAge<r[0])||tbl[tbl.length-1];
   return{name:row[1],emoji:row[2],quarter:row[3],pct,age};
 }
 function prevNewMoon(date){
-  // More accurate: iterate backwards by synodic period until age < 1 day
   const SYN = 29.53058867;
   let d = new Date(date);
   let age = moonAge(d);
   // Jump back to approximate new moon
   d = new Date(d.getTime() - age * 86400000);
-  // Refine with small steps
-  for(let i = 0; i < 10; i++){
+  // Refine: use signed delta to converge on nearest new moon
+  for(let i = 0; i < 15; i++){
     age = moonAge(d);
-    if(age < 0.5) break;
-    if(age > SYN/2){
-      // We're in the second half — we overshot, go forward
-      d = new Date(d.getTime() + (SYN - age) * 86400000);
-    } else {
-      d = new Date(d.getTime() - age * 86400000);
-    }
+    // Signed distance to nearest new moon: negative = before, positive = after
+    var delta = age > SYN/2 ? age - SYN : age;
+    if(Math.abs(delta) < 0.01) break; // converged to ~15 min
+    d = new Date(d.getTime() - delta * 86400000);
   }
-  // Final snap: set to start of that day
+  // Ensure we found the new moon BEFORE the input date
   d.setHours(0,0,0,0);
+  if(d > date){
+    // Found a future new moon — step back one cycle and re-refine
+    d = new Date(d.getTime() - SYN * 86400000);
+    for(let i = 0; i < 10; i++){
+      age = moonAge(d);
+      var delta = age > SYN/2 ? age - SYN : age;
+      if(Math.abs(delta) < 0.01) break;
+      d = new Date(d.getTime() - delta * 86400000);
+    }
+    d.setHours(0,0,0,0);
+  }
   return d;
 }
 
