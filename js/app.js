@@ -4807,7 +4807,7 @@ const WT_STEPS = [
   {
     icon: '🌑',
     title: 'The Sky',
-    body: 'Tap "The Sky" section to see Vedic day panel, space weather, and planetary influences. Hover any term for a tooltip explanation.',
+    body: 'Tap "The Sky" section to see space weather, planetary influences, and Schumann resonance. Hover any term for a tooltip explanation.',
     target: 'sectionSky',
     position: 'above',
   },
@@ -4817,6 +4817,7 @@ const WT_STEPS = [
     body: 'After a few weeks of logging, the Cycles tab shows your patterns — which moon phases lift your energy, which ones challenge you. Your personal lunar fingerprint.',
     target: null,
     position: 'center',
+    tab: 'cycles',
   },
   {
     icon: '⚙',
@@ -4824,6 +4825,7 @@ const WT_STEPS = [
     body: 'Go to Settings → Birth Profile and add your birthday. It makes your readings specific to you — natal sun, moon, and if you add it, rising sign too.',
     target: null,
     position: 'center',
+    tab: 'sky',
   },
   {
     icon: '🔥',
@@ -4831,6 +4833,7 @@ const WT_STEPS = [
     body: 'Log one entry today to start your record. The sky is already tracking — now you track yourself alongside it.',
     target: null,
     position: 'center',
+    tab: 'today',
   },
 ];
 
@@ -4848,6 +4851,9 @@ function renderWalkthroughStep(){
 
   const step = WT_STEPS[_wtStep];
   if(!step) return finishWalkthrough();
+
+  // Switch tab if step requires it
+  if(step.tab && typeof navTabTap === 'function') navTabTap(step.tab);
 
   const overlay = document.createElement('div');
   overlay.className = 'wt-overlay';
