@@ -2301,11 +2301,10 @@ function _showToastNow(msg){
   _toastState.current = t;
   setTimeout(() => {
     t.classList.add('toast-exit');
-    t.addEventListener('animationend', () => {
-      t.remove();
-      _toastState.current = null;
-      if(_toastState.queue.length) _showToastNow(_toastState.queue.shift());
-    }, { once: true });
+    var removed = false;
+    function cleanup(){ if(removed) return; removed = true; t.remove(); _toastState.current = null; if(_toastState.queue.length) _showToastNow(_toastState.queue.shift()); }
+    t.addEventListener('animationend', cleanup, { once: true });
+    setTimeout(cleanup, 400); // fallback if animation CSS not loaded
   }, 3000);
 }
 
