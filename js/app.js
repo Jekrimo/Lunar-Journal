@@ -4823,18 +4823,20 @@ const WT_STEPS = [
   {
     icon: '⚙',
     title: 'Set Your Profile',
-    body: 'Go to Settings → Birth Profile and add your birthday. It makes your readings specific to you — natal sun, moon, and if you add it, rising sign too.',
+    body: 'Add your birthday to get readings specific to you — natal sun, moon, and if you know it, rising sign too.',
     target: null,
     position: 'center',
-    tab: 'sky',
+    onEnter: function(){
+      var ob = document.getElementById('obOverlay');
+      if(ob){ ob.style.zIndex = '499'; openOnboarding(); }
+    },
   },
   {
     icon: '🔥',
     title: 'You are in.',
-    body: 'Log one entry today to start your record. The sky is already tracking — now you track yourself alongside it.',
+    body: 'Fill in your profile below, then start logging. The sky is already tracking — now you track yourself alongside it.',
     target: null,
     position: 'center',
-    tab: 'today',
   },
 ];
 
@@ -4855,6 +4857,8 @@ function renderWalkthroughStep(){
 
   // Switch tab if step requires it
   if(step.tab && typeof navTabTap === 'function') navTabTap(step.tab);
+  // Run onEnter callback if present
+  if(step.onEnter) step.onEnter();
 
   const overlay = document.createElement('div');
   overlay.className = 'wt-overlay';
@@ -4939,12 +4943,11 @@ function wtBack(){ if(_wtStep>0){ _wtStep--; renderWalkthroughStep(); } }
 function finishWalkthrough(){
   document.getElementById('wtOverlay')?.remove();
   localStorage.setItem(WT_KEY, '1');
-  // Focus the entry form
-  const formWrap = document.getElementById('entryFormWrap');
-  if(formWrap && formWrap.style.display !== 'none'){
-    formWrap.scrollIntoView({behavior:'smooth', block:'start'});
+  // Restore onboarding overlay z-index if it's open behind the tour
+  var ob = document.getElementById('obOverlay');
+  if(ob && ob.classList.contains('open')){
+    ob.style.zIndex = '';
   }
-  showToast("✦ You are all set — log your first entry");
 }
 
 
