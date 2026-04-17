@@ -4807,9 +4807,10 @@ const WT_STEPS = [
   {
     icon: '🌑',
     title: 'The Sky',
-    body: 'Tap "The Sky" section to see space weather, planetary influences, and Schumann resonance. Hover any term for a tooltip explanation.',
-    target: 'sectionSky',
-    position: 'above',
+    body: 'The Sky tab shows space weather, planetary influences, and Schumann resonance. Hover any term for a tooltip explanation.',
+    target: null,
+    position: 'center',
+    tab: 'sky',
   },
   {
     icon: '◈',
