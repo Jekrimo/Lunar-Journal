@@ -532,21 +532,6 @@ if(!localStorage.getItem('lj_entered')){
     <div class="today-section-body" id="calendarInCycles"></div>
   </div>
 
-  <div class="today-section" id="secCycleSummary">
-    <div class="today-section-header" onclick="toggleTodaySection('secCycleSummary')">
-      <span class="today-section-label">✦ This Cycle — AI Reading</span>
-      <span class="today-section-chevron">&#9662;</span>
-    </div>
-    <div class="today-section-body">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(201,168,76,.4);">Your cycle so far</div>
-        <button onclick="generateCycleSummaryAI(true)" style="background:none;border:1px solid rgba(201,168,76,.18);border-radius:3px;color:rgba(201,168,76,.45);font-size:10px;font-family:'Cinzel',serif;letter-spacing:.1em;padding:4px 12px;cursor:pointer;">↺ Refresh</button>
-      </div>
-      <div id="cycleSummaryAIText" style="font-size:16px;color:rgba(245,240,232,.75);line-height:1.9;font-style:italic;min-height:50px;"><span style="color:rgba(245,240,232,.2);">Loading…</span></div>
-      <div id="cycleSummaryMeta" style="margin-top:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:rgba(245,240,232,.18);text-transform:uppercase;"></div>
-    </div>
-  </div>
-
   <!-- LAST CYCLE MIRROR — open by default -->
   <div class="today-section" id="secLastCycle">
     <div class="today-section-header" onclick="toggleTodaySection('secLastCycle')">

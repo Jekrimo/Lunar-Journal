@@ -112,7 +112,6 @@ function navTabTap(view, btn){
     }
   }
   if(view==='sky')setTimeout(renderBirthChart,150);
-  if(view==='cycles')setTimeout(function(){generateCycleSummaryAI();},300);
   const now = Date.now();
   if(_lastNavTap.view === view && now - _lastNavTap.time < 400){
     window.scrollTo({top:0, behavior:'smooth'});

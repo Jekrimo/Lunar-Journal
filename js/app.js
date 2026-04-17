@@ -1914,7 +1914,6 @@ async function onSignedIn(user, isNew){
   // Only show welcome tour for genuinely new users — not returning sign-ins
   if(!isNew){localStorage.setItem('lunations_wt_done_v1','1');localStorage.setItem('lunations_welcomed_v1','1');}
   if(isNew && !localStorage.getItem('lunations_wt_done_v1'))setTimeout(showWelcomeModal,1400);
-  setTimeout(function(){generateCycleSummaryAI();},3000);
 
   // Mark as welcomed AND wt_done for returning users with entries — prevents tour on re-login
   if(Object.keys(loadEntries()).length > 0 || !isNew) {
@@ -4854,37 +4853,45 @@ function renderWalkthroughStep(){
   overlay.className = 'wt-overlay';
   overlay.id = 'wtOverlay';
 
-  // Spotlight
+  // Spotlight (position:absolute inside position:fixed overlay — use viewport coords)
   const spotlight = document.createElement('div');
   spotlight.className = 'wt-spotlight';
   if(step.target){
     const el = document.getElementById(step.target);
     if(el){
-      const r = el.getBoundingClientRect();
-      spotlight.style.cssText = `left:${r.left-8}px;top:${r.top-8+window.scrollY}px;width:${r.width+16}px;height:${r.height+16}px;`;
+      el.scrollIntoView({behavior:'smooth', block:'center'});
     }
-  } else {
-    spotlight.style.cssText = 'display:none;';
   }
   overlay.appendChild(spotlight);
 
-  // Card
+  // Card (position:fixed — use viewport coords, no scrollY)
   const card = document.createElement('div');
   card.className = 'wt-card';
 
-  // Position card
-  if(step.target && document.getElementById(step.target)){
-    const r = document.getElementById(step.target).getBoundingClientRect();
-    const spaceBelow = window.innerHeight - r.bottom;
-    if(spaceBelow > 220){
-      card.style.top = (r.bottom + window.scrollY + 16) + 'px';
+  // Position card after a brief delay so scrollIntoView settles
+  function positionWtCard(){
+    if(step.target){
+      const el = document.getElementById(step.target);
+      if(el){
+        const r = el.getBoundingClientRect();
+        // Spotlight
+        spotlight.style.cssText = `left:${r.left-8}px;top:${r.top-8}px;width:${r.width+16}px;height:${r.height+16}px;`;
+        // Card below or above target
+        const spaceBelow = window.innerHeight - r.bottom;
+        if(spaceBelow > 220){
+          card.style.top = (r.bottom + 16) + 'px';
+        } else {
+          card.style.top = Math.max(16, r.top - 220) + 'px';
+        }
+      }
     } else {
-      card.style.top = Math.max(16, r.top + window.scrollY - 220) + 'px';
+      spotlight.style.cssText = 'display:none;';
+      card.style.top = '50%';
+      card.style.transform = 'translate(-50%,-50%)';
     }
-  } else {
-    card.style.top = '50%';
-    card.style.transform = 'translate(-50%,-50%)';
   }
+  if(step.target) setTimeout(positionWtCard, 400);
+  else positionWtCard();
 
   // Dots
   const dots = WT_STEPS.map((_,i) =>
@@ -4910,15 +4917,11 @@ function renderWalkthroughStep(){
   overlay.appendChild(card);
   document.body.appendChild(overlay);
 
-  // Scroll target into view
+  // Open section if collapsed
   if(step.target){
     const el = document.getElementById(step.target);
-    if(el){
-      el.scrollIntoView({behavior:'smooth', block:'center'});
-      // Open section if collapsed
-      if(el.classList.contains('today-section-collapsed')){
-        toggleTodaySection(step.target);
-      }
+    if(el && el.classList.contains('today-section-collapsed')){
+      toggleTodaySection(step.target);
     }
   }
 }
