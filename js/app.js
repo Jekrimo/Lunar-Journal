@@ -1273,7 +1273,7 @@ function renderSky(){
   // Profile now in Settings tab
   // Year overview
   const ys=new Date(now.getFullYear(),0,1),firstNm=prevNewMoon(ys);let d=new Date(firstNm),cycles=[];
-  for(let i=0;i<13;i++){const nm=prevNewMoon(d),end=prevNewMoon(new Date(nm.getTime()+31.53*86400000));cycles.push({num:i+1,start:nm,end,sign:moonSignApprox(nm)});d=new Date(end.getTime()+2*86400000);}
+  for(let i=0;i<13;i++){const nm=prevNewMoon(d),end=prevNewMoon(new Date(nm.getTime()+31.53*86400000));cycles.push({num:i+1,start:nm,end,sign:sunSignForDate(nm)});d=new Date(end.getTime()+2*86400000);}
   var _yo=document.getElementById('yearOverview');if(_yo)_yo.innerHTML=cycles.map(c=>{const cur=now>=c.start&&now<c.end,s1=c.start.toLocaleDateString('en-US',{month:'short',day:'numeric'}),s2=c.end.toLocaleDateString('en-US',{month:'short',day:'numeric'});return`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(245,240,232,.05);${cur?'color:#e8d49a;':'color:rgba(245,240,232,.4);'}"><span style="font-family:Cinzel,serif;font-size:11px;min-width:22px;">${c.num}</span><span style="font-size:13px;">${c.sign?.symbol||''} ${c.sign?.name||''}</span><span style="font-size:12px;margin-left:auto;font-style:italic;">${s1}–${s2}</span>${cur?'<span style="font-family:Cinzel,serif;font-size:9px;color:var(--gold);letter-spacing:.1em;margin-left:6px;">NOW</span>':''}</div>`;}).join('');
 }
 
@@ -4573,6 +4573,20 @@ function renderDayLog(){
     });
     html+='</div>';
   }
+
+  // ── Morning Reading (cached from today) ──────────────────────────
+  try{
+    var _rc=localStorage.getItem(RK);
+    if(_rc){
+      var _rp=JSON.parse(_rc);
+      if(_rp&&_rp.date===key&&_rp.text){
+        html+='<div style="background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:16px;margin-bottom:12px;">';
+        html+='<div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:.12em;color:rgba(201,168,76,.55);text-transform:uppercase;margin-bottom:8px;">Morning Reading</div>';
+        html+='<div style="color:rgba(245,240,232,.6);font-size:14px;line-height:1.55;white-space:pre-wrap;">'+sanitizeAIText(_rp.text)+'</div>';
+        html+='</div>';
+      }
+    }
+  }catch(e){}
 
   // ── Signs Card ────────────────────────────────────────────────────
   var allSigns=getSignsLocal();
